@@ -165,7 +165,7 @@ proc create_root_design { parentCell } {
    CONFIG.ASSOCIATED_RESET {resetn} \
  ] $clk
   set probe0 [ create_bd_port -dir I -from 0 -to 0 probe0 ]
-  set probe1 [ create_bd_port -dir I -from 31 -to 0 probe1 ]
+  set probe1 [ create_bd_port -dir I -from 0 -to 0 probe1 ]
   set resetn [ create_bd_port -dir I -type rst resetn ]
 
   # Create instance: g_inst, and set properties
@@ -211,7 +211,7 @@ proc create_root_design { parentCell } {
    CONFIG.ALL_PROBE_SAME_MU {TRUE} \
    CONFIG.ALL_PROBE_SAME_MU_CNT {1} \
    CONFIG.C_ADV_TRIGGER {FALSE} \
-   CONFIG.C_DATA_DEPTH {1024} \
+   CONFIG.C_DATA_DEPTH {4096} \
    CONFIG.C_EN_STRG_QUAL {0} \
    CONFIG.C_EN_TIME_TAG {0} \
    CONFIG.C_ILA_CLK_FREQ {100000000} \
@@ -243,7 +243,7 @@ proc create_root_design { parentCell } {
    CONFIG.C_PROBE19_WIDTH {2} \
    CONFIG.C_PROBE1_MU_CNT {1} \
    CONFIG.C_PROBE1_TYPE {0} \
-   CONFIG.C_PROBE1_WIDTH {32} \
+   CONFIG.C_PROBE1_WIDTH {1} \
    CONFIG.C_PROBE2_TYPE {0} \
    CONFIG.C_PROBE2_WIDTH {2} \
    CONFIG.C_PROBE3_TYPE {0} \

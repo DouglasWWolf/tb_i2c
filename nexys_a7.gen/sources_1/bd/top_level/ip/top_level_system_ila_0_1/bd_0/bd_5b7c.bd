@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x8BDE1B4EDEE3B4E9",
+      "boundary_crc": "0x3743AEFE6EF04FC0",
       "design_src": "SBD",
       "device": "xc7a100tcsg324-1",
       "name": "bd_5b7c",
@@ -193,7 +193,7 @@
       },
       "probe1": {
         "direction": "I",
-        "left": "31",
+        "left": "0",
         "right": "0"
       },
       "resetn": {
@@ -228,7 +228,7 @@
             "value": "FALSE"
           },
           "C_DATA_DEPTH": {
-            "value": "1024"
+            "value": "4096"
           },
           "C_EN_STRG_QUAL": {
             "value": "0"
@@ -324,7 +324,7 @@
             "value": "0"
           },
           "C_PROBE1_WIDTH": {
-            "value": "32"
+            "value": "1"
           },
           "C_PROBE2_TYPE": {
             "value": "0"

@@ -51,7 +51,7 @@ module bd_5b7c_wrapper
   input SLOT_0_AXI_wvalid;
   input clk;
   input [0:0]probe0;
-  input [31:0]probe1;
+  input [0:0]probe1;
   input resetn;
 
   wire [31:0]SLOT_0_AXI_araddr;
@@ -75,7 +75,7 @@ module bd_5b7c_wrapper
   wire SLOT_0_AXI_wvalid;
   wire clk;
   wire [0:0]probe0;
-  wire [31:0]probe1;
+  wire [0:0]probe1;
   wire resetn;
 
   bd_5b7c bd_5b7c_i

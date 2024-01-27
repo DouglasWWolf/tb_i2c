@@ -1,10 +1,10 @@
 -- Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
--- Date        : Thu Jan 25 02:13:34 2024
+-- Date        : Thu Jan 25 02:13:33 2024
 -- Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
--- Command     : write_vhdl -force -mode synth_stub
---               /fpga/tb_i2c/nexys_a7.gen/sources_1/bd/top_level/ip/top_level_axi_uartlite_0_0/top_level_axi_uartlite_0_0_stub.vhdl
+-- Command     : write_vhdl -force -mode synth_stub -rename_top top_level_axi_uartlite_0_0 -prefix
+--               top_level_axi_uartlite_0_0_ top_level_axi_uartlite_0_0_stub.vhdl
 -- Design      : top_level_axi_uartlite_0_0
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a100tcsg324-1

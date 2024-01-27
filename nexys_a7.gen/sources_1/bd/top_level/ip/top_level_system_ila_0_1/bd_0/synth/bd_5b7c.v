@@ -52,7 +52,7 @@ module bd_5b7c
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI WVALID" *) input SLOT_0_AXI_wvalid;
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLK, ASSOCIATED_BUSIF SLOT_0_AXI, ASSOCIATED_RESET resetn, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.0" *) input clk;
   input [0:0]probe0;
-  input [31:0]probe1;
+  input [0:0]probe1;
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.RESETN RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.RESETN, INSERT_VIP 0, POLARITY ACTIVE_LOW" *) input resetn;
 
   wire [31:0]Conn_ARADDR;
@@ -104,7 +104,7 @@ module bd_5b7c
   wire [3:0]net_slot_0_axi_wstrb;
   wire net_slot_0_axi_wvalid;
   wire [0:0]probe0_1;
-  wire [31:0]probe1_1;
+  wire [0:0]probe1_1;
   wire resetn_1;
 
   assign Conn_ARADDR = SLOT_0_AXI_araddr[31:0];
@@ -128,7 +128,7 @@ module bd_5b7c
   assign Conn_WVALID = SLOT_0_AXI_wvalid;
   assign clk_1 = clk;
   assign probe0_1 = probe0[0];
-  assign probe1_1 = probe1[31:0];
+  assign probe1_1 = probe1[0];
   assign resetn_1 = resetn;
   bd_5b7c_g_inst_0 g_inst
        (.aclk(clk_1),

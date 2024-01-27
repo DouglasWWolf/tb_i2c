@@ -1,10 +1,10 @@
 // Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-// Date        : Thu Jan 25 02:13:31 2024
+// Date        : Thu Jan 25 02:13:30 2024
 // Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
-// Command     : write_verilog -force -mode funcsim
-//               /fpga/tb_i2c/nexys_a7.gen/sources_1/bd/top_level/ip/top_level_clk_wiz_0_0/top_level_clk_wiz_0_0_sim_netlist.v
+// Command     : write_verilog -force -mode funcsim -rename_top top_level_clk_wiz_0_0 -prefix
+//               top_level_clk_wiz_0_0_ top_level_clk_wiz_0_0_sim_netlist.v
 // Design      : top_level_clk_wiz_0_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -22,12 +22,12 @@ module top_level_clk_wiz_0_0
   wire clk_100mhz;
   (* IBUF_LOW_PWR *) wire clk_in1;
 
-  top_level_clk_wiz_0_0_clk_wiz inst
+  top_level_clk_wiz_0_0_top_level_clk_wiz_0_0_clk_wiz inst
        (.clk_100mhz(clk_100mhz),
         .clk_in1(clk_in1));
 endmodule
 
-module top_level_clk_wiz_0_0_clk_wiz
+module top_level_clk_wiz_0_0_top_level_clk_wiz_0_0_clk_wiz
    (clk_100mhz,
     clk_in1);
   output clk_100mhz;

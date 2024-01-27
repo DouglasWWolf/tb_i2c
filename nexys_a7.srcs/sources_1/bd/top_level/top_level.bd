@@ -876,6 +876,9 @@
         "xci_path": "ip/top_level_system_ila_0_1/top_level_system_ila_0_1.xci",
         "inst_hier_path": "system_ila_0",
         "parameters": {
+          "C_DATA_DEPTH": {
+            "value": "4096"
+          },
           "C_MON_TYPE": {
             "value": "MIX"
           },
@@ -898,6 +901,15 @@
             "value": "0"
           },
           "C_PROBE4_TYPE": {
+            "value": "0"
+          },
+          "C_PROBE5_TYPE": {
+            "value": "0"
+          },
+          "C_PROBE6_TYPE": {
+            "value": "0"
+          },
+          "C_PROBE7_TYPE": {
             "value": "0"
           },
           "C_SLOT_0_APC_EN": {
@@ -1241,6 +1253,19 @@
             "direction": "I",
             "left": "31",
             "right": "0"
+          },
+          "o_I2C_TX_DATA": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "o_I2C_WRITE_LEN": {
+            "direction": "O",
+            "left": "2",
+            "right": "0"
+          },
+          "o_I2C_WRITE_LEN_wstrobe": {
+            "direction": "O"
           }
         }
       },
@@ -1473,6 +1498,9 @@
           }
         },
         "ports": {
+          "alarm": {
+            "direction": "O"
+          },
           "clk": {
             "type": "clk",
             "direction": "I",
@@ -1528,7 +1556,7 @@
             "left": "6",
             "right": "0"
           },
-          "i_I2C_REG_ADDR": {
+          "i_I2C_REG_NUM": {
             "direction": "I",
             "left": "7",
             "right": "0"
@@ -1539,6 +1567,19 @@
             "right": "0"
           },
           "i_I2C_READ_LEN_wstrobe": {
+            "direction": "I"
+          },
+          "i_I2C_TX_DATA": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
+          "i_I2C_WRITE_LEN": {
+            "direction": "I",
+            "left": "2",
+            "right": "0"
+          },
+          "i_I2C_WRITE_LEN_wstrobe": {
             "direction": "I"
           },
           "o_MODULE_REV": {
@@ -1627,6 +1668,20 @@
           "source_100mhz/CPU_RESETN"
         ]
       },
+      "alarm": {
+        "ports": [
+          "axi_iic_fe/alarm",
+          "system_ila_0/probe1"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
+      },
       "axi_iic_0_iic2intc_irpt": {
         "ports": [
           "axi_iic_0/iic2intc_irpt",
@@ -1657,17 +1712,8 @@
       "axi_iic_fe_o_MODULE_REV": {
         "ports": [
           "axi_iic_fe/o_MODULE_REV",
-          "system_ila_0/probe1",
           "i2c_register/i_MODULE_REV"
-        ],
-        "hdl_attributes": {
-          "DEBUG": {
-            "value": "true"
-          },
-          "MARK_DEBUG": {
-            "value": "true"
-          }
-        }
+        ]
       },
       "i2c_register_0_o_I2C_DEV_ADDR": {
         "ports": [
@@ -1690,7 +1736,25 @@
       "i2c_register_0_o_I2C_REG_NUM": {
         "ports": [
           "i2c_register/o_I2C_REG_NUM",
-          "axi_iic_fe/i_I2C_REG_ADDR"
+          "axi_iic_fe/i_I2C_REG_NUM"
+        ]
+      },
+      "i2c_register_o_I2C_WRITE_LEN": {
+        "ports": [
+          "i2c_register/o_I2C_WRITE_LEN",
+          "axi_iic_fe/i_I2C_WRITE_LEN"
+        ]
+      },
+      "i2c_register_o_I2C_WRITE_LEN_wstrobe": {
+        "ports": [
+          "i2c_register/o_I2C_WRITE_LEN_wstrobe",
+          "axi_iic_fe/i_I2C_WRITE_LEN_wstrobe"
+        ]
+      },
+      "o_I2C_TX_DATA": {
+        "ports": [
+          "i2c_register/o_I2C_TX_DATA",
+          "axi_iic_fe/i_I2C_TX_DATA"
         ]
       },
       "source_100mhz_interconnect_aresetn": {

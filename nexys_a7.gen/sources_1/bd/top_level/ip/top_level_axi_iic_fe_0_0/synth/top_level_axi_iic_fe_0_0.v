@@ -56,13 +56,17 @@
 (* IP_DEFINITION_SOURCE = "module_ref" *)
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module top_level_axi_iic_fe_0_0 (
+  alarm,
   clk,
   resetn,
   axi_iic_intr,
   i_I2C_DEV_ADDR,
-  i_I2C_REG_ADDR,
+  i_I2C_REG_NUM,
   i_I2C_READ_LEN,
   i_I2C_READ_LEN_wstrobe,
+  i_I2C_TX_DATA,
+  i_I2C_WRITE_LEN,
+  i_I2C_WRITE_LEN_wstrobe,
   o_MODULE_REV,
   o_I2C_STATUS,
   o_I2C_RX_DATA,
@@ -87,6 +91,7 @@ module top_level_axi_iic_fe_0_0 (
   AXI_RREADY
 );
 
+output wire alarm;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME clk, ASSOCIATED_BUSIF AXI, ASSOCIATED_RESET resetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 clk CLK" *)
 input wire clk;
@@ -97,9 +102,12 @@ input wire resetn;
 (* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 axi_iic_intr INTERRUPT" *)
 input wire axi_iic_intr;
 input wire [6 : 0] i_I2C_DEV_ADDR;
-input wire [7 : 0] i_I2C_REG_ADDR;
+input wire [7 : 0] i_I2C_REG_NUM;
 input wire [2 : 0] i_I2C_READ_LEN;
 input wire i_I2C_READ_LEN_wstrobe;
+input wire [31 : 0] i_I2C_TX_DATA;
+input wire [2 : 0] i_I2C_WRITE_LEN;
+input wire i_I2C_WRITE_LEN_wstrobe;
 output wire [31 : 0] o_MODULE_REV;
 output wire [1 : 0] o_I2C_STATUS;
 output wire [31 : 0] o_I2C_RX_DATA;
@@ -147,13 +155,17 @@ output wire AXI_RREADY;
   axi_iic_fe #(
     .IIC_BASE(32'H00000000)
   ) inst (
+    .alarm(alarm),
     .clk(clk),
     .resetn(resetn),
     .axi_iic_intr(axi_iic_intr),
     .i_I2C_DEV_ADDR(i_I2C_DEV_ADDR),
-    .i_I2C_REG_ADDR(i_I2C_REG_ADDR),
+    .i_I2C_REG_NUM(i_I2C_REG_NUM),
     .i_I2C_READ_LEN(i_I2C_READ_LEN),
     .i_I2C_READ_LEN_wstrobe(i_I2C_READ_LEN_wstrobe),
+    .i_I2C_TX_DATA(i_I2C_TX_DATA),
+    .i_I2C_WRITE_LEN(i_I2C_WRITE_LEN),
+    .i_I2C_WRITE_LEN_wstrobe(i_I2C_WRITE_LEN_wstrobe),
     .o_MODULE_REV(o_MODULE_REV),
     .o_I2C_STATUS(o_I2C_STATUS),
     .o_I2C_RX_DATA(o_I2C_RX_DATA),

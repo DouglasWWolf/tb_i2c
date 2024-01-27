@@ -50,30 +50,37 @@ module i2c_register
     //==========================================================================
 
     // The address of the I2C device being communicated with
-    output[6:0] o_I2C_DEV_ADDR,
+    output[6:0]  o_I2C_DEV_ADDR,
 
     // The register number on the I2C device
-    output[7:0] o_I2C_REG_NUM,
+    output[7:0]  o_I2C_REG_NUM,
 
     // The number of bytes to read.  Starts the read.
-    output[2:0] o_I2C_READ_LEN,
-    output      o_I2C_READ_LEN_wstrobe,
+    output[2:0]  o_I2C_READ_LEN,
+    output       o_I2C_READ_LEN_wstrobe,
 
     // Revision number of the "axi_iic_fe.v" module
-    input[31:0] i_MODULE_REV,
+    input[31:0]  i_MODULE_REV,
 
     // The idle & fault status bits
-    input[1:0]  i_I2C_STATUS,
+    input[1:0]   i_I2C_STATUS,
 
     // Data received when reading a device register over I2C
-    input[31:0] i_I2C_RX_DATA
+    input[31:0]  i_I2C_RX_DATA,
+
+    // Data to be written to an I2C ADDR_MASK
+    output[31:0] o_I2C_TX_DATA,
+        
+    // The number of bytes to write.  Starts the write.
+    output[2:0]  o_I2C_WRITE_LEN,
+    output       o_I2C_WRITE_LEN_wstrobe
 
     //==========================================================================
 
 );  
 
     // The number of AXI register we have
-    localparam REGISTER_COUNT = 6;
+    localparam REGISTER_COUNT = 8;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -98,16 +105,22 @@ module i2c_register
     localparam CREG_DEV_ADDR         = 3;
     localparam CREG_REG_NUM          = 4;
     localparam CREG_READ_LEN         = 5;    
+    localparam CREG_TX_DATA          = 6;
+    localparam CREG_WRITE_LEN        = 7;
+
     //==========================================================================
 
 
     //-------------------------------------------------------
     // Map output ports to registers
     //-------------------------------------------------------
-    assign o_I2C_DEV_ADDR         = axi_reg[CREG_DEV_ADDR];
-    assign o_I2C_REG_NUM          = axi_reg[CREG_REG_NUM ];
-    assign o_I2C_READ_LEN         = axi_reg[CREG_READ_LEN];
-    assign o_I2C_READ_LEN_wstrobe = wstrobe[CREG_READ_LEN];
+    assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR ];
+    assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM  ];
+    assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN ];
+    assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN ];
+    assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA  ];
+    assign o_I2C_WRITE_LEN         = axi_reg[CREG_WRITE_LEN];
+    assign o_I2C_WRITE_LEN_wstrobe = wstrobe[CREG_WRITE_LEN];
     //-------------------------------------------------------
 
 

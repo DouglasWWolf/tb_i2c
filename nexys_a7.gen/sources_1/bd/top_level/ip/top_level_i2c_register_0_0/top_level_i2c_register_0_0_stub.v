@@ -1,10 +1,10 @@
 // Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-// Date        : Sat Jan 27 01:35:21 2024
+// Date        : Sat Jan 27 03:49:33 2024
 // Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
-// Command     : write_verilog -force -mode synth_stub
-//               /fpga/tb_i2c/nexys_a7.gen/sources_1/bd/top_level/ip/top_level_i2c_register_0_0/top_level_i2c_register_0_0_stub.v
+// Command     : write_verilog -force -mode synth_stub -rename_top top_level_i2c_register_0_0 -prefix
+//               top_level_i2c_register_0_0_ top_level_i2c_register_0_0_stub.v
 // Design      : top_level_i2c_register_0_0
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a100tcsg324-1
@@ -19,8 +19,8 @@ module top_level_i2c_register_0_0(clk, resetn, S_AXI_AWADDR, S_AXI_AWVALID,
   S_AXI_BRESP, S_AXI_BVALID, S_AXI_BREADY, S_AXI_ARADDR, S_AXI_ARVALID, S_AXI_ARPROT, 
   S_AXI_ARREADY, S_AXI_RDATA, S_AXI_RVALID, S_AXI_RRESP, S_AXI_RREADY, o_I2C_DEV_ADDR, 
   o_I2C_REG_NUM, o_I2C_READ_LEN, o_I2C_READ_LEN_wstrobe, i_MODULE_REV, i_I2C_STATUS, 
-  i_I2C_RX_DATA)
-/* synthesis syn_black_box black_box_pad_pin="clk,resetn,S_AXI_AWADDR[31:0],S_AXI_AWVALID,S_AXI_AWREADY,S_AXI_AWPROT[2:0],S_AXI_WDATA[31:0],S_AXI_WVALID,S_AXI_WSTRB[3:0],S_AXI_WREADY,S_AXI_BRESP[1:0],S_AXI_BVALID,S_AXI_BREADY,S_AXI_ARADDR[31:0],S_AXI_ARVALID,S_AXI_ARPROT[2:0],S_AXI_ARREADY,S_AXI_RDATA[31:0],S_AXI_RVALID,S_AXI_RRESP[1:0],S_AXI_RREADY,o_I2C_DEV_ADDR[6:0],o_I2C_REG_NUM[7:0],o_I2C_READ_LEN[2:0],o_I2C_READ_LEN_wstrobe,i_MODULE_REV[31:0],i_I2C_STATUS[1:0],i_I2C_RX_DATA[31:0]" */;
+  i_I2C_RX_DATA, o_I2C_TX_DATA, o_I2C_WRITE_LEN, o_I2C_WRITE_LEN_wstrobe)
+/* synthesis syn_black_box black_box_pad_pin="clk,resetn,S_AXI_AWADDR[31:0],S_AXI_AWVALID,S_AXI_AWREADY,S_AXI_AWPROT[2:0],S_AXI_WDATA[31:0],S_AXI_WVALID,S_AXI_WSTRB[3:0],S_AXI_WREADY,S_AXI_BRESP[1:0],S_AXI_BVALID,S_AXI_BREADY,S_AXI_ARADDR[31:0],S_AXI_ARVALID,S_AXI_ARPROT[2:0],S_AXI_ARREADY,S_AXI_RDATA[31:0],S_AXI_RVALID,S_AXI_RRESP[1:0],S_AXI_RREADY,o_I2C_DEV_ADDR[6:0],o_I2C_REG_NUM[7:0],o_I2C_READ_LEN[2:0],o_I2C_READ_LEN_wstrobe,i_MODULE_REV[31:0],i_I2C_STATUS[1:0],i_I2C_RX_DATA[31:0],o_I2C_TX_DATA[31:0],o_I2C_WRITE_LEN[2:0],o_I2C_WRITE_LEN_wstrobe" */;
   input clk;
   input resetn;
   input [31:0]S_AXI_AWADDR;
@@ -49,4 +49,7 @@ module top_level_i2c_register_0_0(clk, resetn, S_AXI_AWADDR, S_AXI_AWVALID,
   input [31:0]i_MODULE_REV;
   input [1:0]i_I2C_STATUS;
   input [31:0]i_I2C_RX_DATA;
+  output [31:0]o_I2C_TX_DATA;
+  output [2:0]o_I2C_WRITE_LEN;
+  output o_I2C_WRITE_LEN_wstrobe;
 endmodule
