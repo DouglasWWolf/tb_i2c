@@ -729,7 +729,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:a687bac8</spirit:value>
+            <spirit:value>9:3b17dac5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -740,7 +740,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:a687bac8</spirit:value>
+            <spirit:value>9:3b17dac5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -756,11 +756,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sat Jan 27 04:04:12 UTC 2024</spirit:value>
+            <spirit:value>Sat Jan 27 09:40:06 UTC 2024</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:a687bac8</spirit:value>
+            <spirit:value>9:3b17dac5</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -783,7 +783,7 @@
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:3514c6c3</spirit:value>
+            <spirit:value>9:166d74ab</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -799,11 +799,11 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>GENtimestamp</spirit:name>
-            <spirit:value>Sat Jan 27 04:04:12 UTC 2024</spirit:value>
+            <spirit:value>Sat Jan 27 09:40:06 UTC 2024</spirit:value>
           </spirit:parameter>
           <spirit:parameter>
             <spirit:name>outputProductCRC</spirit:name>
-            <spirit:value>9:3514c6c3</spirit:value>
+            <spirit:value>9:166d74ab</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -940,7 +940,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_PAYLD_WIDTH&apos;)) - 1)">173</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_PAYLD_WIDTH&apos;)) - 1)">174</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1009,7 +1009,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">0</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">1</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1026,7 +1026,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">0</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">1</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1043,7 +1043,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">0</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) - 1)">1</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1060,7 +1060,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) * 1) - 1)">0</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.C_NUM_MI&apos;)) * 1) - 1)">1</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1077,7 +1077,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_PAYLD_WIDTH&apos;)) - 1)">173</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_PAYLD_WIDTH&apos;)) - 1)">174</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -1273,7 +1273,7 @@
       <spirit:modelParameter spirit:dataType="long">
         <spirit:name>C_NUM_MI</spirit:name>
         <spirit:displayName>C_NUM_MI</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_NUM_MI" spirit:minimum="1" spirit:maximum="16" spirit:rangeType="long">1</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_NUM_MI" spirit:minimum="1" spirit:maximum="16" spirit:rangeType="long">2</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="long">
         <spirit:name>C_CHANNEL</spirit:name>
@@ -1283,7 +1283,7 @@
       <spirit:modelParameter spirit:dataType="long">
         <spirit:name>C_PAYLD_WIDTH</spirit:name>
         <spirit:displayName>C_PAYLD_WIDTH</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PAYLD_WIDTH" spirit:minimum="1" spirit:maximum="1854" spirit:rangeType="long">174</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_PAYLD_WIDTH" spirit:minimum="1" spirit:maximum="1854" spirit:rangeType="long">175</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="bitstring">
         <spirit:name>C_S_NUM_BYTES_ARRAY</spirit:name>
@@ -1313,7 +1313,7 @@
       <spirit:modelParameter spirit:dataType="long">
         <spirit:name>C_SC_ROUTE_WIDTH</spirit:name>
         <spirit:displayName>C_SC_ROUTE_WIDTH</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_SC_ROUTE_WIDTH" spirit:minimum="1" spirit:maximum="64" spirit:rangeType="long">3</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_SC_ROUTE_WIDTH" spirit:minimum="1" spirit:maximum="64" spirit:rangeType="long">4</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="long">
         <spirit:name>C_ID_WIDTH</spirit:name>
@@ -1555,7 +1555,7 @@
     <spirit:parameter>
       <spirit:name>NUM_MI</spirit:name>
       <spirit:displayName>NUM_MI</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_MI" spirit:order="10" spirit:minimum="1" spirit:maximum="16" spirit:rangeType="long">1</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.NUM_MI" spirit:order="10" spirit:minimum="1" spirit:maximum="16" spirit:rangeType="long">2</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>CHANNEL</spirit:name>
@@ -1580,7 +1580,7 @@
     <spirit:parameter>
       <spirit:name>SC_ROUTE_WIDTH</spirit:name>
       <spirit:displayName>SC_ROUTE_WIDTH</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.SC_ROUTE_WIDTH" spirit:order="15" spirit:minimum="1" spirit:maximum="64" spirit:rangeType="long">3</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.SC_ROUTE_WIDTH" spirit:order="15" spirit:minimum="1" spirit:maximum="64" spirit:rangeType="long">4</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>ID_WIDTH</spirit:name>
@@ -1590,7 +1590,7 @@
     <spirit:parameter>
       <spirit:name>PAYLD_WIDTH</spirit:name>
       <spirit:displayName>PAYLD_WIDTH</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.PAYLD_WIDTH" spirit:order="17" spirit:minimum="1" spirit:maximum="1854" spirit:rangeType="long">174</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.PAYLD_WIDTH" spirit:order="17" spirit:minimum="1" spirit:maximum="1854" spirit:rangeType="long">175</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>ADDR_WIDTH</spirit:name>

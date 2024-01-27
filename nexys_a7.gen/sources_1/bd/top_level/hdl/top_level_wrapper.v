@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Fri Jan 26 20:04:08 2024
+//Date        : Sat Jan 27 01:40:03 2024
 //Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level_wrapper.bd
 //Design      : top_level_wrapper
@@ -10,14 +10,12 @@
 `timescale 1 ps / 1 ps
 
 module top_level_wrapper
-   (BTNC,
-    CLK100MHZ,
+   (CLK100MHZ,
     CPU_RESETN,
     I2C_scl_io,
     I2C_sda_io,
     UART_rxd,
     UART_txd);
-  input BTNC;
   input CLK100MHZ;
   input CPU_RESETN;
   inout I2C_scl_io;
@@ -25,7 +23,6 @@ module top_level_wrapper
   input UART_rxd;
   output UART_txd;
 
-  wire BTNC;
   wire CLK100MHZ;
   wire CPU_RESETN;
   wire I2C_scl_i;
@@ -50,8 +47,7 @@ module top_level_wrapper
         .O(I2C_sda_i),
         .T(I2C_sda_t));
   top_level top_level_i
-       (.BTNC(BTNC),
-        .CLK100MHZ(CLK100MHZ),
+       (.CLK100MHZ(CLK100MHZ),
         .CPU_RESETN(CPU_RESETN),
         .I2C_scl_i(I2C_scl_i),
         .I2C_scl_o(I2C_scl_o),

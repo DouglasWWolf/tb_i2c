@@ -11,7 +11,7 @@ git add ${folder}/${project}.sim
 git add ${folder}/${project}.srcs
 git add ${folder}/${project}.xpr
 
-git add src xdc grab.sh README.md push
+git add src utils xdc grab.sh README.md push
 
 git commit -m "No commit message"
 git push origin main

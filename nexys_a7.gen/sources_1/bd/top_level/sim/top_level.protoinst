@@ -27,7 +27,7 @@
 						"WVALID": { "actual": "s_axi_wvalid"}
 					}
 				},
-				"/axi_iic_fe_0/AXI": {
+				"/axi_iic_fe/AXI": {
 					"interface": "xilinx.com:interface:aximm:1.0",
 					"ports": {
 						"ACLK": { "actual": "clk"},
@@ -149,6 +149,32 @@
 						"WVALID": { "actual": "s_axi_wvalid"}
 					}
 				},
+				"/i2c_register/S_AXI": {
+					"interface": "xilinx.com:interface:aximm:1.0",
+					"ports": {
+						"ACLK": { "actual": "clk"},
+						"ARADDR": { "actual": "S_AXI_ARADDR"},
+						"ARESETN": { "actual": "resetn"},
+						"ARPROT": { "actual": "S_AXI_ARPROT"},
+						"ARREADY": { "actual": "S_AXI_ARREADY"},
+						"ARVALID": { "actual": "S_AXI_ARVALID"},
+						"AWADDR": { "actual": "S_AXI_AWADDR"},
+						"AWPROT": { "actual": "S_AXI_AWPROT"},
+						"AWREADY": { "actual": "S_AXI_AWREADY"},
+						"AWVALID": { "actual": "S_AXI_AWVALID"},
+						"BREADY": { "actual": "S_AXI_BREADY"},
+						"BRESP": { "actual": "S_AXI_BRESP"},
+						"BVALID": { "actual": "S_AXI_BVALID"},
+						"RDATA": { "actual": "S_AXI_RDATA"},
+						"RREADY": { "actual": "S_AXI_RREADY"},
+						"RRESP": { "actual": "S_AXI_RRESP"},
+						"RVALID": { "actual": "S_AXI_RVALID"},
+						"WDATA": { "actual": "S_AXI_WDATA"},
+						"WREADY": { "actual": "S_AXI_WREADY"},
+						"WSTRB": { "actual": "S_AXI_WSTRB"},
+						"WVALID": { "actual": "S_AXI_WVALID"}
+					}
+				},
 				"/system_interconnect/M00_AXI": {
 					"interface": "xilinx.com:interface:aximm:1.0",
 					"ports": {
@@ -172,6 +198,31 @@
 						"WREADY": { "actual": "M00_AXI_wready"},
 						"WSTRB": { "actual": "M00_AXI_wstrb"},
 						"WVALID": { "actual": "M00_AXI_wvalid"}
+					}
+				},
+				"/system_interconnect/M01_AXI": {
+					"interface": "xilinx.com:interface:aximm:1.0",
+					"ports": {
+						"ACLK": { "actual": "aclk"},
+						"ARADDR": { "actual": "M01_AXI_araddr"},
+						"ARPROT": { "actual": "M01_AXI_arprot"},
+						"ARREADY": { "actual": "M01_AXI_arready"},
+						"ARVALID": { "actual": "M01_AXI_arvalid"},
+						"AWADDR": { "actual": "M01_AXI_awaddr"},
+						"AWPROT": { "actual": "M01_AXI_awprot"},
+						"AWREADY": { "actual": "M01_AXI_awready"},
+						"AWVALID": { "actual": "M01_AXI_awvalid"},
+						"BREADY": { "actual": "M01_AXI_bready"},
+						"BRESP": { "actual": "M01_AXI_bresp"},
+						"BVALID": { "actual": "M01_AXI_bvalid"},
+						"RDATA": { "actual": "M01_AXI_rdata"},
+						"RREADY": { "actual": "M01_AXI_rready"},
+						"RRESP": { "actual": "M01_AXI_rresp"},
+						"RVALID": { "actual": "M01_AXI_rvalid"},
+						"WDATA": { "actual": "M01_AXI_wdata"},
+						"WREADY": { "actual": "M01_AXI_wready"},
+						"WSTRB": { "actual": "M01_AXI_wstrb"},
+						"WVALID": { "actual": "M01_AXI_wvalid"}
 					}
 				},
 				"/system_interconnect/S00_AXI": {

@@ -59,14 +59,12 @@ module top_level_axi_iic_fe_0_0 (
   clk,
   resetn,
   axi_iic_intr,
-  debug_sr_shows_rx,
-  debug_ocy_shows_rx,
-  device_addr,
+  i_I2C_DEV_ADDR,
   i_I2C_REG_ADDR,
-  i_I2C_INIT_wstrobe,
   i_I2C_READ_LEN,
   i_I2C_READ_LEN_wstrobe,
-  o_I2C_IDLE,
+  o_MODULE_REV,
+  o_I2C_STATUS,
   o_I2C_RX_DATA,
   AXI_AWADDR,
   AXI_AWVALID,
@@ -98,14 +96,12 @@ input wire resetn;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME axi_iic_intr, SENSITIVITY LEVEL_HIGH, PortWidth 1" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 axi_iic_intr INTERRUPT" *)
 input wire axi_iic_intr;
-output wire debug_sr_shows_rx;
-output wire debug_ocy_shows_rx;
-input wire [6 : 0] device_addr;
-input wire [15 : 0] i_I2C_REG_ADDR;
-input wire i_I2C_INIT_wstrobe;
-input wire [7 : 0] i_I2C_READ_LEN;
+input wire [6 : 0] i_I2C_DEV_ADDR;
+input wire [7 : 0] i_I2C_REG_ADDR;
+input wire [2 : 0] i_I2C_READ_LEN;
 input wire i_I2C_READ_LEN_wstrobe;
-output wire o_I2C_IDLE;
+output wire [31 : 0] o_MODULE_REV;
+output wire [1 : 0] o_I2C_STATUS;
 output wire [31 : 0] o_I2C_RX_DATA;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWADDR" *)
 output wire [31 : 0] AXI_AWADDR;
@@ -154,14 +150,12 @@ output wire AXI_RREADY;
     .clk(clk),
     .resetn(resetn),
     .axi_iic_intr(axi_iic_intr),
-    .debug_sr_shows_rx(debug_sr_shows_rx),
-    .debug_ocy_shows_rx(debug_ocy_shows_rx),
-    .device_addr(device_addr),
+    .i_I2C_DEV_ADDR(i_I2C_DEV_ADDR),
     .i_I2C_REG_ADDR(i_I2C_REG_ADDR),
-    .i_I2C_INIT_wstrobe(i_I2C_INIT_wstrobe),
     .i_I2C_READ_LEN(i_I2C_READ_LEN),
     .i_I2C_READ_LEN_wstrobe(i_I2C_READ_LEN_wstrobe),
-    .o_I2C_IDLE(o_I2C_IDLE),
+    .o_MODULE_REV(o_MODULE_REV),
+    .o_I2C_STATUS(o_I2C_STATUS),
     .o_I2C_RX_DATA(o_I2C_RX_DATA),
     .AXI_AWADDR(AXI_AWADDR),
     .AXI_AWVALID(AXI_AWVALID),

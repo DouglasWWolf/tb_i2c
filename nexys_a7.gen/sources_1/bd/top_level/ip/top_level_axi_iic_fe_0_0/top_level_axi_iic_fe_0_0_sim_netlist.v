@@ -1,7 +1,7 @@
 // Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-// Date        : Fri Jan 26 20:05:08 2024
+// Date        : Sat Jan 27 01:41:04 2024
 // Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 // Command     : write_verilog -force -mode funcsim
 //               /fpga/tb_i2c/nexys_a7.gen/sources_1/bd/top_level/ip/top_level_axi_iic_fe_0_0/top_level_axi_iic_fe_0_0_sim_netlist.v
@@ -19,14 +19,12 @@ module top_level_axi_iic_fe_0_0
    (clk,
     resetn,
     axi_iic_intr,
-    debug_sr_shows_rx,
-    debug_ocy_shows_rx,
-    device_addr,
+    i_I2C_DEV_ADDR,
     i_I2C_REG_ADDR,
-    i_I2C_INIT_wstrobe,
     i_I2C_READ_LEN,
     i_I2C_READ_LEN_wstrobe,
-    o_I2C_IDLE,
+    o_MODULE_REV,
+    o_I2C_STATUS,
     o_I2C_RX_DATA,
     AXI_AWADDR,
     AXI_AWVALID,
@@ -50,14 +48,12 @@ module top_level_axi_iic_fe_0_0
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 clk CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME clk, ASSOCIATED_BUSIF AXI, ASSOCIATED_RESET resetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, INSERT_VIP 0" *) input clk;
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 resetn RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME resetn, POLARITY ACTIVE_LOW, INSERT_VIP 0" *) input resetn;
   (* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 axi_iic_intr INTERRUPT" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME axi_iic_intr, SENSITIVITY LEVEL_HIGH, PortWidth 1" *) input axi_iic_intr;
-  output debug_sr_shows_rx;
-  output debug_ocy_shows_rx;
-  input [6:0]device_addr;
-  input [15:0]i_I2C_REG_ADDR;
-  input i_I2C_INIT_wstrobe;
-  input [7:0]i_I2C_READ_LEN;
+  input [6:0]i_I2C_DEV_ADDR;
+  input [7:0]i_I2C_REG_ADDR;
+  input [2:0]i_I2C_READ_LEN;
   input i_I2C_READ_LEN_wstrobe;
-  output o_I2C_IDLE;
+  output [31:0]o_MODULE_REV;
+  output [1:0]o_I2C_STATUS;
   output [31:0]o_I2C_RX_DATA;
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWADDR" *) output [31:0]AXI_AWADDR;
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWVALID" *) output AXI_AWVALID;
@@ -81,7 +77,7 @@ module top_level_axi_iic_fe_0_0
 
   wire \<const0> ;
   wire \<const1> ;
-  wire [3:3]\^AXI_ARADDR ;
+  wire [5:3]\^AXI_ARADDR ;
   wire AXI_ARREADY;
   wire AXI_ARVALID;
   wire [8:2]\^AXI_AWADDR ;
@@ -97,13 +93,12 @@ module top_level_axi_iic_fe_0_0
   wire AXI_WVALID;
   wire axi_iic_intr;
   wire clk;
-  wire [6:0]device_addr;
-  wire i_I2C_INIT_wstrobe;
-  wire [7:0]i_I2C_READ_LEN;
+  wire [6:0]i_I2C_DEV_ADDR;
+  wire [2:0]i_I2C_READ_LEN;
   wire i_I2C_READ_LEN_wstrobe;
-  wire [15:0]i_I2C_REG_ADDR;
-  wire o_I2C_IDLE;
+  wire [7:0]i_I2C_REG_ADDR;
   wire [31:0]o_I2C_RX_DATA;
+  wire [1:0]o_I2C_STATUS;
   wire resetn;
 
   assign AXI_ARADDR[31] = \<const0> ;
@@ -132,7 +127,7 @@ module top_level_axi_iic_fe_0_0
   assign AXI_ARADDR[8] = \^AXI_ARADDR [3];
   assign AXI_ARADDR[7] = \<const0> ;
   assign AXI_ARADDR[6] = \<const0> ;
-  assign AXI_ARADDR[5] = \<const0> ;
+  assign AXI_ARADDR[5] = \^AXI_ARADDR [5];
   assign AXI_ARADDR[4] = \<const0> ;
   assign AXI_ARADDR[3] = \^AXI_ARADDR [3];
   assign AXI_ARADDR[2] = \^AXI_ARADDR [3];
@@ -190,154 +185,217 @@ module top_level_axi_iic_fe_0_0
   assign AXI_WDATA[18] = \^AXI_WDATA [29];
   assign AXI_WDATA[17] = \^AXI_WDATA [29];
   assign AXI_WDATA[16] = \^AXI_WDATA [29];
-  assign AXI_WDATA[15:0] = \^AXI_WDATA [15:0];
+  assign AXI_WDATA[15] = \^AXI_WDATA [29];
+  assign AXI_WDATA[14] = \^AXI_WDATA [29];
+  assign AXI_WDATA[13] = \^AXI_WDATA [29];
+  assign AXI_WDATA[12] = \^AXI_WDATA [29];
+  assign AXI_WDATA[11] = \^AXI_WDATA [29];
+  assign AXI_WDATA[10] = \^AXI_WDATA [29];
+  assign AXI_WDATA[9:0] = \^AXI_WDATA [9:0];
   assign AXI_WSTRB[3] = \<const1> ;
   assign AXI_WSTRB[2] = \<const1> ;
   assign AXI_WSTRB[1] = \<const1> ;
   assign AXI_WSTRB[0] = \<const1> ;
-  assign debug_ocy_shows_rx = \<const0> ;
-  assign debug_sr_shows_rx = \<const0> ;
+  assign o_MODULE_REV[31] = \<const0> ;
+  assign o_MODULE_REV[30] = \<const0> ;
+  assign o_MODULE_REV[29] = \<const0> ;
+  assign o_MODULE_REV[28] = \<const0> ;
+  assign o_MODULE_REV[27] = \<const0> ;
+  assign o_MODULE_REV[26] = \<const0> ;
+  assign o_MODULE_REV[25] = \<const0> ;
+  assign o_MODULE_REV[24] = \<const0> ;
+  assign o_MODULE_REV[23] = \<const0> ;
+  assign o_MODULE_REV[22] = \<const0> ;
+  assign o_MODULE_REV[21] = \<const0> ;
+  assign o_MODULE_REV[20] = \<const0> ;
+  assign o_MODULE_REV[19] = \<const0> ;
+  assign o_MODULE_REV[18] = \<const0> ;
+  assign o_MODULE_REV[17] = \<const0> ;
+  assign o_MODULE_REV[16] = \<const0> ;
+  assign o_MODULE_REV[15] = \<const0> ;
+  assign o_MODULE_REV[14] = \<const0> ;
+  assign o_MODULE_REV[13] = \<const0> ;
+  assign o_MODULE_REV[12] = \<const0> ;
+  assign o_MODULE_REV[11] = \<const0> ;
+  assign o_MODULE_REV[10] = \<const0> ;
+  assign o_MODULE_REV[9] = \<const0> ;
+  assign o_MODULE_REV[8] = \<const0> ;
+  assign o_MODULE_REV[7] = \<const0> ;
+  assign o_MODULE_REV[6] = \<const0> ;
+  assign o_MODULE_REV[5] = \<const0> ;
+  assign o_MODULE_REV[4] = \<const0> ;
+  assign o_MODULE_REV[3] = \<const0> ;
+  assign o_MODULE_REV[2] = \<const0> ;
+  assign o_MODULE_REV[1] = \<const0> ;
+  assign o_MODULE_REV[0] = \<const1> ;
   GND GND
        (.G(\<const0> ));
   VCC VCC
        (.P(\<const1> ));
   top_level_axi_iic_fe_0_0_axi_iic_fe inst
-       (.AXI_ARADDR(\^AXI_ARADDR ),
+       (.AXI_ARADDR({\^AXI_ARADDR [3],\^AXI_ARADDR [5]}),
         .AXI_ARREADY(AXI_ARREADY),
         .AXI_ARVALID(AXI_ARVALID),
         .AXI_AWADDR({\^AXI_AWADDR [8],\^AXI_AWADDR [6:5],\^AXI_AWADDR [2],\^AXI_AWADDR [3]}),
         .AXI_AWREADY(AXI_AWREADY),
         .AXI_AWVALID(AXI_AWVALID),
-        .AXI_BREADY(AXI_BREADY),
+        .AXI_BREADY_reg(AXI_BREADY),
         .AXI_BVALID(AXI_BVALID),
         .AXI_RDATA(AXI_RDATA[7:0]),
         .AXI_RREADY_reg(AXI_RREADY),
         .AXI_RVALID(AXI_RVALID),
-        .AXI_WDATA({\^AXI_WDATA [31],\^AXI_WDATA [29],\^AXI_WDATA [15:0]}),
+        .AXI_WDATA({\^AXI_WDATA [31],\^AXI_WDATA [29],\^AXI_WDATA [9:0]}),
         .AXI_WREADY(AXI_WREADY),
         .AXI_WVALID(AXI_WVALID),
         .axi_iic_intr(axi_iic_intr),
         .clk(clk),
-        .device_addr(device_addr),
-        .i_I2C_INIT_wstrobe(i_I2C_INIT_wstrobe),
+        .i_I2C_DEV_ADDR(i_I2C_DEV_ADDR),
         .i_I2C_READ_LEN(i_I2C_READ_LEN),
         .i_I2C_READ_LEN_wstrobe(i_I2C_READ_LEN_wstrobe),
         .i_I2C_REG_ADDR(i_I2C_REG_ADDR),
-        .o_I2C_IDLE(o_I2C_IDLE),
         .o_I2C_RX_DATA(o_I2C_RX_DATA),
+        .o_I2C_STATUS(o_I2C_STATUS),
         .resetn(resetn));
 endmodule
 
 (* ORIG_REF_NAME = "axi4_lite_master" *) 
 module top_level_axi_iic_fe_0_0_axi4_lite_master
-   (resetn_0,
+   (read_state,
+    resetn_0,
     AXI_WVALID,
     AXI_AWVALID,
-    AXI_BREADY,
+    AXI_BREADY_reg_0,
     AXI_RREADY_reg_0,
     AXI_ARVALID,
-    AXI_ARADDR,
-    \byte_index_reg[1] ,
-    \byte_index_reg[1]_0 ,
-    \byte_index_reg[0] ,
-    \byte_index_reg[1]_1 ,
-    \byte_index_reg[0]_0 ,
-    \byte_index_reg[0]_1 ,
-    \byte_index_reg[1]_2 ,
-    \byte_index_reg[0]_2 ,
-    E,
+    \FSM_onehot_write_state_reg[0]_0 ,
     resetn_1,
+    resetn_2,
     AMCI_WRITE,
-    \FSM_sequential_fsm_state_reg[0] ,
+    E,
+    \FSM_onehot_fsm_state_reg[5] ,
+    resetn_3,
+    \FSM_onehot_fsm_state_reg[4] ,
+    resetn_4,
+    \FSM_onehot_fsm_state_reg[4]_0 ,
+    resetn_5,
+    \FSM_onehot_fsm_state_reg[4]_1 ,
     AMCI_READ,
+    \AMCI_RDATA_reg[6]_0 ,
+    \FSM_onehot_fsm_state_reg[5]_0 ,
+    \FSM_onehot_fsm_state_reg[4]_2 ,
+    resetn_6,
+    bus_fault,
+    \FSM_onehot_fsm_state_reg[5]_1 ,
+    \FSM_onehot_fsm_state_reg[5]_2 ,
+    \FSM_onehot_fsm_state_reg[5]_3 ,
+    \FSM_onehot_fsm_state_reg[5]_4 ,
+    \FSM_onehot_fsm_state_reg[5]_5 ,
+    \FSM_onehot_fsm_state_reg[5]_6 ,
+    \FSM_onehot_fsm_state_reg[5]_7 ,
+    \FSM_onehot_fsm_state_reg[5]_8 ,
+    D,
+    resetn_7,
     AXI_AWADDR,
     AXI_WDATA,
-    \AMCI_RDATA_reg[7]_0 ,
+    AXI_ARADDR,
     clk,
-    \rx_data_reg[0][7] ,
-    \rx_data_reg[0][7]_0 ,
-    \rx_data_reg[0][7]_1 ,
-    Q,
-    AXI_WVALID_reg_0,
-    resetn,
-    AXI_AWREADY,
-    AXI_WREADY,
-    AXI_BVALID,
-    AXI_RVALID,
-    \rx_data_reg[3][0] ,
     FSM_sequential_read_state_reg_0,
-    \FSM_sequential_fsm_state_reg[0]_0 ,
+    AXI_WREADY,
+    AXI_AWREADY,
+    AXI_BVALID,
+    resetn,
+    \FSM_onehot_write_state_reg[2]_0 ,
+    Q,
+    AMCI_WRITE0__4,
+    \FSM_onehot_fsm_state_reg[0] ,
+    \FSM_onehot_fsm_state_reg[0]_0 ,
+    \FSM_onehot_fsm_state_reg[0]_1 ,
+    \FSM_onehot_fsm_state_reg[0]_2 ,
+    \FSM_onehot_fsm_state_reg[0]_3 ,
+    \FSM_onehot_fsm_state_reg[0]_4 ,
+    AXI_RVALID,
+    \rx_data_reg[1][1] ,
+    \rx_data_reg[1][1]_0 ,
     axi_iic_intr,
-    \FSM_sequential_fsm_state_reg[0]_1 ,
-    \cmd_index_reg[0] ,
-    \cmd_index_reg[0]_0 ,
-    \AMCI_WDATA_reg[10] ,
-    \AMCI_WDATA_reg[10]_0 ,
-    \FSM_sequential_fsm_state_reg[0]_2 ,
-    \FSM_sequential_fsm_state_reg[0]_3 ,
     AXI_ARREADY,
+    o_I2C_STATUS,
+    AXI_RDATA,
     \AXI_AWADDR_reg[8]_0 ,
-    D,
-    AXI_RDATA);
+    \AXI_WDATA_reg[31]_0 ,
+    AMCI_RADDR);
+  output read_state;
   output resetn_0;
   output AXI_WVALID;
   output AXI_AWVALID;
-  output AXI_BREADY;
+  output AXI_BREADY_reg_0;
   output AXI_RREADY_reg_0;
   output AXI_ARVALID;
-  output [0:0]AXI_ARADDR;
-  output \byte_index_reg[1] ;
-  output \byte_index_reg[1]_0 ;
-  output \byte_index_reg[0] ;
-  output \byte_index_reg[1]_1 ;
-  output \byte_index_reg[0]_0 ;
-  output \byte_index_reg[0]_1 ;
-  output \byte_index_reg[1]_2 ;
-  output \byte_index_reg[0]_2 ;
-  output [0:0]E;
-  output [0:0]resetn_1;
+  output \FSM_onehot_write_state_reg[0]_0 ;
+  output resetn_1;
+  output resetn_2;
   output AMCI_WRITE;
-  output \FSM_sequential_fsm_state_reg[0] ;
+  output [0:0]E;
+  output \FSM_onehot_fsm_state_reg[5] ;
+  output resetn_3;
+  output \FSM_onehot_fsm_state_reg[4] ;
+  output resetn_4;
+  output \FSM_onehot_fsm_state_reg[4]_0 ;
+  output resetn_5;
+  output \FSM_onehot_fsm_state_reg[4]_1 ;
   output AMCI_READ;
+  output [5:0]\AMCI_RDATA_reg[6]_0 ;
+  output \FSM_onehot_fsm_state_reg[5]_0 ;
+  output \FSM_onehot_fsm_state_reg[4]_2 ;
+  output resetn_6;
+  output bus_fault;
+  output \FSM_onehot_fsm_state_reg[5]_1 ;
+  output \FSM_onehot_fsm_state_reg[5]_2 ;
+  output \FSM_onehot_fsm_state_reg[5]_3 ;
+  output \FSM_onehot_fsm_state_reg[5]_4 ;
+  output \FSM_onehot_fsm_state_reg[5]_5 ;
+  output \FSM_onehot_fsm_state_reg[5]_6 ;
+  output \FSM_onehot_fsm_state_reg[5]_7 ;
+  output \FSM_onehot_fsm_state_reg[5]_8 ;
+  output [1:0]D;
+  output resetn_7;
   output [4:0]AXI_AWADDR;
-  output [17:0]AXI_WDATA;
-  output [7:0]\AMCI_RDATA_reg[7]_0 ;
+  output [11:0]AXI_WDATA;
+  output [1:0]AXI_ARADDR;
   input clk;
-  input \rx_data_reg[0][7] ;
-  input \rx_data_reg[0][7]_0 ;
-  input \rx_data_reg[0][7]_1 ;
-  input [3:0]Q;
-  input AXI_WVALID_reg_0;
-  input resetn;
-  input AXI_AWREADY;
-  input AXI_WREADY;
-  input AXI_BVALID;
-  input AXI_RVALID;
-  input \rx_data_reg[3][0] ;
   input FSM_sequential_read_state_reg_0;
-  input \FSM_sequential_fsm_state_reg[0]_0 ;
+  input AXI_WREADY;
+  input AXI_AWREADY;
+  input AXI_BVALID;
+  input resetn;
+  input \FSM_onehot_write_state_reg[2]_0 ;
+  input [4:0]Q;
+  input AMCI_WRITE0__4;
+  input \FSM_onehot_fsm_state_reg[0] ;
+  input \FSM_onehot_fsm_state_reg[0]_0 ;
+  input \FSM_onehot_fsm_state_reg[0]_1 ;
+  input \FSM_onehot_fsm_state_reg[0]_2 ;
+  input \FSM_onehot_fsm_state_reg[0]_3 ;
+  input \FSM_onehot_fsm_state_reg[0]_4 ;
+  input AXI_RVALID;
+  input \rx_data_reg[1][1] ;
+  input \rx_data_reg[1][1]_0 ;
   input axi_iic_intr;
-  input \FSM_sequential_fsm_state_reg[0]_1 ;
-  input \cmd_index_reg[0] ;
-  input \cmd_index_reg[0]_0 ;
-  input [0:0]\AMCI_WDATA_reg[10] ;
-  input \AMCI_WDATA_reg[10]_0 ;
-  input \FSM_sequential_fsm_state_reg[0]_2 ;
-  input \FSM_sequential_fsm_state_reg[0]_3 ;
   input AXI_ARREADY;
-  input [4:0]\AXI_AWADDR_reg[8]_0 ;
-  input [17:0]D;
+  input [0:0]o_I2C_STATUS;
   input [7:0]AXI_RDATA;
+  input [4:0]\AXI_AWADDR_reg[8]_0 ;
+  input [11:0]\AXI_WDATA_reg[31]_0 ;
+  input [1:0]AMCI_RADDR;
 
+  wire [1:0]AMCI_RADDR;
+  wire [7:2]AMCI_RDATA;
   wire \AMCI_RDATA[7]_i_1_n_0 ;
-  wire [7:0]\AMCI_RDATA_reg[7]_0 ;
+  wire [5:0]\AMCI_RDATA_reg[6]_0 ;
   wire AMCI_READ;
-  wire AMCI_READ_i_2_n_0;
-  wire \AMCI_WADDR[8]_i_4_n_0 ;
-  wire [0:0]\AMCI_WDATA_reg[10] ;
-  wire \AMCI_WDATA_reg[10]_0 ;
   wire AMCI_WRITE;
-  wire [0:0]AXI_ARADDR;
+  wire AMCI_WRITE0__4;
+  wire [1:0]AXI_ARADDR;
+  wire \AXI_ARADDR[5]_i_1_n_0 ;
   wire \AXI_ARADDR[8]_i_1_n_0 ;
   wire AXI_ARREADY;
   wire AXI_ARVALID;
@@ -348,178 +406,208 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
   wire AXI_AWREADY;
   wire AXI_AWVALID;
   wire AXI_AWVALID_i_2_n_0;
-  wire AXI_BREADY;
   wire AXI_BREADY_i_1_n_0;
+  wire AXI_BREADY_reg_0;
   wire AXI_BVALID;
   wire [7:0]AXI_RDATA;
   wire AXI_RREADY_i_1_n_0;
   wire AXI_RREADY_reg_0;
   wire AXI_RVALID;
-  wire [17:0]AXI_WDATA;
+  wire [11:0]AXI_WDATA;
+  wire [11:0]\AXI_WDATA_reg[31]_0 ;
   wire AXI_WREADY;
   wire AXI_WVALID;
   wire AXI_WVALID_i_1_n_0;
-  wire AXI_WVALID_reg_0;
-  wire [17:0]D;
+  wire B_HANDSHAKE__0;
+  wire [1:0]D;
   wire [0:0]E;
+  wire \FSM_onehot_fsm_state[5]_i_3_n_0 ;
+  wire \FSM_onehot_fsm_state_reg[0] ;
+  wire \FSM_onehot_fsm_state_reg[0]_0 ;
+  wire \FSM_onehot_fsm_state_reg[0]_1 ;
+  wire \FSM_onehot_fsm_state_reg[0]_2 ;
+  wire \FSM_onehot_fsm_state_reg[0]_3 ;
+  wire \FSM_onehot_fsm_state_reg[0]_4 ;
+  wire \FSM_onehot_fsm_state_reg[4] ;
+  wire \FSM_onehot_fsm_state_reg[4]_0 ;
+  wire \FSM_onehot_fsm_state_reg[4]_1 ;
+  wire \FSM_onehot_fsm_state_reg[4]_2 ;
+  wire \FSM_onehot_fsm_state_reg[5] ;
+  wire \FSM_onehot_fsm_state_reg[5]_0 ;
+  wire \FSM_onehot_fsm_state_reg[5]_1 ;
+  wire \FSM_onehot_fsm_state_reg[5]_2 ;
+  wire \FSM_onehot_fsm_state_reg[5]_3 ;
+  wire \FSM_onehot_fsm_state_reg[5]_4 ;
+  wire \FSM_onehot_fsm_state_reg[5]_5 ;
+  wire \FSM_onehot_fsm_state_reg[5]_6 ;
+  wire \FSM_onehot_fsm_state_reg[5]_7 ;
+  wire \FSM_onehot_fsm_state_reg[5]_8 ;
   wire \FSM_onehot_write_state[0]_i_1_n_0 ;
   wire \FSM_onehot_write_state[1]_i_1_n_0 ;
   wire \FSM_onehot_write_state[2]_i_1_n_0 ;
-  wire \FSM_onehot_write_state[2]_i_2_n_0 ;
   wire \FSM_onehot_write_state[2]_i_3_n_0 ;
-  wire \FSM_onehot_write_state_reg_n_0_[0] ;
+  wire \FSM_onehot_write_state_reg[0]_0 ;
+  wire \FSM_onehot_write_state_reg[2]_0 ;
   wire \FSM_onehot_write_state_reg_n_0_[1] ;
   wire \FSM_onehot_write_state_reg_n_0_[2] ;
-  wire \FSM_sequential_fsm_state[3]_i_3_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_5_n_0 ;
-  wire \FSM_sequential_fsm_state_reg[0] ;
-  wire \FSM_sequential_fsm_state_reg[0]_0 ;
-  wire \FSM_sequential_fsm_state_reg[0]_1 ;
-  wire \FSM_sequential_fsm_state_reg[0]_2 ;
-  wire \FSM_sequential_fsm_state_reg[0]_3 ;
   wire FSM_sequential_read_state_i_1_n_0;
   wire FSM_sequential_read_state_reg_0;
-  wire [3:0]Q;
+  wire [4:0]Q;
   wire axi_iic_intr;
-  wire \byte_index_reg[0] ;
-  wire \byte_index_reg[0]_0 ;
-  wire \byte_index_reg[0]_1 ;
-  wire \byte_index_reg[0]_2 ;
-  wire \byte_index_reg[1] ;
-  wire \byte_index_reg[1]_0 ;
-  wire \byte_index_reg[1]_1 ;
-  wire \byte_index_reg[1]_2 ;
+  wire bus_fault;
+  wire bus_fault_i_2_n_0;
   wire clk;
-  wire \cmd_index[3]_i_4_n_0 ;
-  wire \cmd_index_reg[0] ;
-  wire \cmd_index_reg[0]_0 ;
+  wire fsm_state;
+  wire [0:0]o_I2C_STATUS;
   wire read_state;
   wire resetn;
   wire resetn_0;
-  wire [0:0]resetn_1;
-  wire \rx_data[3][7]_i_4_n_0 ;
-  wire \rx_data_reg[0][7] ;
-  wire \rx_data_reg[0][7]_0 ;
-  wire \rx_data_reg[0][7]_1 ;
-  wire \rx_data_reg[3][0] ;
+  wire resetn_1;
+  wire resetn_2;
+  wire resetn_3;
+  wire resetn_4;
+  wire resetn_5;
+  wire resetn_6;
+  wire resetn_7;
+  wire \rx_data_reg[1][1] ;
+  wire \rx_data_reg[1][1]_0 ;
 
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  LUT4 #(
+    .INIT(16'h0008)) 
+    \AMCI_RADDR[8]_i_2 
+       (.I0(Q[3]),
+        .I1(\AMCI_RDATA_reg[6]_0 [2]),
+        .I2(FSM_sequential_read_state_reg_0),
+        .I3(read_state),
+        .O(\FSM_onehot_fsm_state_reg[4]_2 ));
   LUT4 #(
     .INIT(16'h8000)) 
     \AMCI_RDATA[7]_i_1 
-       (.I0(read_state),
-        .I1(resetn),
+       (.I0(resetn),
+        .I1(AXI_RVALID),
         .I2(AXI_RREADY_reg_0),
-        .I3(AXI_RVALID),
+        .I3(read_state),
         .O(\AMCI_RDATA[7]_i_1_n_0 ));
   FDRE \AMCI_RDATA_reg[0] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[0]),
-        .Q(\AMCI_RDATA_reg[7]_0 [0]),
+        .Q(\AMCI_RDATA_reg[6]_0 [0]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[1] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[1]),
-        .Q(\AMCI_RDATA_reg[7]_0 [1]),
+        .Q(\AMCI_RDATA_reg[6]_0 [1]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[2] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[2]),
-        .Q(\AMCI_RDATA_reg[7]_0 [2]),
+        .Q(AMCI_RDATA[2]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[3] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[3]),
-        .Q(\AMCI_RDATA_reg[7]_0 [3]),
+        .Q(\AMCI_RDATA_reg[6]_0 [2]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[4] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[4]),
-        .Q(\AMCI_RDATA_reg[7]_0 [4]),
+        .Q(\AMCI_RDATA_reg[6]_0 [3]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[5] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[5]),
-        .Q(\AMCI_RDATA_reg[7]_0 [5]),
+        .Q(\AMCI_RDATA_reg[6]_0 [4]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[6] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[6]),
-        .Q(\AMCI_RDATA_reg[7]_0 [6]),
+        .Q(\AMCI_RDATA_reg[6]_0 [5]),
         .R(1'b0));
   FDRE \AMCI_RDATA_reg[7] 
        (.C(clk),
         .CE(\AMCI_RDATA[7]_i_1_n_0 ),
         .D(AXI_RDATA[7]),
-        .Q(\AMCI_RDATA_reg[7]_0 [7]),
+        .Q(AMCI_RDATA[7]),
         .R(1'b0));
   LUT6 #(
-    .INIT(64'h0300000000220022)) 
+    .INIT(64'hFFFFFFFFFF808080)) 
     AMCI_READ_i_1
-       (.I0(AMCI_READ_i_2_n_0),
-        .I1(Q[3]),
-        .I2(Q[2]),
-        .I3(Q[1]),
+       (.I0(bus_fault_i_2_n_0),
+        .I1(\AMCI_RDATA_reg[6]_0 [2]),
+        .I2(Q[3]),
+        .I3(Q[2]),
         .I4(axi_iic_intr),
-        .I5(Q[0]),
+        .I5(\FSM_onehot_fsm_state_reg[5]_0 ),
         .O(AMCI_READ));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
   LUT5 #(
-    .INIT(32'h00020202)) 
+    .INIT(32'h000000A8)) 
     AMCI_READ_i_2
-       (.I0(Q[2]),
-        .I1(FSM_sequential_read_state_reg_0),
-        .I2(read_state),
-        .I3(\rx_data_reg[0][7]_0 ),
-        .I4(\rx_data_reg[0][7]_1 ),
-        .O(AMCI_READ_i_2_n_0));
-  LUT6 #(
-    .INIT(64'hFFEAAAEAAAAAAAAA)) 
+       (.I0(Q[4]),
+        .I1(\rx_data_reg[1][1]_0 ),
+        .I2(\rx_data_reg[1][1] ),
+        .I3(FSM_sequential_read_state_reg_0),
+        .I4(read_state),
+        .O(\FSM_onehot_fsm_state_reg[5]_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+  LUT5 #(
+    .INIT(32'h20000000)) 
     \AMCI_WADDR[8]_i_1 
-       (.I0(\AMCI_WDATA_reg[10] ),
-        .I1(\cmd_index_reg[0] ),
-        .I2(\FSM_sequential_fsm_state_reg[0]_0 ),
-        .I3(Q[0]),
-        .I4(\AMCI_WDATA_reg[10]_0 ),
-        .I5(\AMCI_WADDR[8]_i_4_n_0 ),
-        .O(\FSM_sequential_fsm_state_reg[0] ));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
-  LUT3 #(
-    .INIT(8'h40)) 
-    \AMCI_WADDR[8]_i_4 
-       (.I0(AXI_WVALID_reg_0),
-        .I1(\FSM_onehot_write_state_reg_n_0_[0] ),
-        .I2(resetn),
-        .O(\AMCI_WADDR[8]_i_4_n_0 ));
-  LUT6 #(
-    .INIT(64'h00000000AF000080)) 
-    AMCI_WRITE_i_1
-       (.I0(\cmd_index[3]_i_4_n_0 ),
-        .I1(\cmd_index_reg[0] ),
-        .I2(Q[1]),
-        .I3(Q[0]),
-        .I4(Q[2]),
-        .I5(Q[3]),
-        .O(AMCI_WRITE));
+       (.I0(resetn),
+        .I1(\FSM_onehot_write_state_reg[2]_0 ),
+        .I2(\FSM_onehot_write_state_reg[0]_0 ),
+        .I3(AMCI_WRITE0__4),
+        .I4(Q[1]),
+        .O(resetn_2));
+  (* SOFT_HLUTNM = "soft_lutpair0" *) 
   LUT4 #(
-    .INIT(16'hFB08)) 
+    .INIT(16'h0080)) 
+    AMCI_WRITE_i_1
+       (.I0(Q[1]),
+        .I1(AMCI_WRITE0__4),
+        .I2(\FSM_onehot_write_state_reg[0]_0 ),
+        .I3(\FSM_onehot_write_state_reg[2]_0 ),
+        .O(AMCI_WRITE));
+  LUT5 #(
+    .INIT(32'hFF8F0080)) 
+    \AXI_ARADDR[5]_i_1 
+       (.I0(FSM_sequential_read_state_reg_0),
+        .I1(AMCI_RADDR[0]),
+        .I2(resetn),
+        .I3(read_state),
+        .I4(AXI_ARADDR[0]),
+        .O(\AXI_ARADDR[5]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  LUT5 #(
+    .INIT(32'hFF8F0080)) 
     \AXI_ARADDR[8]_i_1 
        (.I0(FSM_sequential_read_state_reg_0),
-        .I1(resetn),
-        .I2(read_state),
-        .I3(AXI_ARADDR),
+        .I1(AMCI_RADDR[1]),
+        .I2(resetn),
+        .I3(read_state),
+        .I4(AXI_ARADDR[1]),
         .O(\AXI_ARADDR[8]_i_1_n_0 ));
+  FDRE \AXI_ARADDR_reg[5] 
+       (.C(clk),
+        .CE(1'b1),
+        .D(\AXI_ARADDR[5]_i_1_n_0 ),
+        .Q(AXI_ARADDR[0]),
+        .R(1'b0));
   FDRE \AXI_ARADDR_reg[8] 
        (.C(clk),
         .CE(1'b1),
         .D(\AXI_ARADDR[8]_i_1_n_0 ),
-        .Q(AXI_ARADDR),
+        .Q(AXI_ARADDR[1]),
         .R(1'b0));
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
   LUT4 #(
     .INIT(16'h30AA)) 
     AXI_ARVALID_i_1
@@ -537,9 +625,9 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
   LUT3 #(
     .INIT(8'h80)) 
     \AXI_AWADDR[8]_i_1 
-       (.I0(AXI_WVALID_reg_0),
-        .I1(\FSM_onehot_write_state_reg_n_0_[0] ),
-        .I2(resetn),
+       (.I0(resetn),
+        .I1(\FSM_onehot_write_state_reg[2]_0 ),
+        .I2(\FSM_onehot_write_state_reg[0]_0 ),
         .O(\AXI_AWADDR[8]_i_1_n_0 ));
   FDRE \AXI_AWADDR_reg[3] 
        (.C(clk),
@@ -577,13 +665,13 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
        (.I0(resetn),
         .O(resetn_0));
   LUT5 #(
-    .INIT(32'hFF4C4C4C)) 
+    .INIT(32'h88F8F8F8)) 
     AXI_AWVALID_i_2
-       (.I0(\FSM_onehot_write_state_reg_n_0_[1] ),
-        .I1(AXI_AWVALID),
-        .I2(AXI_AWREADY),
-        .I3(AXI_WVALID_reg_0),
-        .I4(\FSM_onehot_write_state_reg_n_0_[0] ),
+       (.I0(\FSM_onehot_write_state_reg[2]_0 ),
+        .I1(\FSM_onehot_write_state_reg[0]_0 ),
+        .I2(AXI_AWVALID),
+        .I3(AXI_AWREADY),
+        .I4(\FSM_onehot_write_state_reg_n_0_[1] ),
         .O(AXI_AWVALID_i_2_n_0));
   FDRE AXI_AWVALID_reg
        (.C(clk),
@@ -591,23 +679,23 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
         .D(AXI_AWVALID_i_2_n_0),
         .Q(AXI_AWVALID),
         .R(resetn_0));
-  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+  (* SOFT_HLUTNM = "soft_lutpair2" *) 
   LUT5 #(
-    .INIT(32'hFF707070)) 
+    .INIT(32'h8F88FF88)) 
     AXI_BREADY_i_1
-       (.I0(\FSM_onehot_write_state_reg_n_0_[2] ),
-        .I1(AXI_BVALID),
-        .I2(AXI_BREADY),
-        .I3(AXI_WVALID_reg_0),
-        .I4(\FSM_onehot_write_state_reg_n_0_[0] ),
+       (.I0(\FSM_onehot_write_state_reg[2]_0 ),
+        .I1(\FSM_onehot_write_state_reg[0]_0 ),
+        .I2(AXI_BVALID),
+        .I3(AXI_BREADY_reg_0),
+        .I4(\FSM_onehot_write_state_reg_n_0_[2] ),
         .O(AXI_BREADY_i_1_n_0));
   FDRE AXI_BREADY_reg
        (.C(clk),
         .CE(1'b1),
         .D(AXI_BREADY_i_1_n_0),
-        .Q(AXI_BREADY),
+        .Q(AXI_BREADY_reg_0),
         .R(resetn_0));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT4 #(
     .INIT(16'h0CAA)) 
     AXI_RREADY_i_1
@@ -625,120 +713,83 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
   FDRE \AXI_WDATA_reg[0] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[0]),
+        .D(\AXI_WDATA_reg[31]_0 [0]),
         .Q(AXI_WDATA[0]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[10] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[10]),
-        .Q(AXI_WDATA[10]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[11] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[11]),
-        .Q(AXI_WDATA[11]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[12] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[12]),
-        .Q(AXI_WDATA[12]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[13] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[13]),
-        .Q(AXI_WDATA[13]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[14] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[14]),
-        .Q(AXI_WDATA[14]),
-        .R(1'b0));
-  FDRE \AXI_WDATA_reg[15] 
-       (.C(clk),
-        .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[15]),
-        .Q(AXI_WDATA[15]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[1] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[1]),
+        .D(\AXI_WDATA_reg[31]_0 [1]),
         .Q(AXI_WDATA[1]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[2] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[2]),
+        .D(\AXI_WDATA_reg[31]_0 [2]),
         .Q(AXI_WDATA[2]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[30] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[16]),
-        .Q(AXI_WDATA[16]),
+        .D(\AXI_WDATA_reg[31]_0 [10]),
+        .Q(AXI_WDATA[10]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[31] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[17]),
-        .Q(AXI_WDATA[17]),
+        .D(\AXI_WDATA_reg[31]_0 [11]),
+        .Q(AXI_WDATA[11]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[3] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[3]),
+        .D(\AXI_WDATA_reg[31]_0 [3]),
         .Q(AXI_WDATA[3]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[4] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[4]),
+        .D(\AXI_WDATA_reg[31]_0 [4]),
         .Q(AXI_WDATA[4]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[5] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[5]),
+        .D(\AXI_WDATA_reg[31]_0 [5]),
         .Q(AXI_WDATA[5]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[6] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[6]),
+        .D(\AXI_WDATA_reg[31]_0 [6]),
         .Q(AXI_WDATA[6]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[7] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[7]),
+        .D(\AXI_WDATA_reg[31]_0 [7]),
         .Q(AXI_WDATA[7]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[8] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[8]),
+        .D(\AXI_WDATA_reg[31]_0 [8]),
         .Q(AXI_WDATA[8]),
         .R(1'b0));
   FDRE \AXI_WDATA_reg[9] 
        (.C(clk),
         .CE(\AXI_AWADDR[8]_i_1_n_0 ),
-        .D(D[9]),
+        .D(\AXI_WDATA_reg[31]_0 [9]),
         .Q(AXI_WDATA[9]),
         .R(1'b0));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
   LUT5 #(
-    .INIT(32'hFF4C4C4C)) 
+    .INIT(32'h88F8F8F8)) 
     AXI_WVALID_i_1
-       (.I0(\FSM_onehot_write_state_reg_n_0_[1] ),
-        .I1(AXI_WVALID),
-        .I2(AXI_WREADY),
-        .I3(AXI_WVALID_reg_0),
-        .I4(\FSM_onehot_write_state_reg_n_0_[0] ),
+       (.I0(\FSM_onehot_write_state_reg[2]_0 ),
+        .I1(\FSM_onehot_write_state_reg[0]_0 ),
+        .I2(AXI_WVALID),
+        .I3(AXI_WREADY),
+        .I4(\FSM_onehot_write_state_reg_n_0_[1] ),
         .O(AXI_WVALID_i_1_n_0));
   FDRE AXI_WVALID_reg
        (.C(clk),
@@ -746,47 +797,94 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
         .D(AXI_WVALID_i_1_n_0),
         .Q(AXI_WVALID),
         .R(resetn_0));
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
   LUT3 #(
-    .INIT(8'hB8)) 
+    .INIT(8'hBA)) 
+    \FSM_onehot_fsm_state[0]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [2]),
+        .I2(Q[3]),
+        .O(D[0]));
+  LUT6 #(
+    .INIT(64'hFFFFFFFEFFFEFFFE)) 
+    \FSM_onehot_fsm_state[5]_i_1 
+       (.I0(\FSM_onehot_fsm_state[5]_i_3_n_0 ),
+        .I1(\FSM_onehot_fsm_state_reg[0] ),
+        .I2(\FSM_onehot_fsm_state_reg[5] ),
+        .I3(\FSM_onehot_fsm_state_reg[0]_0 ),
+        .I4(fsm_state),
+        .I5(Q[1]),
+        .O(E));
+  LUT2 #(
+    .INIT(4'h8)) 
+    \FSM_onehot_fsm_state[5]_i_2 
+       (.I0(Q[3]),
+        .I1(\AMCI_RDATA_reg[6]_0 [2]),
+        .O(D[1]));
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  LUT4 #(
+    .INIT(16'hABAA)) 
+    \FSM_onehot_fsm_state[5]_i_3 
+       (.I0(Q[0]),
+        .I1(FSM_sequential_read_state_reg_0),
+        .I2(read_state),
+        .I3(Q[3]),
+        .O(\FSM_onehot_fsm_state[5]_i_3_n_0 ));
+  LUT6 #(
+    .INIT(64'h4040404040404000)) 
+    \FSM_onehot_fsm_state[5]_i_6 
+       (.I0(\FSM_onehot_write_state_reg[2]_0 ),
+        .I1(\FSM_onehot_write_state_reg[0]_0 ),
+        .I2(\FSM_onehot_fsm_state_reg[0]_1 ),
+        .I3(\FSM_onehot_fsm_state_reg[0]_2 ),
+        .I4(\FSM_onehot_fsm_state_reg[0]_3 ),
+        .I5(\FSM_onehot_fsm_state_reg[0]_4 ),
+        .O(fsm_state));
+  LUT6 #(
+    .INIT(64'hFFFF0000FAAA2222)) 
     \FSM_onehot_write_state[0]_i_1 
-       (.I0(\FSM_onehot_write_state_reg_n_0_[2] ),
-        .I1(\FSM_onehot_write_state[2]_i_2_n_0 ),
-        .I2(\FSM_onehot_write_state_reg_n_0_[0] ),
+       (.I0(\FSM_onehot_write_state_reg[0]_0 ),
+        .I1(\FSM_onehot_write_state_reg[2]_0 ),
+        .I2(AXI_BREADY_reg_0),
+        .I3(AXI_BVALID),
+        .I4(\FSM_onehot_write_state_reg_n_0_[2] ),
+        .I5(\FSM_onehot_write_state[2]_i_3_n_0 ),
         .O(\FSM_onehot_write_state[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
-  LUT3 #(
-    .INIT(8'hB8)) 
+  LUT6 #(
+    .INIT(64'hAAAAAFFFAAAAA888)) 
     \FSM_onehot_write_state[1]_i_1 
-       (.I0(\FSM_onehot_write_state_reg_n_0_[0] ),
-        .I1(\FSM_onehot_write_state[2]_i_2_n_0 ),
-        .I2(\FSM_onehot_write_state_reg_n_0_[1] ),
+       (.I0(\FSM_onehot_write_state_reg[0]_0 ),
+        .I1(\FSM_onehot_write_state_reg[2]_0 ),
+        .I2(B_HANDSHAKE__0),
+        .I3(\FSM_onehot_write_state_reg_n_0_[2] ),
+        .I4(\FSM_onehot_write_state[2]_i_3_n_0 ),
+        .I5(\FSM_onehot_write_state_reg_n_0_[1] ),
         .O(\FSM_onehot_write_state[1]_i_1_n_0 ));
-  LUT3 #(
-    .INIT(8'hB8)) 
+  LUT6 #(
+    .INIT(64'hAAAAAAAAAABF8080)) 
     \FSM_onehot_write_state[2]_i_1 
        (.I0(\FSM_onehot_write_state_reg_n_0_[1] ),
-        .I1(\FSM_onehot_write_state[2]_i_2_n_0 ),
-        .I2(\FSM_onehot_write_state_reg_n_0_[2] ),
-        .O(\FSM_onehot_write_state[2]_i_1_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFBB0B0000)) 
-    \FSM_onehot_write_state[2]_i_2 
-       (.I0(AXI_AWREADY),
-        .I1(AXI_AWVALID),
-        .I2(AXI_WVALID),
-        .I3(AXI_WREADY),
-        .I4(\FSM_onehot_write_state_reg_n_0_[1] ),
+        .I1(\FSM_onehot_write_state_reg[0]_0 ),
+        .I2(\FSM_onehot_write_state_reg[2]_0 ),
+        .I3(B_HANDSHAKE__0),
+        .I4(\FSM_onehot_write_state_reg_n_0_[2] ),
         .I5(\FSM_onehot_write_state[2]_i_3_n_0 ),
-        .O(\FSM_onehot_write_state[2]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+        .O(\FSM_onehot_write_state[2]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair2" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \FSM_onehot_write_state[2]_i_2 
+       (.I0(AXI_BVALID),
+        .I1(AXI_BREADY_reg_0),
+        .O(B_HANDSHAKE__0));
   LUT5 #(
-    .INIT(32'hFF808080)) 
+    .INIT(32'hB0BB0000)) 
     \FSM_onehot_write_state[2]_i_3 
-       (.I0(\FSM_onehot_write_state_reg_n_0_[2] ),
-        .I1(AXI_BVALID),
-        .I2(AXI_BREADY),
-        .I3(AXI_WVALID_reg_0),
-        .I4(\FSM_onehot_write_state_reg_n_0_[0] ),
+       (.I0(AXI_WREADY),
+        .I1(AXI_WVALID),
+        .I2(AXI_AWREADY),
+        .I3(AXI_AWVALID),
+        .I4(\FSM_onehot_write_state_reg_n_0_[1] ),
         .O(\FSM_onehot_write_state[2]_i_3_n_0 ));
   (* FSM_ENCODED_STATES = "iSTATE:001,iSTATE0:010,iSTATE1:100," *) 
   FDSE #(
@@ -795,7 +893,7 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
        (.C(clk),
         .CE(1'b1),
         .D(\FSM_onehot_write_state[0]_i_1_n_0 ),
-        .Q(\FSM_onehot_write_state_reg_n_0_[0] ),
+        .Q(\FSM_onehot_write_state_reg[0]_0 ),
         .S(resetn_0));
   (* FSM_ENCODED_STATES = "iSTATE:001,iSTATE0:010,iSTATE1:100," *) 
   FDRE #(
@@ -815,37 +913,7 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
         .D(\FSM_onehot_write_state[2]_i_1_n_0 ),
         .Q(\FSM_onehot_write_state_reg_n_0_[2] ),
         .R(resetn_0));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFFFFFEAAA)) 
-    \FSM_sequential_fsm_state[3]_i_1 
-       (.I0(\FSM_sequential_fsm_state[3]_i_3_n_0 ),
-        .I1(Q[0]),
-        .I2(\FSM_sequential_fsm_state_reg[0]_0 ),
-        .I3(axi_iic_intr),
-        .I4(\FSM_sequential_fsm_state[3]_i_5_n_0 ),
-        .I5(\FSM_sequential_fsm_state_reg[0]_1 ),
-        .O(E));
-  LUT6 #(
-    .INIT(64'h888C888888888888)) 
-    \FSM_sequential_fsm_state[3]_i_3 
-       (.I0(Q[0]),
-        .I1(\FSM_sequential_fsm_state_reg[0]_3 ),
-        .I2(read_state),
-        .I3(FSM_sequential_read_state_reg_0),
-        .I4(\rx_data_reg[0][7]_0 ),
-        .I5(\rx_data_reg[0][7]_1 ),
-        .O(\FSM_sequential_fsm_state[3]_i_3_n_0 ));
-  LUT6 #(
-    .INIT(64'h0D0D0000FF080000)) 
-    \FSM_sequential_fsm_state[3]_i_5 
-       (.I0(Q[1]),
-        .I1(Q[2]),
-        .I2(Q[3]),
-        .I3(\FSM_sequential_fsm_state_reg[0]_2 ),
-        .I4(\cmd_index[3]_i_4_n_0 ),
-        .I5(Q[0]),
-        .O(\FSM_sequential_fsm_state[3]_i_5_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT4 #(
     .INIT(16'h3FAA)) 
     FSM_sequential_read_state_i_1
@@ -862,1081 +930,835 @@ module top_level_axi_iic_fe_0_0_axi4_lite_master
         .Q(read_state),
         .R(resetn_0));
   LUT6 #(
-    .INIT(64'h0080C00000000000)) 
-    \cmd_index[3]_i_1 
-       (.I0(\cmd_index_reg[0] ),
-        .I1(\cmd_index[3]_i_4_n_0 ),
-        .I2(resetn),
-        .I3(Q[0]),
-        .I4(Q[1]),
-        .I5(\cmd_index_reg[0]_0 ),
-        .O(resetn_1));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+    .INIT(64'hDD55FFFF88000800)) 
+    bus_fault_i_1
+       (.I0(resetn),
+        .I1(Q[3]),
+        .I2(\AMCI_RDATA_reg[6]_0 [2]),
+        .I3(bus_fault_i_2_n_0),
+        .I4(Q[0]),
+        .I5(o_I2C_STATUS),
+        .O(resetn_7));
+  (* SOFT_HLUTNM = "soft_lutpair3" *) 
   LUT2 #(
-    .INIT(4'h2)) 
-    \cmd_index[3]_i_4 
-       (.I0(\FSM_onehot_write_state_reg_n_0_[0] ),
-        .I1(AXI_WVALID_reg_0),
-        .O(\cmd_index[3]_i_4_n_0 ));
+    .INIT(4'h1)) 
+    bus_fault_i_2
+       (.I0(FSM_sequential_read_state_reg_0),
+        .I1(read_state),
+        .O(bus_fault_i_2_n_0));
   LUT6 #(
-    .INIT(64'hABAA0000ABAAABAA)) 
-    \rx_data[0][7]_i_1 
-       (.I0(\rx_data_reg[0][7] ),
-        .I1(\rx_data_reg[0][7]_0 ),
-        .I2(\rx_data_reg[0][7]_1 ),
-        .I3(\rx_data[3][7]_i_4_n_0 ),
-        .I4(Q[3]),
-        .I5(Q[2]),
-        .O(\byte_index_reg[1] ));
-  (* SOFT_HLUTNM = "soft_lutpair2" *) 
-  LUT4 #(
-    .INIT(16'hFF02)) 
+    .INIT(64'hAAAAAAAA00008000)) 
+    \cmd_index[3]_i_2 
+       (.I0(resetn),
+        .I1(Q[1]),
+        .I2(AMCI_WRITE0__4),
+        .I3(\FSM_onehot_write_state_reg[0]_0 ),
+        .I4(\FSM_onehot_write_state_reg[2]_0 ),
+        .I5(Q[0]),
+        .O(resetn_1));
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+  LUT3 #(
+    .INIT(8'h02)) 
+    \rx_data[0][4]_i_2 
+       (.I0(Q[3]),
+        .I1(read_state),
+        .I2(FSM_sequential_read_state_reg_0),
+        .O(bus_fault));
+  LUT6 #(
+    .INIT(64'hAAAA000000080000)) 
     \rx_data[0][7]_i_2 
-       (.I0(\rx_data[3][7]_i_4_n_0 ),
-        .I1(\rx_data_reg[0][7]_1 ),
-        .I2(\rx_data_reg[0][7]_0 ),
-        .I3(\rx_data_reg[0][7] ),
-        .O(\byte_index_reg[0]_0 ));
+       (.I0(resetn),
+        .I1(Q[4]),
+        .I2(\rx_data_reg[1][1]_0 ),
+        .I3(\rx_data_reg[1][1] ),
+        .I4(bus_fault_i_2_n_0),
+        .I5(Q[3]),
+        .O(resetn_6));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  LUT5 #(
+    .INIT(32'h00000002)) 
+    \rx_data[0][7]_i_3 
+       (.I0(Q[4]),
+        .I1(\rx_data_reg[1][1]_0 ),
+        .I2(\rx_data_reg[1][1] ),
+        .I3(FSM_sequential_read_state_reg_0),
+        .I4(read_state),
+        .O(\FSM_onehot_fsm_state_reg[5] ));
   LUT6 #(
-    .INIT(64'hBAAA0000BAAABAAA)) 
-    \rx_data[1][7]_i_1 
-       (.I0(\rx_data_reg[0][7] ),
-        .I1(\rx_data_reg[0][7]_0 ),
-        .I2(\rx_data_reg[0][7]_1 ),
-        .I3(\rx_data[3][7]_i_4_n_0 ),
-        .I4(Q[3]),
-        .I5(Q[2]),
-        .O(\byte_index_reg[1]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair2" *) 
-  LUT4 #(
-    .INIT(16'hFF08)) 
+    .INIT(64'hAAAA000000800000)) 
     \rx_data[1][7]_i_2 
-       (.I0(\rx_data[3][7]_i_4_n_0 ),
-        .I1(\rx_data_reg[0][7]_1 ),
-        .I2(\rx_data_reg[0][7]_0 ),
-        .I3(\rx_data_reg[0][7] ),
-        .O(\byte_index_reg[0]_1 ));
+       (.I0(resetn),
+        .I1(Q[4]),
+        .I2(\rx_data_reg[1][1] ),
+        .I3(\rx_data_reg[1][1]_0 ),
+        .I4(bus_fault_i_2_n_0),
+        .I5(Q[3]),
+        .O(resetn_3));
   LUT6 #(
-    .INIT(64'hBAAA0000BAAABAAA)) 
-    \rx_data[2][7]_i_1 
-       (.I0(\rx_data_reg[0][7] ),
-        .I1(\rx_data_reg[0][7]_1 ),
-        .I2(\rx_data_reg[0][7]_0 ),
-        .I3(\rx_data[3][7]_i_4_n_0 ),
-        .I4(Q[3]),
-        .I5(Q[2]),
-        .O(\byte_index_reg[0] ));
-  (* SOFT_HLUTNM = "soft_lutpair3" *) 
-  LUT4 #(
-    .INIT(16'hFF08)) 
+    .INIT(64'h0203020202020202)) 
+    \rx_data[1][7]_i_3 
+       (.I0(Q[3]),
+        .I1(read_state),
+        .I2(FSM_sequential_read_state_reg_0),
+        .I3(\rx_data_reg[1][1]_0 ),
+        .I4(\rx_data_reg[1][1] ),
+        .I5(Q[4]),
+        .O(\FSM_onehot_fsm_state_reg[4] ));
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[2][0]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [0]),
+        .O(\FSM_onehot_fsm_state_reg[5]_8 ));
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[2][5]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [4]),
+        .O(\FSM_onehot_fsm_state_reg[5]_3 ));
+  LUT6 #(
+    .INIT(64'hAAAA000000800000)) 
     \rx_data[2][7]_i_2 
-       (.I0(\rx_data[3][7]_i_4_n_0 ),
-        .I1(\rx_data_reg[0][7]_0 ),
-        .I2(\rx_data_reg[0][7]_1 ),
-        .I3(\rx_data_reg[0][7] ),
-        .O(\byte_index_reg[1]_2 ));
+       (.I0(resetn),
+        .I1(Q[4]),
+        .I2(\rx_data_reg[1][1]_0 ),
+        .I3(\rx_data_reg[1][1] ),
+        .I4(bus_fault_i_2_n_0),
+        .I5(Q[3]),
+        .O(resetn_4));
   LUT6 #(
-    .INIT(64'hEAAA0000EAAAEAAA)) 
-    \rx_data[3][7]_i_1 
-       (.I0(\rx_data_reg[0][7] ),
-        .I1(\rx_data[3][7]_i_4_n_0 ),
-        .I2(\rx_data_reg[0][7]_0 ),
-        .I3(\rx_data_reg[0][7]_1 ),
-        .I4(Q[3]),
-        .I5(Q[2]),
-        .O(\byte_index_reg[1]_1 ));
-  (* SOFT_HLUTNM = "soft_lutpair3" *) 
-  LUT4 #(
-    .INIT(16'hFF80)) 
+    .INIT(64'h0203020202020202)) 
+    \rx_data[2][7]_i_3 
+       (.I0(Q[3]),
+        .I1(read_state),
+        .I2(FSM_sequential_read_state_reg_0),
+        .I3(\rx_data_reg[1][1] ),
+        .I4(\rx_data_reg[1][1]_0 ),
+        .I5(Q[4]),
+        .O(\FSM_onehot_fsm_state_reg[4]_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair10" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][1]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [1]),
+        .O(\FSM_onehot_fsm_state_reg[5]_7 ));
+  (* SOFT_HLUTNM = "soft_lutpair10" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][2]_i_1 
+       (.I0(Q[4]),
+        .I1(AMCI_RDATA[2]),
+        .O(\FSM_onehot_fsm_state_reg[5]_6 ));
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][3]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [2]),
+        .O(\FSM_onehot_fsm_state_reg[5]_5 ));
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][4]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [3]),
+        .O(\FSM_onehot_fsm_state_reg[5]_4 ));
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][6]_i_1 
+       (.I0(Q[4]),
+        .I1(\AMCI_RDATA_reg[6]_0 [5]),
+        .O(\FSM_onehot_fsm_state_reg[5]_2 ));
+  LUT6 #(
+    .INIT(64'hAAAA000080000000)) 
     \rx_data[3][7]_i_2 
-       (.I0(\rx_data_reg[0][7]_1 ),
-        .I1(\rx_data_reg[0][7]_0 ),
-        .I2(\rx_data[3][7]_i_4_n_0 ),
-        .I3(\rx_data_reg[0][7] ),
-        .O(\byte_index_reg[0]_2 ));
+       (.I0(resetn),
+        .I1(Q[4]),
+        .I2(\rx_data_reg[1][1] ),
+        .I3(\rx_data_reg[1][1]_0 ),
+        .I4(bus_fault_i_2_n_0),
+        .I5(Q[3]),
+        .O(resetn_5));
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    \rx_data[3][7]_i_3 
+       (.I0(Q[4]),
+        .I1(AMCI_RDATA[7]),
+        .O(\FSM_onehot_fsm_state_reg[5]_1 ));
   LUT6 #(
-    .INIT(64'h0000002000000000)) 
+    .INIT(64'h0302020202020202)) 
     \rx_data[3][7]_i_4 
-       (.I0(\rx_data_reg[3][0] ),
-        .I1(Q[0]),
-        .I2(resetn),
-        .I3(read_state),
-        .I4(FSM_sequential_read_state_reg_0),
-        .I5(Q[2]),
-        .O(\rx_data[3][7]_i_4_n_0 ));
+       (.I0(Q[3]),
+        .I1(read_state),
+        .I2(FSM_sequential_read_state_reg_0),
+        .I3(\rx_data_reg[1][1]_0 ),
+        .I4(\rx_data_reg[1][1] ),
+        .I5(Q[4]),
+        .O(\FSM_onehot_fsm_state_reg[4]_1 ));
 endmodule
 
 (* ORIG_REF_NAME = "axi_iic_fe" *) 
 module top_level_axi_iic_fe_0_0_axi_iic_fe
-   (AXI_AWADDR,
+   (AXI_BREADY_reg,
+    AXI_AWADDR,
     AXI_WDATA,
-    o_I2C_RX_DATA,
-    AXI_AWVALID,
-    AXI_WVALID,
-    AXI_BREADY,
-    AXI_RREADY_reg,
-    o_I2C_IDLE,
-    AXI_ARVALID,
     AXI_ARADDR,
+    o_I2C_RX_DATA,
+    AXI_WVALID,
+    AXI_AWVALID,
+    AXI_RREADY_reg,
+    o_I2C_STATUS,
+    AXI_ARVALID,
     i_I2C_READ_LEN,
-    i_I2C_REG_ADDR,
-    clk,
     resetn,
-    AXI_RDATA,
-    AXI_AWREADY,
-    AXI_WREADY,
     AXI_BVALID,
-    AXI_RVALID,
-    device_addr,
-    i_I2C_READ_LEN_wstrobe,
-    i_I2C_INIT_wstrobe,
+    clk,
+    AXI_RDATA,
     axi_iic_intr,
+    AXI_WREADY,
+    AXI_AWREADY,
+    AXI_RVALID,
+    i_I2C_READ_LEN_wstrobe,
+    i_I2C_REG_ADDR,
+    i_I2C_DEV_ADDR,
     AXI_ARREADY);
+  output AXI_BREADY_reg;
   output [4:0]AXI_AWADDR;
-  output [17:0]AXI_WDATA;
+  output [11:0]AXI_WDATA;
+  output [1:0]AXI_ARADDR;
   output [31:0]o_I2C_RX_DATA;
-  output AXI_AWVALID;
   output AXI_WVALID;
-  output AXI_BREADY;
+  output AXI_AWVALID;
   output AXI_RREADY_reg;
-  output o_I2C_IDLE;
+  output [1:0]o_I2C_STATUS;
   output AXI_ARVALID;
-  output [0:0]AXI_ARADDR;
-  input [7:0]i_I2C_READ_LEN;
-  input [15:0]i_I2C_REG_ADDR;
-  input clk;
+  input [2:0]i_I2C_READ_LEN;
   input resetn;
-  input [7:0]AXI_RDATA;
-  input AXI_AWREADY;
-  input AXI_WREADY;
   input AXI_BVALID;
-  input AXI_RVALID;
-  input [6:0]device_addr;
-  input i_I2C_READ_LEN_wstrobe;
-  input i_I2C_INIT_wstrobe;
+  input clk;
+  input [7:0]AXI_RDATA;
   input axi_iic_intr;
+  input AXI_WREADY;
+  input AXI_AWREADY;
+  input AXI_RVALID;
+  input i_I2C_READ_LEN_wstrobe;
+  input [7:0]i_I2C_REG_ADDR;
+  input [6:0]i_I2C_DEV_ADDR;
   input AXI_ARREADY;
 
-  wire [7:0]AMCI_RDATA;
+  wire [8:5]AMCI_RADDR;
+  wire \AMCI_RADDR[5]_i_1_n_0 ;
+  wire \AMCI_RADDR[8]_i_1_n_0 ;
+  wire [6:0]AMCI_RDATA;
   wire AMCI_READ;
   wire AMCI_READ_reg_n_0;
   wire [8:3]AMCI_WADDR;
-  wire \AMCI_WADDR[8]_i_3_n_0 ;
-  wire \AMCI_WADDR_reg_n_0_[3] ;
-  wire \AMCI_WADDR_reg_n_0_[4] ;
-  wire \AMCI_WADDR_reg_n_0_[5] ;
-  wire \AMCI_WADDR_reg_n_0_[6] ;
-  wire \AMCI_WADDR_reg_n_0_[8] ;
-  wire [30:0]AMCI_WDATA;
-  wire \AMCI_WDATA[0]_i_2_n_0 ;
-  wire \AMCI_WDATA[10]_i_1_n_0 ;
-  wire \AMCI_WDATA[11]_i_1_n_0 ;
-  wire \AMCI_WDATA[12]_i_1_n_0 ;
-  wire \AMCI_WDATA[13]_i_1_n_0 ;
-  wire \AMCI_WDATA[14]_i_1_n_0 ;
-  wire \AMCI_WDATA[15]_i_1_n_0 ;
+  wire [31:0]AMCI_WDATA;
   wire \AMCI_WDATA[1]_i_2_n_0 ;
   wire \AMCI_WDATA[1]_i_3_n_0 ;
-  wire \AMCI_WDATA[1]_i_4_n_0 ;
   wire \AMCI_WDATA[2]_i_2_n_0 ;
   wire \AMCI_WDATA[2]_i_3_n_0 ;
-  wire \AMCI_WDATA[30]_i_2_n_0 ;
-  wire \AMCI_WDATA[30]_i_3_n_0 ;
-  wire \AMCI_WDATA[30]_i_4_n_0 ;
+  wire \AMCI_WDATA[30]_i_1_n_0 ;
   wire \AMCI_WDATA[31]_i_1_n_0 ;
   wire \AMCI_WDATA[31]_i_2_n_0 ;
+  wire \AMCI_WDATA[31]_i_3_n_0 ;
+  wire \AMCI_WDATA[3]_i_1_n_0 ;
   wire \AMCI_WDATA[3]_i_2_n_0 ;
-  wire \AMCI_WDATA[3]_i_3_n_0 ;
-  wire \AMCI_WDATA[3]_i_4_n_0 ;
-  wire \AMCI_WDATA[3]_i_5_n_0 ;
-  wire \AMCI_WDATA[4]_i_2_n_0 ;
-  wire \AMCI_WDATA[5]_i_2_n_0 ;
-  wire \AMCI_WDATA[6]_i_2_n_0 ;
-  wire \AMCI_WDATA[6]_i_3_n_0 ;
-  wire \AMCI_WDATA[7]_i_2_n_0 ;
-  wire \AMCI_WDATA[7]_i_3_n_0 ;
-  wire \AMCI_WDATA[7]_i_4_n_0 ;
-  wire \AMCI_WDATA[8]_i_2_n_0 ;
-  wire \AMCI_WDATA[8]_i_3_n_0 ;
-  wire \AMCI_WDATA[8]_i_4_n_0 ;
-  wire \AMCI_WDATA[8]_i_5_n_0 ;
-  wire \AMCI_WDATA[8]_i_6_n_0 ;
+  wire \AMCI_WDATA[4]_i_1_n_0 ;
+  wire \AMCI_WDATA[5]_i_1_n_0 ;
+  wire \AMCI_WDATA[6]_i_1_n_0 ;
+  wire \AMCI_WDATA[7]_i_1_n_0 ;
+  wire \AMCI_WDATA[8]_i_1_n_0 ;
   wire \AMCI_WDATA[9]_i_2_n_0 ;
-  wire \AMCI_WDATA[9]_i_3_n_0 ;
-  wire \AMCI_WDATA_reg_n_0_[0] ;
-  wire \AMCI_WDATA_reg_n_0_[10] ;
-  wire \AMCI_WDATA_reg_n_0_[11] ;
-  wire \AMCI_WDATA_reg_n_0_[12] ;
-  wire \AMCI_WDATA_reg_n_0_[13] ;
-  wire \AMCI_WDATA_reg_n_0_[14] ;
-  wire \AMCI_WDATA_reg_n_0_[15] ;
-  wire \AMCI_WDATA_reg_n_0_[1] ;
-  wire \AMCI_WDATA_reg_n_0_[2] ;
-  wire \AMCI_WDATA_reg_n_0_[30] ;
-  wire \AMCI_WDATA_reg_n_0_[31] ;
-  wire \AMCI_WDATA_reg_n_0_[3] ;
-  wire \AMCI_WDATA_reg_n_0_[4] ;
-  wire \AMCI_WDATA_reg_n_0_[5] ;
-  wire \AMCI_WDATA_reg_n_0_[6] ;
-  wire \AMCI_WDATA_reg_n_0_[7] ;
-  wire \AMCI_WDATA_reg_n_0_[8] ;
-  wire \AMCI_WDATA_reg_n_0_[9] ;
   wire AMCI_WRITE;
+  wire AMCI_WRITE0__4;
   wire AMCI_WRITE_reg_n_0;
-  wire [0:0]AXI_ARADDR;
+  wire [1:0]AXI_ARADDR;
   wire AXI_ARREADY;
   wire AXI_ARVALID;
   wire [4:0]AXI_AWADDR;
   wire AXI_AWREADY;
   wire AXI_AWVALID;
-  wire AXI_BREADY;
+  wire AXI_BREADY_reg;
   wire AXI_BVALID;
   wire [7:0]AXI_RDATA;
   wire AXI_RREADY_reg;
   wire AXI_RVALID;
-  wire [17:0]AXI_WDATA;
+  wire [11:0]AXI_WDATA;
   wire AXI_WREADY;
   wire AXI_WVALID;
-  wire \FSM_sequential_fsm_state[2]_i_2_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_10_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_11_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_4_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_6_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_7_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_8_n_0 ;
-  wire \FSM_sequential_fsm_state[3]_i_9_n_0 ;
+  wire \FSM_onehot_fsm_state[5]_i_4_n_0 ;
+  wire \FSM_onehot_fsm_state[5]_i_5_n_0 ;
+  wire \FSM_onehot_fsm_state_reg_n_0_[0] ;
+  wire \FSM_onehot_fsm_state_reg_n_0_[3] ;
+  wire \FSM_onehot_fsm_state_reg_n_0_[4] ;
   wire axi_iic_intr;
-  wire [1:1]byte_index;
+  wire bus_fault;
+  wire [1:0]byte_index;
   wire \byte_index[0]_i_1_n_0 ;
   wire \byte_index[1]_i_1_n_0 ;
   wire \byte_index_reg_n_0_[0] ;
   wire \byte_index_reg_n_0_[1] ;
   wire clk;
-  wire [3:0]cmd_index;
+  wire \cmd_index[0]_i_1_n_0 ;
+  wire \cmd_index[1]_i_1_n_0 ;
+  wire \cmd_index[2]_i_1_n_0 ;
+  wire \cmd_index[3]_i_1_n_0 ;
   wire \cmd_index[3]_i_3_n_0 ;
-  wire \cmd_index[3]_i_5_n_0 ;
   wire \cmd_index_reg_n_0_[0] ;
   wire \cmd_index_reg_n_0_[1] ;
   wire \cmd_index_reg_n_0_[2] ;
   wire \cmd_index_reg_n_0_[3] ;
-  wire [6:0]device_addr;
-  wire [3:0]fsm_state__0;
-  wire [3:0]fsm_state__1;
-  wire i_I2C_INIT_wstrobe;
-  wire [7:0]i_I2C_READ_LEN;
+  wire [5:1]fsm_state__0;
+  wire [5:0]fsm_state__1;
+  wire [6:0]i_I2C_DEV_ADDR;
+  wire [2:0]i_I2C_READ_LEN;
   wire i_I2C_READ_LEN_wstrobe;
-  wire [15:0]i_I2C_REG_ADDR;
-  wire nolabel_line263_n_0;
-  wire nolabel_line263_n_10;
-  wire nolabel_line263_n_11;
-  wire nolabel_line263_n_12;
-  wire nolabel_line263_n_13;
-  wire nolabel_line263_n_14;
-  wire nolabel_line263_n_15;
-  wire nolabel_line263_n_16;
-  wire nolabel_line263_n_18;
-  wire nolabel_line263_n_7;
-  wire nolabel_line263_n_8;
-  wire nolabel_line263_n_9;
-  wire o_I2C_IDLE;
+  wire [7:0]i_I2C_REG_ADDR;
+  wire nolabel_line245_n_1;
+  wire nolabel_line245_n_11;
+  wire nolabel_line245_n_12;
+  wire nolabel_line245_n_13;
+  wire nolabel_line245_n_14;
+  wire nolabel_line245_n_15;
+  wire nolabel_line245_n_16;
+  wire nolabel_line245_n_17;
+  wire nolabel_line245_n_18;
+  wire nolabel_line245_n_26;
+  wire nolabel_line245_n_27;
+  wire nolabel_line245_n_28;
+  wire nolabel_line245_n_30;
+  wire nolabel_line245_n_31;
+  wire nolabel_line245_n_32;
+  wire nolabel_line245_n_33;
+  wire nolabel_line245_n_34;
+  wire nolabel_line245_n_35;
+  wire nolabel_line245_n_36;
+  wire nolabel_line245_n_37;
+  wire nolabel_line245_n_40;
+  wire nolabel_line245_n_7;
+  wire nolabel_line245_n_8;
+  wire nolabel_line245_n_9;
   wire [31:0]o_I2C_RX_DATA;
-  wire \o_I2C_RX_DATA[31]_i_1_n_0 ;
+  wire [1:0]o_I2C_STATUS;
+  wire [3:3]p_0_in;
+  wire [8:3]rca;
+  wire [9:0]rcd;
+  wire read_state;
   wire resetn;
-  wire \rx_data[3][7]_i_3_n_0 ;
-  wire [7:0]\rx_data_reg[0] ;
-  wire [7:0]\rx_data_reg[1] ;
-  wire [7:0]\rx_data_reg[2] ;
-  wire [7:0]\rx_data_reg[3] ;
+  wire \rx_data[0][4]_i_1_n_0 ;
+  wire \rx_data[0][7]_i_1_n_0 ;
+  wire \rx_data[1][0]_i_1_n_0 ;
+  wire \rx_data[1][6]_i_1_n_0 ;
+  wire \rx_data[1][7]_i_1_n_0 ;
+  wire \rx_data[2][1]_i_1_n_0 ;
+  wire \rx_data[2][4]_i_1_n_0 ;
+  wire \rx_data[2][6]_i_1_n_0 ;
+  wire \rx_data[2][7]_i_1_n_0 ;
+  wire \rx_data[3][0]_i_1_n_0 ;
+  wire \rx_data[3][5]_i_1_n_0 ;
+  wire \rx_data[3][7]_i_1_n_0 ;
 
+  (* SOFT_HLUTNM = "soft_lutpair12" *) 
+  LUT5 #(
+    .INIT(32'hF7F7A080)) 
+    \AMCI_RADDR[5]_i_1 
+       (.I0(resetn),
+        .I1(nolabel_line245_n_27),
+        .I2(\FSM_onehot_fsm_state_reg_n_0_[3] ),
+        .I3(axi_iic_intr),
+        .I4(AMCI_RADDR[5]),
+        .O(\AMCI_RADDR[5]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hBBBFBFBF88808080)) 
+    \AMCI_RADDR[8]_i_1 
+       (.I0(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I1(resetn),
+        .I2(nolabel_line245_n_27),
+        .I3(\FSM_onehot_fsm_state_reg_n_0_[3] ),
+        .I4(axi_iic_intr),
+        .I5(AMCI_RADDR[8]),
+        .O(\AMCI_RADDR[8]_i_1_n_0 ));
+  FDRE \AMCI_RADDR_reg[5] 
+       (.C(clk),
+        .CE(1'b1),
+        .D(\AMCI_RADDR[5]_i_1_n_0 ),
+        .Q(AMCI_RADDR[5]),
+        .R(1'b0));
+  FDRE \AMCI_RADDR_reg[8] 
+       (.C(clk),
+        .CE(1'b1),
+        .D(\AMCI_RADDR[8]_i_1_n_0 ),
+        .Q(AMCI_RADDR[8]),
+        .R(1'b0));
   FDRE AMCI_READ_reg
        (.C(clk),
         .CE(1'b1),
         .D(AMCI_READ),
         .Q(AMCI_READ_reg_n_0),
-        .R(nolabel_line263_n_0));
-  LUT6 #(
-    .INIT(64'h0001000103020201)) 
+        .R(nolabel_line245_n_1));
+  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+  LUT4 #(
+    .INIT(16'h2236)) 
     \AMCI_WADDR[3]_i_1 
-       (.I0(\cmd_index_reg_n_0_[1] ),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[3]),
-        .I3(\cmd_index_reg_n_0_[2] ),
-        .I4(\cmd_index_reg_n_0_[0] ),
-        .I5(\cmd_index_reg_n_0_[3] ),
-        .O(AMCI_WADDR[3]));
-  LUT6 #(
-    .INIT(64'h0001000000000001)) 
-    \AMCI_WADDR[4]_i_1 
-       (.I0(\cmd_index_reg_n_0_[3] ),
-        .I1(fsm_state__0[3]),
-        .I2(fsm_state__0[2]),
-        .I3(\cmd_index_reg_n_0_[1] ),
-        .I4(\cmd_index_reg_n_0_[0] ),
-        .I5(\cmd_index_reg_n_0_[2] ),
-        .O(AMCI_WADDR[4]));
-  LUT6 #(
-    .INIT(64'h000000100000FFFF)) 
-    \AMCI_WADDR[5]_i_1 
        (.I0(\cmd_index_reg_n_0_[2] ),
         .I1(\cmd_index_reg_n_0_[3] ),
         .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(fsm_state__0[2]),
-        .I4(fsm_state__0[3]),
-        .I5(fsm_state__0[1]),
-        .O(AMCI_WADDR[5]));
-  (* SOFT_HLUTNM = "soft_lutpair21" *) 
-  LUT3 #(
-    .INIT(8'h40)) 
+        .I3(\cmd_index_reg_n_0_[0] ),
+        .O(rca[3]));
+  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+  LUT4 #(
+    .INIT(16'h0010)) 
+    \AMCI_WADDR[4]_i_1 
+       (.I0(\cmd_index_reg_n_0_[3] ),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[2] ),
+        .I3(\cmd_index_reg_n_0_[0] ),
+        .O(rca[4]));
+  (* SOFT_HLUTNM = "soft_lutpair14" *) 
+  LUT4 #(
+    .INIT(16'h0014)) 
+    \AMCI_WADDR[5]_i_1 
+       (.I0(\cmd_index_reg_n_0_[3] ),
+        .I1(\cmd_index_reg_n_0_[0] ),
+        .I2(\cmd_index_reg_n_0_[1] ),
+        .I3(\cmd_index_reg_n_0_[2] ),
+        .O(rca[5]));
+  (* SOFT_HLUTNM = "soft_lutpair17" *) 
+  LUT4 #(
+    .INIT(16'h0001)) 
     \AMCI_WADDR[6]_i_1 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[1]),
-        .O(AMCI_WADDR[6]));
-  LUT6 #(
-    .INIT(64'h0000004500000036)) 
+       (.I0(\cmd_index_reg_n_0_[2] ),
+        .I1(\cmd_index_reg_n_0_[3] ),
+        .I2(\cmd_index_reg_n_0_[1] ),
+        .I3(\cmd_index_reg_n_0_[0] ),
+        .O(rca[6]));
+  (* SOFT_HLUTNM = "soft_lutpair18" *) 
+  LUT4 #(
+    .INIT(16'h5446)) 
     \AMCI_WADDR[8]_i_2 
        (.I0(\cmd_index_reg_n_0_[3] ),
-        .I1(\cmd_index_reg_n_0_[2] ),
-        .I2(\cmd_index_reg_n_0_[0] ),
-        .I3(fsm_state__0[3]),
-        .I4(fsm_state__0[2]),
-        .I5(\cmd_index_reg_n_0_[1] ),
-        .O(AMCI_WADDR[8]));
-  (* SOFT_HLUTNM = "soft_lutpair23" *) 
-  LUT2 #(
-    .INIT(4'h2)) 
-    \AMCI_WADDR[8]_i_3 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .O(\AMCI_WADDR[8]_i_3_n_0 ));
+        .I1(\cmd_index_reg_n_0_[0] ),
+        .I2(\cmd_index_reg_n_0_[1] ),
+        .I3(\cmd_index_reg_n_0_[2] ),
+        .O(rca[8]));
   FDRE \AMCI_WADDR_reg[3] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WADDR[3]),
-        .Q(\AMCI_WADDR_reg_n_0_[3] ),
+        .CE(nolabel_line245_n_9),
+        .D(rca[3]),
+        .Q(AMCI_WADDR[3]),
         .R(1'b0));
   FDRE \AMCI_WADDR_reg[4] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WADDR[4]),
-        .Q(\AMCI_WADDR_reg_n_0_[4] ),
+        .CE(nolabel_line245_n_9),
+        .D(rca[4]),
+        .Q(AMCI_WADDR[4]),
         .R(1'b0));
   FDRE \AMCI_WADDR_reg[5] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WADDR[5]),
-        .Q(\AMCI_WADDR_reg_n_0_[5] ),
+        .CE(nolabel_line245_n_9),
+        .D(rca[5]),
+        .Q(AMCI_WADDR[5]),
         .R(1'b0));
   FDRE \AMCI_WADDR_reg[6] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WADDR[6]),
-        .Q(\AMCI_WADDR_reg_n_0_[6] ),
+        .CE(nolabel_line245_n_9),
+        .D(rca[6]),
+        .Q(AMCI_WADDR[6]),
         .R(1'b0));
   FDRE \AMCI_WADDR_reg[8] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WADDR[8]),
-        .Q(\AMCI_WADDR_reg_n_0_[8] ),
+        .CE(nolabel_line245_n_9),
+        .D(rca[8]),
+        .Q(AMCI_WADDR[8]),
         .R(1'b0));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
-  LUT5 #(
-    .INIT(32'hFFFFF111)) 
+  LUT6 #(
+    .INIT(64'h5E5F0A0A54550050)) 
     \AMCI_WDATA[0]_i_1 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[3]),
-        .I2(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I3(i_I2C_REG_ADDR[0]),
-        .I4(\AMCI_WDATA[0]_i_2_n_0 ),
-        .O(AMCI_WDATA[0]));
-  LUT6 #(
-    .INIT(64'h0F00040005001400)) 
-    \AMCI_WDATA[0]_i_2 
-       (.I0(\cmd_index_reg_n_0_[0] ),
-        .I1(\cmd_index_reg_n_0_[2] ),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(\cmd_index[3]_i_5_n_0 ),
-        .I4(\cmd_index_reg_n_0_[3] ),
+       (.I0(\cmd_index_reg_n_0_[3] ),
+        .I1(i_I2C_REG_ADDR[0]),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(\cmd_index_reg_n_0_[2] ),
+        .I4(\cmd_index_reg_n_0_[1] ),
         .I5(i_I2C_READ_LEN[0]),
-        .O(\AMCI_WDATA[0]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair19" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[10]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[10]),
-        .O(\AMCI_WDATA[10]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair19" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[11]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[11]),
-        .O(\AMCI_WDATA[11]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair18" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[12]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[12]),
-        .O(\AMCI_WDATA[12]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair18" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[13]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[13]),
-        .O(\AMCI_WDATA[13]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair17" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[14]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[14]),
-        .O(\AMCI_WDATA[14]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair17" *) 
-  LUT3 #(
-    .INIT(8'hEA)) 
-    \AMCI_WDATA[15]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[15]),
-        .O(\AMCI_WDATA[15]_i_1_n_0 ));
+        .O(rcd[0]));
   LUT6 #(
-    .INIT(64'hFAEAEAEAEAEAEAEA)) 
+    .INIT(64'h30B833BB30B80088)) 
     \AMCI_WDATA[1]_i_1 
-       (.I0(\AMCI_WDATA[1]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[1]_i_3_n_0 ),
-        .I2(\AMCI_WDATA[3]_i_4_n_0 ),
-        .I3(i_I2C_REG_ADDR[1]),
+       (.I0(i_I2C_READ_LEN[1]),
+        .I1(\cmd_index_reg_n_0_[3] ),
+        .I2(\AMCI_WDATA[1]_i_2_n_0 ),
+        .I3(\cmd_index_reg_n_0_[0] ),
         .I4(\cmd_index_reg_n_0_[2] ),
-        .I5(\cmd_index_reg_n_0_[0] ),
-        .O(AMCI_WDATA[1]));
-  LUT6 #(
-    .INIT(64'hFFFFFFFF22322222)) 
-    \AMCI_WDATA[1]_i_2 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .I2(device_addr[0]),
-        .I3(\cmd_index_reg_n_0_[0] ),
-        .I4(\AMCI_WDATA[3]_i_5_n_0 ),
-        .I5(\AMCI_WDATA[1]_i_4_n_0 ),
-        .O(\AMCI_WDATA[1]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+        .I5(\AMCI_WDATA[1]_i_3_n_0 ),
+        .O(rcd[1]));
+  (* SOFT_HLUTNM = "soft_lutpair19" *) 
   LUT4 #(
-    .INIT(16'h0009)) 
+    .INIT(16'hF808)) 
+    \AMCI_WDATA[1]_i_2 
+       (.I0(i_I2C_REG_ADDR[1]),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[0]),
+        .O(\AMCI_WDATA[1]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair16" *) 
+  LUT4 #(
+    .INIT(16'h7337)) 
     \AMCI_WDATA[1]_i_3 
-       (.I0(i_I2C_READ_LEN[0]),
-        .I1(i_I2C_READ_LEN[1]),
-        .I2(\cmd_index_reg_n_0_[2] ),
-        .I3(\cmd_index_reg_n_0_[0] ),
+       (.I0(\cmd_index_reg_n_0_[1] ),
+        .I1(\cmd_index_reg_n_0_[0] ),
+        .I2(i_I2C_READ_LEN[1]),
+        .I3(i_I2C_READ_LEN[0]),
         .O(\AMCI_WDATA[1]_i_3_n_0 ));
   LUT6 #(
-    .INIT(64'h0044000400000004)) 
-    \AMCI_WDATA[1]_i_4 
-       (.I0(fsm_state__0[3]),
-        .I1(\cmd_index_reg_n_0_[0] ),
-        .I2(\cmd_index_reg_n_0_[2] ),
-        .I3(\cmd_index_reg_n_0_[1] ),
-        .I4(\cmd_index_reg_n_0_[3] ),
-        .I5(i_I2C_READ_LEN[1]),
-        .O(\AMCI_WDATA[1]_i_4_n_0 ));
-  LUT5 #(
-    .INIT(32'hFFEAEAEA)) 
+    .INIT(64'h30B833BB30B80088)) 
     \AMCI_WDATA[2]_i_1 
-       (.I0(\AMCI_WDATA[2]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[2]),
-        .I3(device_addr[1]),
-        .I4(\AMCI_WDATA[8]_i_2_n_0 ),
-        .O(AMCI_WDATA[2]));
-  LUT6 #(
-    .INIT(64'hFFEAAAAAEAEAFFAA)) 
-    \AMCI_WDATA[2]_i_2 
-       (.I0(\AMCI_WDATA[6]_i_2_n_0 ),
-        .I1(\cmd_index_reg_n_0_[0] ),
-        .I2(\AMCI_WDATA[2]_i_3_n_0 ),
-        .I3(\AMCI_WDATA[7]_i_3_n_0 ),
-        .I4(i_I2C_READ_LEN[2]),
-        .I5(\FSM_sequential_fsm_state[3]_i_10_n_0 ),
-        .O(\AMCI_WDATA[2]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair12" *) 
-  LUT4 #(
-    .INIT(16'h0100)) 
-    \AMCI_WDATA[2]_i_3 
-       (.I0(\cmd_index_reg_n_0_[1] ),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[3]),
-        .I3(\cmd_index_reg_n_0_[3] ),
-        .O(\AMCI_WDATA[2]_i_3_n_0 ));
-  LUT5 #(
-    .INIT(32'h0000D555)) 
-    \AMCI_WDATA[30]_i_1 
-       (.I0(fsm_state__0[1]),
-        .I1(\AMCI_WDATA[30]_i_2_n_0 ),
-        .I2(\AMCI_WDATA[30]_i_3_n_0 ),
-        .I3(\AMCI_WDATA[30]_i_4_n_0 ),
-        .I4(fsm_state__0[3]),
-        .O(AMCI_WDATA[30]));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
-  LUT4 #(
-    .INIT(16'h0001)) 
-    \AMCI_WDATA[30]_i_2 
-       (.I0(i_I2C_READ_LEN[6]),
-        .I1(i_I2C_READ_LEN[5]),
-        .I2(i_I2C_READ_LEN[4]),
-        .I3(i_I2C_READ_LEN[3]),
-        .O(\AMCI_WDATA[30]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair24" *) 
-  LUT3 #(
-    .INIT(8'h01)) 
-    \AMCI_WDATA[30]_i_3 
        (.I0(i_I2C_READ_LEN[2]),
-        .I1(i_I2C_READ_LEN[1]),
-        .I2(i_I2C_READ_LEN[0]),
-        .O(\AMCI_WDATA[30]_i_3_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000010)) 
-    \AMCI_WDATA[30]_i_4 
-       (.I0(i_I2C_READ_LEN[7]),
-        .I1(fsm_state__0[2]),
-        .I2(\cmd_index_reg_n_0_[1] ),
+        .I1(\cmd_index_reg_n_0_[3] ),
+        .I2(\AMCI_WDATA[2]_i_2_n_0 ),
         .I3(\cmd_index_reg_n_0_[0] ),
-        .I4(\cmd_index_reg_n_0_[3] ),
-        .I5(\cmd_index_reg_n_0_[2] ),
-        .O(\AMCI_WDATA[30]_i_4_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \AMCI_WDATA[31]_i_1 
-       (.I0(AMCI_WDATA[30]),
-        .I1(nolabel_line263_n_18),
-        .O(\AMCI_WDATA[31]_i_1_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000040)) 
-    \AMCI_WDATA[31]_i_2 
-       (.I0(\cmd_index_reg_n_0_[3] ),
-        .I1(\cmd_index_reg_n_0_[0] ),
-        .I2(\cmd_index_reg_n_0_[2] ),
-        .I3(\cmd_index_reg_n_0_[1] ),
-        .I4(fsm_state__0[2]),
-        .I5(fsm_state__0[3]),
-        .O(\AMCI_WDATA[31]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'hFAFAFAFAFFFAFEFA)) 
-    \AMCI_WDATA[3]_i_1 
-       (.I0(\AMCI_WDATA[3]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[3]_i_3_n_0 ),
-        .I2(\AMCI_WADDR[8]_i_3_n_0 ),
-        .I3(\AMCI_WDATA[3]_i_4_n_0 ),
-        .I4(\cmd_index_reg_n_0_[0] ),
-        .I5(\cmd_index_reg_n_0_[2] ),
-        .O(AMCI_WDATA[3]));
-  LUT6 #(
-    .INIT(64'h8888888800F00000)) 
-    \AMCI_WDATA[3]_i_2 
-       (.I0(\AMCI_WDATA[3]_i_4_n_0 ),
-        .I1(i_I2C_REG_ADDR[3]),
-        .I2(\AMCI_WDATA[3]_i_5_n_0 ),
-        .I3(fsm_state__0[3]),
-        .I4(device_addr[2]),
-        .I5(\cmd_index_reg_n_0_[0] ),
-        .O(\AMCI_WDATA[3]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair14" *) 
+        .I4(\cmd_index_reg_n_0_[2] ),
+        .I5(\AMCI_WDATA[2]_i_3_n_0 ),
+        .O(rcd[2]));
+  (* SOFT_HLUTNM = "soft_lutpair20" *) 
   LUT4 #(
-    .INIT(16'hAAA9)) 
-    \AMCI_WDATA[3]_i_3 
-       (.I0(i_I2C_READ_LEN[3]),
+    .INIT(16'hF808)) 
+    \AMCI_WDATA[2]_i_2 
+       (.I0(i_I2C_REG_ADDR[2]),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[1]),
+        .O(\AMCI_WDATA[2]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair11" *) 
+  LUT5 #(
+    .INIT(32'h0000E100)) 
+    \AMCI_WDATA[2]_i_3 
+       (.I0(i_I2C_READ_LEN[0]),
         .I1(i_I2C_READ_LEN[1]),
-        .I2(i_I2C_READ_LEN[0]),
-        .I3(i_I2C_READ_LEN[2]),
-        .O(\AMCI_WDATA[3]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair23" *) 
-  LUT3 #(
-    .INIT(8'h04)) 
-    \AMCI_WDATA[3]_i_4 
-       (.I0(\cmd_index_reg_n_0_[3] ),
-        .I1(\cmd_index_reg_n_0_[1] ),
-        .I2(fsm_state__0[3]),
-        .O(\AMCI_WDATA[3]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair16" *) 
-  LUT3 #(
-    .INIT(8'h38)) 
-    \AMCI_WDATA[3]_i_5 
-       (.I0(\cmd_index_reg_n_0_[2] ),
-        .I1(\cmd_index_reg_n_0_[1] ),
-        .I2(\cmd_index_reg_n_0_[3] ),
-        .O(\AMCI_WDATA[3]_i_5_n_0 ));
+        .I2(i_I2C_READ_LEN[2]),
+        .I3(\cmd_index_reg_n_0_[0] ),
+        .I4(\cmd_index_reg_n_0_[1] ),
+        .O(\AMCI_WDATA[2]_i_3_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFFFEAEAEA)) 
-    \AMCI_WDATA[4]_i_1 
-       (.I0(\AMCI_WDATA[6]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[8]_i_2_n_0 ),
-        .I2(device_addr[3]),
-        .I3(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I4(i_I2C_REG_ADDR[4]),
-        .I5(\AMCI_WDATA[4]_i_2_n_0 ),
-        .O(AMCI_WDATA[4]));
-  LUT6 #(
-    .INIT(64'hAAAAAAA800000002)) 
-    \AMCI_WDATA[4]_i_2 
-       (.I0(\AMCI_WDATA[7]_i_3_n_0 ),
-        .I1(i_I2C_READ_LEN[3]),
+    .INIT(64'h0000000000000004)) 
+    \AMCI_WDATA[30]_i_1 
+       (.I0(\cmd_index_reg_n_0_[1] ),
+        .I1(\cmd_index_reg_n_0_[0] ),
         .I2(i_I2C_READ_LEN[1]),
         .I3(i_I2C_READ_LEN[0]),
         .I4(i_I2C_READ_LEN[2]),
-        .I5(i_I2C_READ_LEN[4]),
-        .O(\AMCI_WDATA[4]_i_2_n_0 ));
+        .I5(\AMCI_WDATA[31]_i_3_n_0 ),
+        .O(\AMCI_WDATA[30]_i_1_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFFFEAEAEA)) 
-    \AMCI_WDATA[5]_i_1 
-       (.I0(\AMCI_WDATA[6]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[8]_i_2_n_0 ),
-        .I2(device_addr[4]),
-        .I3(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I4(i_I2C_REG_ADDR[5]),
-        .I5(\AMCI_WDATA[5]_i_2_n_0 ),
-        .O(AMCI_WDATA[5]));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
-  LUT5 #(
-    .INIT(32'hAAA80002)) 
-    \AMCI_WDATA[5]_i_2 
-       (.I0(\AMCI_WDATA[7]_i_3_n_0 ),
-        .I1(\AMCI_WDATA[8]_i_5_n_0 ),
-        .I2(i_I2C_READ_LEN[3]),
-        .I3(i_I2C_READ_LEN[4]),
-        .I4(i_I2C_READ_LEN[5]),
-        .O(\AMCI_WDATA[5]_i_2_n_0 ));
+    .INIT(64'h0000800000000000)) 
+    \AMCI_WDATA[31]_i_1 
+       (.I0(\cmd_index_reg_n_0_[3] ),
+        .I1(fsm_state__0[2]),
+        .I2(AMCI_WRITE0__4),
+        .I3(nolabel_line245_n_7),
+        .I4(AMCI_WRITE_reg_n_0),
+        .I5(resetn),
+        .O(\AMCI_WDATA[31]_i_1_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFFFEAEAEA)) 
-    \AMCI_WDATA[6]_i_1 
-       (.I0(\AMCI_WDATA[6]_i_2_n_0 ),
-        .I1(\AMCI_WDATA[8]_i_2_n_0 ),
-        .I2(device_addr[5]),
-        .I3(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I4(i_I2C_REG_ADDR[6]),
-        .I5(\AMCI_WDATA[6]_i_3_n_0 ),
-        .O(AMCI_WDATA[6]));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
-  LUT2 #(
-    .INIT(4'h1)) 
-    \AMCI_WDATA[6]_i_2 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[3]),
-        .O(\AMCI_WDATA[6]_i_2_n_0 ));
+    .INIT(64'h000000000001AAAA)) 
+    \AMCI_WDATA[31]_i_2 
+       (.I0(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I1(i_I2C_READ_LEN[2]),
+        .I2(i_I2C_READ_LEN[0]),
+        .I3(i_I2C_READ_LEN[1]),
+        .I4(\cmd_index_reg_n_0_[0] ),
+        .I5(\cmd_index_reg_n_0_[1] ),
+        .O(\AMCI_WDATA[31]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair18" *) 
+  LUT3 #(
+    .INIT(8'hB8)) 
+    \AMCI_WDATA[31]_i_3 
+       (.I0(\cmd_index_reg_n_0_[0] ),
+        .I1(\cmd_index_reg_n_0_[3] ),
+        .I2(\cmd_index_reg_n_0_[2] ),
+        .O(\AMCI_WDATA[31]_i_3_n_0 ));
   LUT6 #(
-    .INIT(64'hAAAAAAA800000002)) 
-    \AMCI_WDATA[6]_i_3 
-       (.I0(\AMCI_WDATA[7]_i_3_n_0 ),
-        .I1(\AMCI_WDATA[8]_i_5_n_0 ),
-        .I2(i_I2C_READ_LEN[4]),
-        .I3(i_I2C_READ_LEN[3]),
-        .I4(i_I2C_READ_LEN[5]),
-        .I5(i_I2C_READ_LEN[6]),
-        .O(\AMCI_WDATA[6]_i_3_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFFFF8F8F8)) 
-    \AMCI_WDATA[7]_i_1 
-       (.I0(device_addr[6]),
-        .I1(\AMCI_WDATA[8]_i_2_n_0 ),
-        .I2(\AMCI_WDATA[7]_i_2_n_0 ),
-        .I3(i_I2C_REG_ADDR[7]),
-        .I4(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I5(AMCI_WDATA[30]),
-        .O(AMCI_WDATA[7]));
-  LUT6 #(
-    .INIT(64'h8888888888888880)) 
-    \AMCI_WDATA[7]_i_2 
-       (.I0(i_I2C_READ_LEN[7]),
-        .I1(\AMCI_WDATA[7]_i_3_n_0 ),
-        .I2(\AMCI_WDATA[8]_i_5_n_0 ),
-        .I3(i_I2C_READ_LEN[5]),
-        .I4(\AMCI_WDATA[7]_i_4_n_0 ),
-        .I5(i_I2C_READ_LEN[6]),
-        .O(\AMCI_WDATA[7]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000010)) 
-    \AMCI_WDATA[7]_i_3 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(\cmd_index_reg_n_0_[3] ),
-        .I4(\cmd_index_reg_n_0_[2] ),
-        .I5(\cmd_index_reg_n_0_[0] ),
-        .O(\AMCI_WDATA[7]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
-  LUT2 #(
-    .INIT(4'hE)) 
-    \AMCI_WDATA[7]_i_4 
-       (.I0(i_I2C_READ_LEN[3]),
-        .I1(i_I2C_READ_LEN[4]),
-        .O(\AMCI_WDATA[7]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair11" *) 
-  LUT4 #(
-    .INIT(16'hFFAB)) 
-    \AMCI_WDATA[8]_i_1 
-       (.I0(\AMCI_WDATA[8]_i_2_n_0 ),
-        .I1(fsm_state__0[1]),
-        .I2(fsm_state__0[3]),
-        .I3(\AMCI_WDATA[8]_i_3_n_0 ),
-        .O(AMCI_WDATA[8]));
-  LUT6 #(
-    .INIT(64'h0000000001100100)) 
-    \AMCI_WDATA[8]_i_2 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(\cmd_index_reg_n_0_[3] ),
-        .I4(\cmd_index_reg_n_0_[2] ),
-        .I5(\cmd_index_reg_n_0_[0] ),
-        .O(\AMCI_WDATA[8]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'h8888888F00000000)) 
-    \AMCI_WDATA[8]_i_3 
-       (.I0(i_I2C_REG_ADDR[8]),
-        .I1(\cmd_index_reg_n_0_[2] ),
-        .I2(\AMCI_WDATA[8]_i_4_n_0 ),
-        .I3(\cmd_index_reg_n_0_[0] ),
-        .I4(\AMCI_WDATA[8]_i_5_n_0 ),
-        .I5(\AMCI_WDATA[8]_i_6_n_0 ),
-        .O(\AMCI_WDATA[8]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
-  LUT5 #(
-    .INIT(32'hFFFFFFFE)) 
-    \AMCI_WDATA[8]_i_4 
-       (.I0(i_I2C_READ_LEN[6]),
-        .I1(i_I2C_READ_LEN[4]),
-        .I2(i_I2C_READ_LEN[3]),
-        .I3(i_I2C_READ_LEN[5]),
-        .I4(i_I2C_READ_LEN[7]),
-        .O(\AMCI_WDATA[8]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+    .INIT(64'hC0C0AF0FC0CFAF0F)) 
+    \AMCI_WDATA[3]_i_1 
+       (.I0(i_I2C_REG_ADDR[3]),
+        .I1(i_I2C_DEV_ADDR[2]),
+        .I2(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I3(\cmd_index_reg_n_0_[1] ),
+        .I4(\cmd_index_reg_n_0_[0] ),
+        .I5(\AMCI_WDATA[3]_i_2_n_0 ),
+        .O(\AMCI_WDATA[3]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair13" *) 
   LUT3 #(
     .INIT(8'hFE)) 
-    \AMCI_WDATA[8]_i_5 
-       (.I0(i_I2C_READ_LEN[1]),
+    \AMCI_WDATA[3]_i_2 
+       (.I0(i_I2C_READ_LEN[2]),
         .I1(i_I2C_READ_LEN[0]),
-        .I2(i_I2C_READ_LEN[2]),
-        .O(\AMCI_WDATA[8]_i_5_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair12" *) 
-  LUT4 #(
-    .INIT(16'h0004)) 
-    \AMCI_WDATA[8]_i_6 
-       (.I0(\cmd_index_reg_n_0_[3] ),
+        .I2(i_I2C_READ_LEN[1]),
+        .O(\AMCI_WDATA[3]_i_2_n_0 ));
+  LUT6 #(
+    .INIT(64'hF808FFFFF8080000)) 
+    \AMCI_WDATA[4]_i_1 
+       (.I0(i_I2C_REG_ADDR[4]),
         .I1(\cmd_index_reg_n_0_[1] ),
-        .I2(fsm_state__0[3]),
-        .I3(fsm_state__0[2]),
-        .O(\AMCI_WDATA[8]_i_6_n_0 ));
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[3]),
+        .I4(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I5(\AMCI_WDATA[9]_i_2_n_0 ),
+        .O(\AMCI_WDATA[4]_i_1_n_0 ));
   LUT6 #(
-    .INIT(64'hFFEAEAEAEAEAEAEA)) 
+    .INIT(64'hF808FFFFF8080000)) 
+    \AMCI_WDATA[5]_i_1 
+       (.I0(i_I2C_REG_ADDR[5]),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[4]),
+        .I4(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I5(\AMCI_WDATA[9]_i_2_n_0 ),
+        .O(\AMCI_WDATA[5]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hF808FFFFF8080000)) 
+    \AMCI_WDATA[6]_i_1 
+       (.I0(i_I2C_REG_ADDR[6]),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[5]),
+        .I4(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I5(\AMCI_WDATA[9]_i_2_n_0 ),
+        .O(\AMCI_WDATA[6]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hF808FFFFF8080000)) 
+    \AMCI_WDATA[7]_i_1 
+       (.I0(i_I2C_REG_ADDR[7]),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(i_I2C_DEV_ADDR[6]),
+        .I4(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I5(\AMCI_WDATA[9]_i_2_n_0 ),
+        .O(\AMCI_WDATA[7]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hAAAA0000AAAB0000)) 
+    \AMCI_WDATA[8]_i_1 
+       (.I0(\AMCI_WDATA[31]_i_3_n_0 ),
+        .I1(i_I2C_READ_LEN[2]),
+        .I2(i_I2C_READ_LEN[0]),
+        .I3(i_I2C_READ_LEN[1]),
+        .I4(\cmd_index_reg_n_0_[0] ),
+        .I5(\cmd_index_reg_n_0_[1] ),
+        .O(\AMCI_WDATA[8]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair17" *) 
+  LUT4 #(
+    .INIT(16'h04AE)) 
     \AMCI_WDATA[9]_i_1 
-       (.I0(AMCI_WDATA[30]),
+       (.I0(\cmd_index_reg_n_0_[3] ),
         .I1(\AMCI_WDATA[9]_i_2_n_0 ),
-        .I2(i_I2C_REG_ADDR[9]),
+        .I2(\cmd_index_reg_n_0_[2] ),
         .I3(\cmd_index_reg_n_0_[0] ),
-        .I4(\AMCI_WDATA[9]_i_3_n_0 ),
-        .I5(\cmd_index_reg_n_0_[3] ),
-        .O(AMCI_WDATA[9]));
-  LUT6 #(
-    .INIT(64'h0010000000000000)) 
+        .O(rcd[9]));
+  (* SOFT_HLUTNM = "soft_lutpair11" *) 
+  LUT5 #(
+    .INIT(32'h00000100)) 
     \AMCI_WDATA[9]_i_2 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(\cmd_index_reg_n_0_[3] ),
-        .I4(\cmd_index_reg_n_0_[2] ),
-        .I5(\cmd_index_reg_n_0_[0] ),
+       (.I0(i_I2C_READ_LEN[2]),
+        .I1(i_I2C_READ_LEN[0]),
+        .I2(i_I2C_READ_LEN[1]),
+        .I3(\cmd_index_reg_n_0_[0] ),
+        .I4(\cmd_index_reg_n_0_[1] ),
         .O(\AMCI_WDATA[9]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair20" *) 
-  LUT3 #(
-    .INIT(8'h01)) 
-    \AMCI_WDATA[9]_i_3 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[2]),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .O(\AMCI_WDATA[9]_i_3_n_0 ));
   FDRE \AMCI_WDATA_reg[0] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[0]),
-        .Q(\AMCI_WDATA_reg_n_0_[0] ),
+        .CE(nolabel_line245_n_9),
+        .D(rcd[0]),
+        .Q(AMCI_WDATA[0]),
         .R(1'b0));
-  FDSE \AMCI_WDATA_reg[10] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[10]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[10] ),
-        .S(1'b0));
-  FDSE \AMCI_WDATA_reg[11] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[11]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[11] ),
-        .S(1'b0));
-  FDSE \AMCI_WDATA_reg[12] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[12]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[12] ),
-        .S(1'b0));
-  FDSE \AMCI_WDATA_reg[13] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[13]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[13] ),
-        .S(1'b0));
-  FDSE \AMCI_WDATA_reg[14] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[14]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[14] ),
-        .S(1'b0));
-  FDSE \AMCI_WDATA_reg[15] 
-       (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(\AMCI_WDATA[15]_i_1_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[15] ),
-        .S(1'b0));
   FDRE \AMCI_WDATA_reg[1] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[1]),
-        .Q(\AMCI_WDATA_reg_n_0_[1] ),
+        .CE(nolabel_line245_n_9),
+        .D(rcd[1]),
+        .Q(AMCI_WDATA[1]),
         .R(1'b0));
   FDRE \AMCI_WDATA_reg[2] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[2]),
-        .Q(\AMCI_WDATA_reg_n_0_[2] ),
+        .CE(nolabel_line245_n_9),
+        .D(rcd[2]),
+        .Q(AMCI_WDATA[2]),
         .R(1'b0));
   FDRE \AMCI_WDATA_reg[30] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[30]),
-        .Q(\AMCI_WDATA_reg_n_0_[30] ),
-        .R(1'b0));
-  FDSE \AMCI_WDATA_reg[31] 
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[30]_i_1_n_0 ),
+        .Q(AMCI_WDATA[30]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
+  FDRE \AMCI_WDATA_reg[31] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
+        .CE(nolabel_line245_n_9),
         .D(\AMCI_WDATA[31]_i_2_n_0 ),
-        .Q(\AMCI_WDATA_reg_n_0_[31] ),
-        .S(\AMCI_WDATA[31]_i_1_n_0 ));
+        .Q(AMCI_WDATA[31]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[3] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[3]),
-        .Q(\AMCI_WDATA_reg_n_0_[3] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[3]_i_1_n_0 ),
+        .Q(AMCI_WDATA[3]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[4] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[4]),
-        .Q(\AMCI_WDATA_reg_n_0_[4] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[4]_i_1_n_0 ),
+        .Q(AMCI_WDATA[4]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[5] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[5]),
-        .Q(\AMCI_WDATA_reg_n_0_[5] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[5]_i_1_n_0 ),
+        .Q(AMCI_WDATA[5]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[6] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[6]),
-        .Q(\AMCI_WDATA_reg_n_0_[6] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[6]_i_1_n_0 ),
+        .Q(AMCI_WDATA[6]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[7] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[7]),
-        .Q(\AMCI_WDATA_reg_n_0_[7] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[7]_i_1_n_0 ),
+        .Q(AMCI_WDATA[7]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[8] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[8]),
-        .Q(\AMCI_WDATA_reg_n_0_[8] ),
-        .R(1'b0));
+        .CE(nolabel_line245_n_9),
+        .D(\AMCI_WDATA[8]_i_1_n_0 ),
+        .Q(AMCI_WDATA[8]),
+        .R(\AMCI_WDATA[31]_i_1_n_0 ));
   FDRE \AMCI_WDATA_reg[9] 
        (.C(clk),
-        .CE(nolabel_line263_n_18),
-        .D(AMCI_WDATA[9]),
-        .Q(\AMCI_WDATA_reg_n_0_[9] ),
+        .CE(nolabel_line245_n_9),
+        .D(rcd[9]),
+        .Q(AMCI_WDATA[9]),
         .R(1'b0));
   FDRE AMCI_WRITE_reg
        (.C(clk),
         .CE(1'b1),
         .D(AMCI_WRITE),
         .Q(AMCI_WRITE_reg_n_0),
-        .R(nolabel_line263_n_0));
+        .R(nolabel_line245_n_1));
   (* SOFT_HLUTNM = "soft_lutpair13" *) 
-  LUT4 #(
-    .INIT(16'h0013)) 
-    \FSM_sequential_fsm_state[0]_i_1 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[0]),
-        .I2(fsm_state__0[1]),
-        .I3(fsm_state__0[3]),
-        .O(fsm_state__1[0]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
   LUT5 #(
-    .INIT(32'h000003F2)) 
-    \FSM_sequential_fsm_state[1]_i_1 
-       (.I0(\FSM_sequential_fsm_state[2]_i_2_n_0 ),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[0]),
-        .I3(fsm_state__0[1]),
-        .I4(fsm_state__0[3]),
-        .O(fsm_state__1[1]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
-  LUT5 #(
-    .INIT(32'h12031202)) 
-    \FSM_sequential_fsm_state[2]_i_1 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .I2(fsm_state__0[1]),
-        .I3(fsm_state__0[0]),
-        .I4(\FSM_sequential_fsm_state[2]_i_2_n_0 ),
-        .O(fsm_state__1[2]));
-  (* SOFT_HLUTNM = "soft_lutpair14" *) 
-  LUT4 #(
-    .INIT(16'hFEAB)) 
-    \FSM_sequential_fsm_state[2]_i_2 
-       (.I0(\FSM_sequential_fsm_state[3]_i_11_n_0 ),
-        .I1(i_I2C_READ_LEN[1]),
+    .INIT(32'h22280000)) 
+    \FSM_onehot_fsm_state[5]_i_4 
+       (.I0(\FSM_onehot_fsm_state_reg_n_0_[0] ),
+        .I1(i_I2C_READ_LEN[2]),
         .I2(i_I2C_READ_LEN[0]),
-        .I3(i_I2C_READ_LEN[2]),
-        .O(\FSM_sequential_fsm_state[2]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair24" *) 
+        .I3(i_I2C_READ_LEN[1]),
+        .I4(i_I2C_READ_LEN_wstrobe),
+        .O(\FSM_onehot_fsm_state[5]_i_4_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair12" *) 
   LUT2 #(
-    .INIT(4'hE)) 
-    \FSM_sequential_fsm_state[3]_i_10 
-       (.I0(i_I2C_READ_LEN[0]),
-        .I1(i_I2C_READ_LEN[1]),
-        .O(\FSM_sequential_fsm_state[3]_i_10_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFEFFFFFFFF)) 
-    \FSM_sequential_fsm_state[3]_i_11 
-       (.I0(i_I2C_READ_LEN[7]),
-        .I1(i_I2C_READ_LEN[5]),
-        .I2(i_I2C_READ_LEN[3]),
-        .I3(i_I2C_READ_LEN[4]),
-        .I4(i_I2C_READ_LEN[6]),
-        .I5(i_I2C_READ_LEN_wstrobe),
-        .O(\FSM_sequential_fsm_state[3]_i_11_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair13" *) 
-  LUT4 #(
-    .INIT(16'h0800)) 
-    \FSM_sequential_fsm_state[3]_i_2 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[0]),
-        .I2(fsm_state__0[3]),
-        .I3(fsm_state__0[2]),
-        .O(fsm_state__1[3]));
-  (* SOFT_HLUTNM = "soft_lutpair20" *) 
-  LUT3 #(
-    .INIT(8'h10)) 
-    \FSM_sequential_fsm_state[3]_i_4 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[1]),
-        .O(\FSM_sequential_fsm_state[3]_i_4_n_0 ));
-  LUT6 #(
-    .INIT(64'h4040404040444440)) 
-    \FSM_sequential_fsm_state[3]_i_6 
-       (.I0(fsm_state__0[0]),
-        .I1(\FSM_sequential_fsm_state[3]_i_9_n_0 ),
-        .I2(i_I2C_INIT_wstrobe),
-        .I3(i_I2C_READ_LEN[2]),
-        .I4(\FSM_sequential_fsm_state[3]_i_10_n_0 ),
-        .I5(\FSM_sequential_fsm_state[3]_i_11_n_0 ),
-        .O(\FSM_sequential_fsm_state[3]_i_6_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair21" *) 
-  LUT3 #(
-    .INIT(8'h10)) 
-    \FSM_sequential_fsm_state[3]_i_7 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[1]),
-        .I2(fsm_state__0[2]),
-        .O(\FSM_sequential_fsm_state[3]_i_7_n_0 ));
-  LUT6 #(
-    .INIT(64'h00FC550000005500)) 
-    \FSM_sequential_fsm_state[3]_i_8 
-       (.I0(fsm_state__0[2]),
-        .I1(\cmd_index_reg_n_0_[1] ),
-        .I2(\cmd_index_reg_n_0_[2] ),
-        .I3(fsm_state__0[3]),
-        .I4(fsm_state__0[1]),
-        .I5(\cmd_index_reg_n_0_[3] ),
-        .O(\FSM_sequential_fsm_state[3]_i_8_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair11" *) 
-  LUT3 #(
-    .INIT(8'h01)) 
-    \FSM_sequential_fsm_state[3]_i_9 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[2]),
-        .I2(fsm_state__0[1]),
-        .O(\FSM_sequential_fsm_state[3]_i_9_n_0 ));
-  (* FSM_ENCODED_STATES = "iSTATE:0110,iSTATE0:0101,iSTATE1:1000,iSTATE2:0100,iSTATE3:0010,iSTATE4:0011,FSM_READ_IIC:0001,FSM_INIT_IIC:0111,FSM_IDLE:0000" *) 
-  FDRE \FSM_sequential_fsm_state_reg[0] 
+    .INIT(4'h8)) 
+    \FSM_onehot_fsm_state[5]_i_5 
+       (.I0(\FSM_onehot_fsm_state_reg_n_0_[3] ),
+        .I1(axi_iic_intr),
+        .O(\FSM_onehot_fsm_state[5]_i_5_n_0 ));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDSE #(
+    .INIT(1'b1)) 
+    \FSM_onehot_fsm_state_reg[0] 
        (.C(clk),
-        .CE(nolabel_line263_n_15),
+        .CE(nolabel_line245_n_11),
         .D(fsm_state__1[0]),
-        .Q(fsm_state__0[0]),
-        .R(nolabel_line263_n_0));
-  (* FSM_ENCODED_STATES = "iSTATE:0110,iSTATE0:0101,iSTATE1:1000,iSTATE2:0100,iSTATE3:0010,iSTATE4:0011,FSM_READ_IIC:0001,FSM_INIT_IIC:0111,FSM_IDLE:0000" *) 
-  FDRE \FSM_sequential_fsm_state_reg[1] 
+        .Q(\FSM_onehot_fsm_state_reg_n_0_[0] ),
+        .S(nolabel_line245_n_1));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_fsm_state_reg[1] 
        (.C(clk),
-        .CE(nolabel_line263_n_15),
-        .D(fsm_state__1[1]),
+        .CE(nolabel_line245_n_11),
+        .D(\FSM_onehot_fsm_state_reg_n_0_[0] ),
         .Q(fsm_state__0[1]),
-        .R(nolabel_line263_n_0));
-  (* FSM_ENCODED_STATES = "iSTATE:0110,iSTATE0:0101,iSTATE1:1000,iSTATE2:0100,iSTATE3:0010,iSTATE4:0011,FSM_READ_IIC:0001,FSM_INIT_IIC:0111,FSM_IDLE:0000" *) 
-  FDRE \FSM_sequential_fsm_state_reg[2] 
+        .R(nolabel_line245_n_1));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_fsm_state_reg[2] 
        (.C(clk),
-        .CE(nolabel_line263_n_15),
-        .D(fsm_state__1[2]),
+        .CE(nolabel_line245_n_11),
+        .D(fsm_state__0[1]),
         .Q(fsm_state__0[2]),
-        .R(nolabel_line263_n_0));
-  (* FSM_ENCODED_STATES = "iSTATE:0110,iSTATE0:0101,iSTATE1:1000,iSTATE2:0100,iSTATE3:0010,iSTATE4:0011,FSM_READ_IIC:0001,FSM_INIT_IIC:0111,FSM_IDLE:0000" *) 
-  FDRE \FSM_sequential_fsm_state_reg[3] 
+        .R(nolabel_line245_n_1));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_fsm_state_reg[3] 
        (.C(clk),
-        .CE(nolabel_line263_n_15),
-        .D(fsm_state__1[3]),
-        .Q(fsm_state__0[3]),
-        .R(nolabel_line263_n_0));
-  LUT6 #(
-    .INIT(64'h08FFFFFF0B000000)) 
+        .CE(nolabel_line245_n_11),
+        .D(fsm_state__0[2]),
+        .Q(\FSM_onehot_fsm_state_reg_n_0_[3] ),
+        .R(nolabel_line245_n_1));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_fsm_state_reg[4] 
+       (.C(clk),
+        .CE(nolabel_line245_n_11),
+        .D(\FSM_onehot_fsm_state_reg_n_0_[3] ),
+        .Q(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .R(nolabel_line245_n_1));
+  (* FSM_ENCODED_STATES = "FSM_READ_IIC:000010,iSTATE:000100,iSTATE0:001000,iSTATE1:010000,FSM_IDLE:000001,iSTATE2:100000" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_fsm_state_reg[5] 
+       (.C(clk),
+        .CE(nolabel_line245_n_11),
+        .D(fsm_state__1[5]),
+        .Q(fsm_state__0[5]),
+        .R(nolabel_line245_n_1));
+  FDRE bus_fault_reg
+       (.C(clk),
+        .CE(1'b1),
+        .D(nolabel_line245_n_40),
+        .Q(o_I2C_STATUS[1]),
+        .R(1'b0));
+  LUT5 #(
+    .INIT(32'hBBBF8880)) 
     \byte_index[0]_i_1 
-       (.I0(i_I2C_READ_LEN[0]),
-        .I1(fsm_state__0[0]),
-        .I2(fsm_state__0[3]),
-        .I3(AMCI_READ),
-        .I4(resetn),
-        .I5(\byte_index_reg_n_0_[0] ),
+       (.I0(byte_index[0]),
+        .I1(resetn),
+        .I2(nolabel_line245_n_26),
+        .I3(nolabel_line245_n_27),
+        .I4(\byte_index_reg_n_0_[0] ),
         .O(\byte_index[0]_i_1_n_0 ));
   LUT4 #(
-    .INIT(16'hBF80)) 
+    .INIT(16'h4F44)) 
+    \byte_index[0]_i_2 
+       (.I0(i_I2C_READ_LEN[0]),
+        .I1(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I2(\byte_index_reg_n_0_[0] ),
+        .I3(fsm_state__0[5]),
+        .O(byte_index[0]));
+  LUT5 #(
+    .INIT(32'hBBBF8880)) 
     \byte_index[1]_i_1 
-       (.I0(byte_index),
-        .I1(AMCI_READ),
-        .I2(resetn),
-        .I3(\byte_index_reg_n_0_[1] ),
+       (.I0(byte_index[1]),
+        .I1(resetn),
+        .I2(nolabel_line245_n_26),
+        .I3(nolabel_line245_n_27),
+        .I4(\byte_index_reg_n_0_[1] ),
         .O(\byte_index[1]_i_1_n_0 ));
   LUT6 #(
-    .INIT(64'h0000000066660FF0)) 
+    .INIT(64'hFF9090FF90909090)) 
     \byte_index[1]_i_2 
        (.I0(i_I2C_READ_LEN[0]),
         .I1(i_I2C_READ_LEN[1]),
-        .I2(\byte_index_reg_n_0_[0] ),
-        .I3(\byte_index_reg_n_0_[1] ),
-        .I4(fsm_state__0[0]),
-        .I5(fsm_state__0[3]),
-        .O(byte_index));
+        .I2(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I3(\byte_index_reg_n_0_[0] ),
+        .I4(\byte_index_reg_n_0_[1] ),
+        .I5(fsm_state__0[5]),
+        .O(byte_index[1]));
   FDRE \byte_index_reg[0] 
        (.C(clk),
         .CE(1'b1),
@@ -1949,545 +1771,444 @@ module top_level_axi_iic_fe_0_0_axi_iic_fe
         .D(\byte_index[1]_i_1_n_0 ),
         .Q(\byte_index_reg_n_0_[1] ),
         .R(1'b0));
-  (* SOFT_HLUTNM = "soft_lutpair22" *) 
-  LUT3 #(
-    .INIT(8'h04)) 
+  (* SOFT_HLUTNM = "soft_lutpair20" *) 
+  LUT1 #(
+    .INIT(2'h1)) 
     \cmd_index[0]_i_1 
-       (.I0(fsm_state__0[3]),
-        .I1(fsm_state__0[1]),
-        .I2(\cmd_index_reg_n_0_[0] ),
-        .O(cmd_index[0]));
-  (* SOFT_HLUTNM = "soft_lutpair10" *) 
-  LUT4 #(
-    .INIT(16'h0220)) 
-    \cmd_index[1]_i_1 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[0] ),
-        .I3(\cmd_index_reg_n_0_[1] ),
-        .O(cmd_index[1]));
-  (* SOFT_HLUTNM = "soft_lutpair10" *) 
-  LUT5 #(
-    .INIT(32'h02222000)) 
-    \cmd_index[2]_i_1 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[1] ),
-        .I3(\cmd_index_reg_n_0_[0] ),
-        .I4(\cmd_index_reg_n_0_[2] ),
-        .O(cmd_index[2]));
-  LUT6 #(
-    .INIT(64'h0220202020202020)) 
-    \cmd_index[3]_i_2 
-       (.I0(fsm_state__0[1]),
-        .I1(fsm_state__0[3]),
-        .I2(\cmd_index_reg_n_0_[3] ),
-        .I3(\cmd_index_reg_n_0_[1] ),
-        .I4(\cmd_index_reg_n_0_[2] ),
-        .I5(\cmd_index_reg_n_0_[0] ),
-        .O(cmd_index[3]));
+       (.I0(\cmd_index_reg_n_0_[0] ),
+        .O(\cmd_index[0]_i_1_n_0 ));
   (* SOFT_HLUTNM = "soft_lutpair16" *) 
+  LUT2 #(
+    .INIT(4'h6)) 
+    \cmd_index[1]_i_1 
+       (.I0(\cmd_index_reg_n_0_[0] ),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .O(\cmd_index[1]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair19" *) 
   LUT3 #(
-    .INIT(8'h1F)) 
+    .INIT(8'h78)) 
+    \cmd_index[2]_i_1 
+       (.I0(\cmd_index_reg_n_0_[0] ),
+        .I1(\cmd_index_reg_n_0_[1] ),
+        .I2(\cmd_index_reg_n_0_[2] ),
+        .O(\cmd_index[2]_i_1_n_0 ));
+  LUT3 #(
+    .INIT(8'h08)) 
+    \cmd_index[3]_i_1 
+       (.I0(fsm_state__0[1]),
+        .I1(resetn),
+        .I2(fsm_state__0[2]),
+        .O(\cmd_index[3]_i_1_n_0 ));
+  LUT4 #(
+    .INIT(16'h7F80)) 
     \cmd_index[3]_i_3 
+       (.I0(\cmd_index_reg_n_0_[1] ),
+        .I1(\cmd_index_reg_n_0_[0] ),
+        .I2(\cmd_index_reg_n_0_[2] ),
+        .I3(\cmd_index_reg_n_0_[3] ),
+        .O(\cmd_index[3]_i_3_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair14" *) 
+  LUT4 #(
+    .INIT(16'h01FF)) 
+    \cmd_index[3]_i_4 
        (.I0(\cmd_index_reg_n_0_[2] ),
         .I1(\cmd_index_reg_n_0_[1] ),
-        .I2(\cmd_index_reg_n_0_[3] ),
-        .O(\cmd_index[3]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair22" *) 
-  LUT2 #(
-    .INIT(4'h1)) 
-    \cmd_index[3]_i_5 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[3]),
-        .O(\cmd_index[3]_i_5_n_0 ));
+        .I2(\cmd_index_reg_n_0_[0] ),
+        .I3(\cmd_index_reg_n_0_[3] ),
+        .O(AMCI_WRITE0__4));
   FDRE \cmd_index_reg[0] 
        (.C(clk),
-        .CE(nolabel_line263_n_16),
-        .D(cmd_index[0]),
+        .CE(nolabel_line245_n_8),
+        .D(\cmd_index[0]_i_1_n_0 ),
         .Q(\cmd_index_reg_n_0_[0] ),
-        .R(1'b0));
+        .R(\cmd_index[3]_i_1_n_0 ));
   FDRE \cmd_index_reg[1] 
        (.C(clk),
-        .CE(nolabel_line263_n_16),
-        .D(cmd_index[1]),
+        .CE(nolabel_line245_n_8),
+        .D(\cmd_index[1]_i_1_n_0 ),
         .Q(\cmd_index_reg_n_0_[1] ),
-        .R(1'b0));
+        .R(\cmd_index[3]_i_1_n_0 ));
   FDRE \cmd_index_reg[2] 
        (.C(clk),
-        .CE(nolabel_line263_n_16),
-        .D(cmd_index[2]),
+        .CE(nolabel_line245_n_8),
+        .D(\cmd_index[2]_i_1_n_0 ),
         .Q(\cmd_index_reg_n_0_[2] ),
-        .R(1'b0));
+        .R(\cmd_index[3]_i_1_n_0 ));
   FDRE \cmd_index_reg[3] 
        (.C(clk),
-        .CE(nolabel_line263_n_16),
-        .D(cmd_index[3]),
+        .CE(nolabel_line245_n_8),
+        .D(\cmd_index[3]_i_3_n_0 ),
         .Q(\cmd_index_reg_n_0_[3] ),
-        .R(1'b0));
-  top_level_axi_iic_fe_0_0_axi4_lite_master nolabel_line263
-       (.\AMCI_RDATA_reg[7]_0 (AMCI_RDATA),
+        .R(\cmd_index[3]_i_1_n_0 ));
+  top_level_axi_iic_fe_0_0_axi4_lite_master nolabel_line245
+       (.AMCI_RADDR({AMCI_RADDR[8],AMCI_RADDR[5]}),
+        .\AMCI_RDATA_reg[6]_0 ({AMCI_RDATA[6:4],p_0_in,AMCI_RDATA[1:0]}),
         .AMCI_READ(AMCI_READ),
-        .\AMCI_WDATA_reg[10] (\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .\AMCI_WDATA_reg[10]_0 (\AMCI_WADDR[8]_i_3_n_0 ),
         .AMCI_WRITE(AMCI_WRITE),
+        .AMCI_WRITE0__4(AMCI_WRITE0__4),
         .AXI_ARADDR(AXI_ARADDR),
         .AXI_ARREADY(AXI_ARREADY),
         .AXI_ARVALID(AXI_ARVALID),
         .AXI_AWADDR(AXI_AWADDR),
-        .\AXI_AWADDR_reg[8]_0 ({\AMCI_WADDR_reg_n_0_[8] ,\AMCI_WADDR_reg_n_0_[6] ,\AMCI_WADDR_reg_n_0_[5] ,\AMCI_WADDR_reg_n_0_[4] ,\AMCI_WADDR_reg_n_0_[3] }),
+        .\AXI_AWADDR_reg[8]_0 ({AMCI_WADDR[8],AMCI_WADDR[6:3]}),
         .AXI_AWREADY(AXI_AWREADY),
         .AXI_AWVALID(AXI_AWVALID),
-        .AXI_BREADY(AXI_BREADY),
+        .AXI_BREADY_reg_0(AXI_BREADY_reg),
         .AXI_BVALID(AXI_BVALID),
         .AXI_RDATA(AXI_RDATA),
         .AXI_RREADY_reg_0(AXI_RREADY_reg),
         .AXI_RVALID(AXI_RVALID),
         .AXI_WDATA(AXI_WDATA),
+        .\AXI_WDATA_reg[31]_0 ({AMCI_WDATA[31:30],AMCI_WDATA[9:0]}),
         .AXI_WREADY(AXI_WREADY),
         .AXI_WVALID(AXI_WVALID),
-        .AXI_WVALID_reg_0(AMCI_WRITE_reg_n_0),
-        .D({\AMCI_WDATA_reg_n_0_[31] ,\AMCI_WDATA_reg_n_0_[30] ,\AMCI_WDATA_reg_n_0_[15] ,\AMCI_WDATA_reg_n_0_[14] ,\AMCI_WDATA_reg_n_0_[13] ,\AMCI_WDATA_reg_n_0_[12] ,\AMCI_WDATA_reg_n_0_[11] ,\AMCI_WDATA_reg_n_0_[10] ,\AMCI_WDATA_reg_n_0_[9] ,\AMCI_WDATA_reg_n_0_[8] ,\AMCI_WDATA_reg_n_0_[7] ,\AMCI_WDATA_reg_n_0_[6] ,\AMCI_WDATA_reg_n_0_[5] ,\AMCI_WDATA_reg_n_0_[4] ,\AMCI_WDATA_reg_n_0_[3] ,\AMCI_WDATA_reg_n_0_[2] ,\AMCI_WDATA_reg_n_0_[1] ,\AMCI_WDATA_reg_n_0_[0] }),
-        .E(nolabel_line263_n_15),
-        .\FSM_sequential_fsm_state_reg[0] (nolabel_line263_n_18),
-        .\FSM_sequential_fsm_state_reg[0]_0 (\FSM_sequential_fsm_state[3]_i_4_n_0 ),
-        .\FSM_sequential_fsm_state_reg[0]_1 (\FSM_sequential_fsm_state[3]_i_6_n_0 ),
-        .\FSM_sequential_fsm_state_reg[0]_2 (\FSM_sequential_fsm_state[3]_i_8_n_0 ),
-        .\FSM_sequential_fsm_state_reg[0]_3 (\FSM_sequential_fsm_state[3]_i_7_n_0 ),
+        .D({fsm_state__1[5],fsm_state__1[0]}),
+        .E(nolabel_line245_n_11),
+        .\FSM_onehot_fsm_state_reg[0] (\FSM_onehot_fsm_state[5]_i_4_n_0 ),
+        .\FSM_onehot_fsm_state_reg[0]_0 (\FSM_onehot_fsm_state[5]_i_5_n_0 ),
+        .\FSM_onehot_fsm_state_reg[0]_1 (\cmd_index_reg_n_0_[3] ),
+        .\FSM_onehot_fsm_state_reg[0]_2 (\cmd_index_reg_n_0_[0] ),
+        .\FSM_onehot_fsm_state_reg[0]_3 (\cmd_index_reg_n_0_[1] ),
+        .\FSM_onehot_fsm_state_reg[0]_4 (\cmd_index_reg_n_0_[2] ),
+        .\FSM_onehot_fsm_state_reg[4] (nolabel_line245_n_14),
+        .\FSM_onehot_fsm_state_reg[4]_0 (nolabel_line245_n_16),
+        .\FSM_onehot_fsm_state_reg[4]_1 (nolabel_line245_n_18),
+        .\FSM_onehot_fsm_state_reg[4]_2 (nolabel_line245_n_27),
+        .\FSM_onehot_fsm_state_reg[5] (nolabel_line245_n_12),
+        .\FSM_onehot_fsm_state_reg[5]_0 (nolabel_line245_n_26),
+        .\FSM_onehot_fsm_state_reg[5]_1 (nolabel_line245_n_30),
+        .\FSM_onehot_fsm_state_reg[5]_2 (nolabel_line245_n_31),
+        .\FSM_onehot_fsm_state_reg[5]_3 (nolabel_line245_n_32),
+        .\FSM_onehot_fsm_state_reg[5]_4 (nolabel_line245_n_33),
+        .\FSM_onehot_fsm_state_reg[5]_5 (nolabel_line245_n_34),
+        .\FSM_onehot_fsm_state_reg[5]_6 (nolabel_line245_n_35),
+        .\FSM_onehot_fsm_state_reg[5]_7 (nolabel_line245_n_36),
+        .\FSM_onehot_fsm_state_reg[5]_8 (nolabel_line245_n_37),
+        .\FSM_onehot_write_state_reg[0]_0 (nolabel_line245_n_7),
+        .\FSM_onehot_write_state_reg[2]_0 (AMCI_WRITE_reg_n_0),
         .FSM_sequential_read_state_reg_0(AMCI_READ_reg_n_0),
-        .Q(fsm_state__0),
+        .Q({fsm_state__0[5],\FSM_onehot_fsm_state_reg_n_0_[4] ,\FSM_onehot_fsm_state_reg_n_0_[3] ,fsm_state__0[2:1]}),
         .axi_iic_intr(axi_iic_intr),
-        .\byte_index_reg[0] (nolabel_line263_n_9),
-        .\byte_index_reg[0]_0 (nolabel_line263_n_11),
-        .\byte_index_reg[0]_1 (nolabel_line263_n_12),
-        .\byte_index_reg[0]_2 (nolabel_line263_n_14),
-        .\byte_index_reg[1] (nolabel_line263_n_7),
-        .\byte_index_reg[1]_0 (nolabel_line263_n_8),
-        .\byte_index_reg[1]_1 (nolabel_line263_n_10),
-        .\byte_index_reg[1]_2 (nolabel_line263_n_13),
+        .bus_fault(bus_fault),
         .clk(clk),
-        .\cmd_index_reg[0] (\cmd_index[3]_i_3_n_0 ),
-        .\cmd_index_reg[0]_0 (\cmd_index[3]_i_5_n_0 ),
+        .o_I2C_STATUS(o_I2C_STATUS[1]),
+        .read_state(read_state),
         .resetn(resetn),
-        .resetn_0(nolabel_line263_n_0),
-        .resetn_1(nolabel_line263_n_16),
-        .\rx_data_reg[0][7] (\rx_data[3][7]_i_3_n_0 ),
-        .\rx_data_reg[0][7]_0 (\byte_index_reg_n_0_[1] ),
-        .\rx_data_reg[0][7]_1 (\byte_index_reg_n_0_[0] ),
-        .\rx_data_reg[3][0] (\AMCI_WDATA[6]_i_2_n_0 ));
+        .resetn_0(nolabel_line245_n_1),
+        .resetn_1(nolabel_line245_n_8),
+        .resetn_2(nolabel_line245_n_9),
+        .resetn_3(nolabel_line245_n_13),
+        .resetn_4(nolabel_line245_n_15),
+        .resetn_5(nolabel_line245_n_17),
+        .resetn_6(nolabel_line245_n_28),
+        .resetn_7(nolabel_line245_n_40),
+        .\rx_data_reg[1][1] (\byte_index_reg_n_0_[0] ),
+        .\rx_data_reg[1][1]_0 (\byte_index_reg_n_0_[1] ));
+  LUT2 #(
+    .INIT(4'h2)) 
+    \o_I2C_STATUS[0]_INST_0 
+       (.I0(\FSM_onehot_fsm_state_reg_n_0_[0] ),
+        .I1(i_I2C_READ_LEN_wstrobe),
+        .O(o_I2C_STATUS[0]));
   LUT6 #(
-    .INIT(64'h0000000000000001)) 
-    o_I2C_IDLE_INST_0
-       (.I0(i_I2C_READ_LEN_wstrobe),
-        .I1(fsm_state__0[0]),
-        .I2(i_I2C_INIT_wstrobe),
-        .I3(fsm_state__0[1]),
-        .I4(fsm_state__0[2]),
-        .I5(fsm_state__0[3]),
-        .O(o_I2C_IDLE));
+    .INIT(64'h8F8F8FFF80808000)) 
+    \rx_data[0][4]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[4]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_12),
+        .I4(bus_fault),
+        .I5(o_I2C_RX_DATA[4]),
+        .O(\rx_data[0][4]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'h5500010000000000)) 
+    \rx_data[0][7]_i_1 
+       (.I0(p_0_in),
+        .I1(AMCI_READ_reg_n_0),
+        .I2(read_state),
+        .I3(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I4(nolabel_line245_n_12),
+        .I5(resetn),
+        .O(\rx_data[0][7]_i_1_n_0 ));
   LUT5 #(
-    .INIT(32'h02000000)) 
-    \o_I2C_RX_DATA[31]_i_1 
-       (.I0(fsm_state__0[2]),
-        .I1(fsm_state__0[1]),
-        .I2(fsm_state__0[3]),
+    .INIT(32'h8FFF8000)) 
+    \rx_data[1][0]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[0]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_14),
+        .I4(o_I2C_RX_DATA[8]),
+        .O(\rx_data[1][0]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[1][6]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[6]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_14),
+        .I4(o_I2C_RX_DATA[14]),
+        .O(\rx_data[1][6]_i_1_n_0 ));
+  LUT4 #(
+    .INIT(16'h4000)) 
+    \rx_data[1][7]_i_1 
+       (.I0(p_0_in),
+        .I1(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I2(nolabel_line245_n_14),
         .I3(resetn),
-        .I4(fsm_state__0[0]),
-        .O(\o_I2C_RX_DATA[31]_i_1_n_0 ));
-  FDRE \o_I2C_RX_DATA_reg[0] 
+        .O(\rx_data[1][7]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[2][1]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[1]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_16),
+        .I4(o_I2C_RX_DATA[17]),
+        .O(\rx_data[2][1]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[2][4]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[4]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_16),
+        .I4(o_I2C_RX_DATA[20]),
+        .O(\rx_data[2][4]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[2][6]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[6]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_16),
+        .I4(o_I2C_RX_DATA[22]),
+        .O(\rx_data[2][6]_i_1_n_0 ));
+  LUT4 #(
+    .INIT(16'h4000)) 
+    \rx_data[2][7]_i_1 
+       (.I0(p_0_in),
+        .I1(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I2(nolabel_line245_n_16),
+        .I3(resetn),
+        .O(\rx_data[2][7]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[3][0]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[0]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_18),
+        .I4(o_I2C_RX_DATA[24]),
+        .O(\rx_data[3][0]_i_1_n_0 ));
+  LUT5 #(
+    .INIT(32'h8FFF8000)) 
+    \rx_data[3][5]_i_1 
+       (.I0(fsm_state__0[5]),
+        .I1(AMCI_RDATA[5]),
+        .I2(resetn),
+        .I3(nolabel_line245_n_18),
+        .I4(o_I2C_RX_DATA[29]),
+        .O(\rx_data[3][5]_i_1_n_0 ));
+  LUT4 #(
+    .INIT(16'h4000)) 
+    \rx_data[3][7]_i_1 
+       (.I0(p_0_in),
+        .I1(\FSM_onehot_fsm_state_reg_n_0_[4] ),
+        .I2(nolabel_line245_n_18),
+        .I3(resetn),
+        .O(\rx_data[3][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][0] 
        (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [0]),
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_37),
         .Q(o_I2C_RX_DATA[0]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[10] 
+        .S(\rx_data[0][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][1] 
        (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [2]),
-        .Q(o_I2C_RX_DATA[10]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[11] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [3]),
-        .Q(o_I2C_RX_DATA[11]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[12] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [4]),
-        .Q(o_I2C_RX_DATA[12]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[13] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [5]),
-        .Q(o_I2C_RX_DATA[13]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[14] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [6]),
-        .Q(o_I2C_RX_DATA[14]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[15] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [7]),
-        .Q(o_I2C_RX_DATA[15]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[16] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [0]),
-        .Q(o_I2C_RX_DATA[16]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[17] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [1]),
-        .Q(o_I2C_RX_DATA[17]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[18] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [2]),
-        .Q(o_I2C_RX_DATA[18]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[19] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [3]),
-        .Q(o_I2C_RX_DATA[19]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[1] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [1]),
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_36),
         .Q(o_I2C_RX_DATA[1]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[20] 
+        .S(\rx_data[0][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][2] 
        (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [4]),
-        .Q(o_I2C_RX_DATA[20]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[21] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [5]),
-        .Q(o_I2C_RX_DATA[21]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[22] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [6]),
-        .Q(o_I2C_RX_DATA[22]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[23] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[1] [7]),
-        .Q(o_I2C_RX_DATA[23]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[24] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [0]),
-        .Q(o_I2C_RX_DATA[24]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[25] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [1]),
-        .Q(o_I2C_RX_DATA[25]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[26] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [2]),
-        .Q(o_I2C_RX_DATA[26]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[27] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [3]),
-        .Q(o_I2C_RX_DATA[27]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[28] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [4]),
-        .Q(o_I2C_RX_DATA[28]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[29] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [5]),
-        .Q(o_I2C_RX_DATA[29]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[2] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [2]),
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_35),
         .Q(o_I2C_RX_DATA[2]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[30] 
+        .S(\rx_data[0][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][3] 
        (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [6]),
-        .Q(o_I2C_RX_DATA[30]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[31] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[0] [7]),
-        .Q(o_I2C_RX_DATA[31]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[3] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [3]),
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_34),
         .Q(o_I2C_RX_DATA[3]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[4] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [4]),
-        .Q(o_I2C_RX_DATA[4]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[5] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [5]),
-        .Q(o_I2C_RX_DATA[5]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[6] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [6]),
-        .Q(o_I2C_RX_DATA[6]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[7] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[3] [7]),
-        .Q(o_I2C_RX_DATA[7]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[8] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [0]),
-        .Q(o_I2C_RX_DATA[8]),
-        .R(1'b0));
-  FDRE \o_I2C_RX_DATA_reg[9] 
-       (.C(clk),
-        .CE(\o_I2C_RX_DATA[31]_i_1_n_0 ),
-        .D(\rx_data_reg[2] [1]),
-        .Q(o_I2C_RX_DATA[9]),
-        .R(1'b0));
-  LUT6 #(
-    .INIT(64'h0200000000000000)) 
-    \rx_data[3][7]_i_3 
-       (.I0(axi_iic_intr),
-        .I1(fsm_state__0[3]),
-        .I2(fsm_state__0[2]),
-        .I3(fsm_state__0[1]),
-        .I4(resetn),
-        .I5(fsm_state__0[0]),
-        .O(\rx_data[3][7]_i_3_n_0 ));
-  FDRE \rx_data_reg[0][0] 
-       (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[0]),
-        .Q(\rx_data_reg[0] [0]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][1] 
-       (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[1]),
-        .Q(\rx_data_reg[0] [1]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][2] 
-       (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[2]),
-        .Q(\rx_data_reg[0] [2]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][3] 
-       (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[3]),
-        .Q(\rx_data_reg[0] [3]),
-        .R(nolabel_line263_n_7));
+        .S(\rx_data[0][7]_i_1_n_0 ));
   FDRE \rx_data_reg[0][4] 
        (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[4]),
-        .Q(\rx_data_reg[0] [4]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][5] 
+        .CE(1'b1),
+        .D(\rx_data[0][4]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[4]),
+        .R(1'b0));
+  FDSE \rx_data_reg[0][5] 
        (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[5]),
-        .Q(\rx_data_reg[0] [5]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][6] 
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_32),
+        .Q(o_I2C_RX_DATA[5]),
+        .S(\rx_data[0][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][6] 
        (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[6]),
-        .Q(\rx_data_reg[0] [6]),
-        .R(nolabel_line263_n_7));
-  FDRE \rx_data_reg[0][7] 
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_31),
+        .Q(o_I2C_RX_DATA[6]),
+        .S(\rx_data[0][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[0][7] 
        (.C(clk),
-        .CE(nolabel_line263_n_11),
-        .D(AMCI_RDATA[7]),
-        .Q(\rx_data_reg[0] [7]),
-        .R(nolabel_line263_n_7));
+        .CE(nolabel_line245_n_28),
+        .D(nolabel_line245_n_30),
+        .Q(o_I2C_RX_DATA[7]),
+        .S(\rx_data[0][7]_i_1_n_0 ));
   FDRE \rx_data_reg[1][0] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[0]),
-        .Q(\rx_data_reg[1] [0]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][1] 
+        .CE(1'b1),
+        .D(\rx_data[1][0]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[8]),
+        .R(1'b0));
+  FDSE \rx_data_reg[1][1] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[1]),
-        .Q(\rx_data_reg[1] [1]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][2] 
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_36),
+        .Q(o_I2C_RX_DATA[9]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[1][2] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[2]),
-        .Q(\rx_data_reg[1] [2]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][3] 
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_35),
+        .Q(o_I2C_RX_DATA[10]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[1][3] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[3]),
-        .Q(\rx_data_reg[1] [3]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][4] 
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_34),
+        .Q(o_I2C_RX_DATA[11]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[1][4] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[4]),
-        .Q(\rx_data_reg[1] [4]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][5] 
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_33),
+        .Q(o_I2C_RX_DATA[12]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[1][5] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[5]),
-        .Q(\rx_data_reg[1] [5]),
-        .R(nolabel_line263_n_8));
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_32),
+        .Q(o_I2C_RX_DATA[13]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
   FDRE \rx_data_reg[1][6] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[6]),
-        .Q(\rx_data_reg[1] [6]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[1][7] 
+        .CE(1'b1),
+        .D(\rx_data[1][6]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[14]),
+        .R(1'b0));
+  FDSE \rx_data_reg[1][7] 
        (.C(clk),
-        .CE(nolabel_line263_n_12),
-        .D(AMCI_RDATA[7]),
-        .Q(\rx_data_reg[1] [7]),
-        .R(nolabel_line263_n_8));
-  FDRE \rx_data_reg[2][0] 
+        .CE(nolabel_line245_n_13),
+        .D(nolabel_line245_n_30),
+        .Q(o_I2C_RX_DATA[15]),
+        .S(\rx_data[1][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[2][0] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[0]),
-        .Q(\rx_data_reg[2] [0]),
-        .R(nolabel_line263_n_9));
+        .CE(nolabel_line245_n_15),
+        .D(nolabel_line245_n_37),
+        .Q(o_I2C_RX_DATA[16]),
+        .S(\rx_data[2][7]_i_1_n_0 ));
   FDRE \rx_data_reg[2][1] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[1]),
-        .Q(\rx_data_reg[2] [1]),
-        .R(nolabel_line263_n_9));
-  FDRE \rx_data_reg[2][2] 
+        .CE(1'b1),
+        .D(\rx_data[2][1]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[17]),
+        .R(1'b0));
+  FDSE \rx_data_reg[2][2] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[2]),
-        .Q(\rx_data_reg[2] [2]),
-        .R(nolabel_line263_n_9));
-  FDRE \rx_data_reg[2][3] 
+        .CE(nolabel_line245_n_15),
+        .D(nolabel_line245_n_35),
+        .Q(o_I2C_RX_DATA[18]),
+        .S(\rx_data[2][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[2][3] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[3]),
-        .Q(\rx_data_reg[2] [3]),
-        .R(nolabel_line263_n_9));
+        .CE(nolabel_line245_n_15),
+        .D(nolabel_line245_n_34),
+        .Q(o_I2C_RX_DATA[19]),
+        .S(\rx_data[2][7]_i_1_n_0 ));
   FDRE \rx_data_reg[2][4] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[4]),
-        .Q(\rx_data_reg[2] [4]),
-        .R(nolabel_line263_n_9));
-  FDRE \rx_data_reg[2][5] 
+        .CE(1'b1),
+        .D(\rx_data[2][4]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[20]),
+        .R(1'b0));
+  FDSE \rx_data_reg[2][5] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[5]),
-        .Q(\rx_data_reg[2] [5]),
-        .R(nolabel_line263_n_9));
+        .CE(nolabel_line245_n_15),
+        .D(nolabel_line245_n_32),
+        .Q(o_I2C_RX_DATA[21]),
+        .S(\rx_data[2][7]_i_1_n_0 ));
   FDRE \rx_data_reg[2][6] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[6]),
-        .Q(\rx_data_reg[2] [6]),
-        .R(nolabel_line263_n_9));
-  FDRE \rx_data_reg[2][7] 
+        .CE(1'b1),
+        .D(\rx_data[2][6]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[22]),
+        .R(1'b0));
+  FDSE \rx_data_reg[2][7] 
        (.C(clk),
-        .CE(nolabel_line263_n_13),
-        .D(AMCI_RDATA[7]),
-        .Q(\rx_data_reg[2] [7]),
-        .R(nolabel_line263_n_9));
+        .CE(nolabel_line245_n_15),
+        .D(nolabel_line245_n_30),
+        .Q(o_I2C_RX_DATA[23]),
+        .S(\rx_data[2][7]_i_1_n_0 ));
   FDRE \rx_data_reg[3][0] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[0]),
-        .Q(\rx_data_reg[3] [0]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][1] 
+        .CE(1'b1),
+        .D(\rx_data[3][0]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[24]),
+        .R(1'b0));
+  FDSE \rx_data_reg[3][1] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[1]),
-        .Q(\rx_data_reg[3] [1]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][2] 
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_36),
+        .Q(o_I2C_RX_DATA[25]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[3][2] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[2]),
-        .Q(\rx_data_reg[3] [2]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][3] 
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_35),
+        .Q(o_I2C_RX_DATA[26]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[3][3] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[3]),
-        .Q(\rx_data_reg[3] [3]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][4] 
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_34),
+        .Q(o_I2C_RX_DATA[27]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[3][4] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[4]),
-        .Q(\rx_data_reg[3] [4]),
-        .R(nolabel_line263_n_10));
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_33),
+        .Q(o_I2C_RX_DATA[28]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
   FDRE \rx_data_reg[3][5] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[5]),
-        .Q(\rx_data_reg[3] [5]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][6] 
+        .CE(1'b1),
+        .D(\rx_data[3][5]_i_1_n_0 ),
+        .Q(o_I2C_RX_DATA[29]),
+        .R(1'b0));
+  FDSE \rx_data_reg[3][6] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[6]),
-        .Q(\rx_data_reg[3] [6]),
-        .R(nolabel_line263_n_10));
-  FDRE \rx_data_reg[3][7] 
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_31),
+        .Q(o_I2C_RX_DATA[30]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
+  FDSE \rx_data_reg[3][7] 
        (.C(clk),
-        .CE(nolabel_line263_n_14),
-        .D(AMCI_RDATA[7]),
-        .Q(\rx_data_reg[3] [7]),
-        .R(nolabel_line263_n_10));
+        .CE(nolabel_line245_n_17),
+        .D(nolabel_line245_n_30),
+        .Q(o_I2C_RX_DATA[31]),
+        .S(\rx_data[3][7]_i_1_n_0 ));
 endmodule
 `ifndef GLBL
 `define GLBL

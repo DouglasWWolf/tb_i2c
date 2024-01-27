@@ -1,0 +1,27 @@
+source "registers.sh"
+
+axireg $I2C_STATUS
+axireg $I2C_STATUS
+
+axireg $I2C_DEV_ADDR 0x4B
+axireg $I2C_REG_NUM  0x00
+axireg $I2C_READ_LEN 2
+
+echo "Just issued read, status is"
+axireg $I2C_STATUS
+sleep 1
+
+echo "Slept after read, status is"
+axireg $I2C_STATUS
+
+echo "Result is"
+axireg $I2C_RX_DATA
+
+#  MODULE_REV=$((BASE_ADDR + 0*4))  
+#  I2C_STATUS=$((BASE_ADDR + 1*4))
+# I2C_RX_DATA=$((BASE_ADDR + 2*4))
+#    I2C_INIT=$((BASE_ADDR + 3*4))
+#I2C_DEV_ADDR=$((BASE_ADDR + 4*4))
+# I2C_REG_NUM=$((BASE_ADDR + 5*4))
+#I2C_READ_LEN=$((BASE_ADDR + 6*4))
+

@@ -40,7 +40,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# axi_iic_fe, axi_uart_bridge
+# axi_iic_fe, i2c_register, axi_uart_bridge
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -317,7 +317,6 @@ proc create_root_design { parentCell } {
 
 
   # Create ports
-  set BTNC [ create_bd_port -dir I BTNC ]
   set CLK100MHZ [ create_bd_port -dir I -type clk CLK100MHZ ]
   set_property -dict [ list \
    CONFIG.ASSOCIATED_RESET {CPU_RESETN} \
@@ -331,13 +330,13 @@ proc create_root_design { parentCell } {
    CONFIG.USE_BOARD_FLOW {true} \
  ] $axi_iic_0
 
-  # Create instance: axi_iic_fe_0, and set properties
+  # Create instance: axi_iic_fe, and set properties
   set block_name axi_iic_fe
-  set block_cell_name axi_iic_fe_0
-  if { [catch {set axi_iic_fe_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+  set block_cell_name axi_iic_fe
+  if { [catch {set axi_iic_fe [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
-   } elseif { $axi_iic_fe_0 eq "" } {
+   } elseif { $axi_iic_fe eq "" } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
@@ -345,27 +344,17 @@ proc create_root_design { parentCell } {
   # Create instance: axi_uart_bridge
   create_hier_cell_axi_uart_bridge [current_bd_instance .] axi_uart_bridge
 
-  # Create instance: const_00, and set properties
-  set const_00 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 const_00 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0} \
-   CONFIG.CONST_WIDTH {16} \
- ] $const_00
-
-  # Create instance: const_02, and set properties
-  set const_02 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 const_02 ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {2} \
-   CONFIG.CONST_WIDTH {8} \
- ] $const_02
-
-  # Create instance: const_4b, and set properties
-  set const_4b [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 const_4b ]
-  set_property -dict [ list \
-   CONFIG.CONST_VAL {0x4B} \
-   CONFIG.CONST_WIDTH {7} \
- ] $const_4b
-
+  # Create instance: i2c_register, and set properties
+  set block_name i2c_register
+  set block_cell_name i2c_register
+  if { [catch {set i2c_register [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $i2c_register eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: source_100mhz
   create_hier_cell_source_100mhz [current_bd_instance .] source_100mhz
 
@@ -374,7 +363,7 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.C_MON_TYPE {MIX} \
    CONFIG.C_NUM_MONITOR_SLOTS {1} \
-   CONFIG.C_NUM_OF_PROBES {5} \
+   CONFIG.C_NUM_OF_PROBES {2} \
    CONFIG.C_PROBE0_TYPE {0} \
    CONFIG.C_PROBE1_TYPE {0} \
    CONFIG.C_PROBE2_TYPE {0} \
@@ -397,43 +386,43 @@ proc create_root_design { parentCell } {
   # Create instance: system_interconnect, and set properties
   set system_interconnect [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 system_interconnect ]
   set_property -dict [ list \
+   CONFIG.NUM_MI {2} \
    CONFIG.NUM_SI {2} \
  ] $system_interconnect
 
   # Create interface connections
   connect_bd_intf_net -intf_net axi_iic_0_IIC [get_bd_intf_ports I2C] [get_bd_intf_pins axi_iic_0/IIC]
-  connect_bd_intf_net -intf_net axi_iic_fe_0_AXI [get_bd_intf_pins axi_iic_fe_0/AXI] [get_bd_intf_pins system_interconnect/S01_AXI]
-connect_bd_intf_net -intf_net [get_bd_intf_nets axi_iic_fe_0_AXI] [get_bd_intf_pins axi_iic_fe_0/AXI] [get_bd_intf_pins system_ila_0/SLOT_0_AXI]
+  connect_bd_intf_net -intf_net axi_iic_fe_0_AXI [get_bd_intf_pins axi_iic_fe/AXI] [get_bd_intf_pins system_interconnect/S01_AXI]
+connect_bd_intf_net -intf_net [get_bd_intf_nets axi_iic_fe_0_AXI] [get_bd_intf_pins axi_iic_fe/AXI] [get_bd_intf_pins system_ila_0/SLOT_0_AXI]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_intf_nets axi_iic_fe_0_AXI]
   connect_bd_intf_net -intf_net hier_0_M_AXI [get_bd_intf_pins axi_uart_bridge/M_AXI] [get_bd_intf_pins system_interconnect/S00_AXI]
   connect_bd_intf_net -intf_net hier_0_UART [get_bd_intf_ports UART] [get_bd_intf_pins axi_uart_bridge/UART]
   connect_bd_intf_net -intf_net system_interconnect_M00_AXI [get_bd_intf_pins axi_iic_0/S_AXI] [get_bd_intf_pins system_interconnect/M00_AXI]
+  connect_bd_intf_net -intf_net system_interconnect_M01_AXI [get_bd_intf_pins i2c_register/S_AXI] [get_bd_intf_pins system_interconnect/M01_AXI]
 
   # Create port connections
-  connect_bd_net -net BTNC_1 [get_bd_ports BTNC] [get_bd_pins axi_iic_fe_0/i_I2C_READ_LEN_wstrobe]
   connect_bd_net -net CLK100MHZ_1 [get_bd_ports CLK100MHZ] [get_bd_pins source_100mhz/CLK100MHZ]
   connect_bd_net -net CPU_RESETN_1 [get_bd_ports CPU_RESETN] [get_bd_pins source_100mhz/CPU_RESETN]
-  connect_bd_net -net axi_iic_0_iic2intc_irpt [get_bd_pins axi_iic_0/iic2intc_irpt] [get_bd_pins axi_iic_fe_0/axi_iic_intr] [get_bd_pins system_ila_0/probe4]
+  connect_bd_net -net axi_iic_0_iic2intc_irpt [get_bd_pins axi_iic_0/iic2intc_irpt] [get_bd_pins axi_iic_fe/axi_iic_intr] [get_bd_pins system_ila_0/probe0]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets axi_iic_0_iic2intc_irpt]
-  connect_bd_net -net const_00_dout [get_bd_pins axi_iic_fe_0/i_I2C_REG_ADDR] [get_bd_pins const_00/dout]
-  connect_bd_net -net const_02_dout [get_bd_pins axi_iic_fe_0/i_I2C_READ_LEN] [get_bd_pins const_02/dout]
-  connect_bd_net -net const_4b_dout [get_bd_pins axi_iic_fe_0/device_addr] [get_bd_pins const_4b/dout]
-  connect_bd_net -net debug_ocy_shows_rx [get_bd_pins axi_iic_fe_0/debug_ocy_shows_rx] [get_bd_pins system_ila_0/probe3]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets debug_ocy_shows_rx]
-  connect_bd_net -net debug_sr_shows_rx [get_bd_pins axi_iic_fe_0/debug_sr_shows_rx] [get_bd_pins system_ila_0/probe2]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets debug_sr_shows_rx]
-  connect_bd_net -net o_I2C_IDLE [get_bd_pins axi_iic_fe_0/o_I2C_IDLE] [get_bd_pins system_ila_0/probe0]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets o_I2C_IDLE]
-  connect_bd_net -net o_I2C_RX_DATA [get_bd_pins axi_iic_fe_0/o_I2C_RX_DATA] [get_bd_pins system_ila_0/probe1]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets o_I2C_RX_DATA]
+  connect_bd_net -net axi_iic_fe_o_I2C_IDLE [get_bd_pins axi_iic_fe/o_I2C_STATUS] [get_bd_pins i2c_register/i_I2C_STATUS]
+  connect_bd_net -net axi_iic_fe_o_I2C_RX_DATA [get_bd_pins axi_iic_fe/o_I2C_RX_DATA] [get_bd_pins i2c_register/i_I2C_RX_DATA]
+  connect_bd_net -net axi_iic_fe_o_MODULE_REV [get_bd_pins axi_iic_fe/o_MODULE_REV] [get_bd_pins i2c_register/i_MODULE_REV] [get_bd_pins system_ila_0/probe1]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets axi_iic_fe_o_MODULE_REV]
+  connect_bd_net -net i2c_register_0_o_I2C_DEV_ADDR [get_bd_pins axi_iic_fe/i_I2C_DEV_ADDR] [get_bd_pins i2c_register/o_I2C_DEV_ADDR]
+  connect_bd_net -net i2c_register_0_o_I2C_READ_LEN [get_bd_pins axi_iic_fe/i_I2C_READ_LEN] [get_bd_pins i2c_register/o_I2C_READ_LEN]
+  connect_bd_net -net i2c_register_0_o_I2C_READ_LEN_wstrobe [get_bd_pins axi_iic_fe/i_I2C_READ_LEN_wstrobe] [get_bd_pins i2c_register/o_I2C_READ_LEN_wstrobe]
+  connect_bd_net -net i2c_register_0_o_I2C_REG_NUM [get_bd_pins axi_iic_fe/i_I2C_REG_ADDR] [get_bd_pins i2c_register/o_I2C_REG_NUM]
   connect_bd_net -net source_100mhz_interconnect_aresetn [get_bd_pins source_100mhz/interconnect_aresetn] [get_bd_pins system_interconnect/aresetn]
-  connect_bd_net -net source_100mhz_peripheral_aresetn [get_bd_pins axi_iic_0/s_axi_aresetn] [get_bd_pins axi_iic_fe_0/resetn] [get_bd_pins axi_uart_bridge/aresetn] [get_bd_pins source_100mhz/peripheral_aresetn] [get_bd_pins system_ila_0/resetn]
-  connect_bd_net -net system_clock_clk_100mhz [get_bd_pins axi_iic_0/s_axi_aclk] [get_bd_pins axi_iic_fe_0/clk] [get_bd_pins axi_uart_bridge/aclk] [get_bd_pins source_100mhz/clk_100mhz] [get_bd_pins system_ila_0/clk] [get_bd_pins system_interconnect/aclk]
+  connect_bd_net -net source_100mhz_peripheral_aresetn [get_bd_pins axi_iic_0/s_axi_aresetn] [get_bd_pins axi_iic_fe/resetn] [get_bd_pins axi_uart_bridge/aresetn] [get_bd_pins i2c_register/resetn] [get_bd_pins source_100mhz/peripheral_aresetn] [get_bd_pins system_ila_0/resetn]
+  connect_bd_net -net system_clock_clk_100mhz [get_bd_pins axi_iic_0/s_axi_aclk] [get_bd_pins axi_iic_fe/clk] [get_bd_pins axi_uart_bridge/aclk] [get_bd_pins i2c_register/clk] [get_bd_pins source_100mhz/clk_100mhz] [get_bd_pins system_ila_0/clk] [get_bd_pins system_interconnect/aclk]
 
   # Create address segments
-  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_iic_fe_0/AXI] [get_bd_addr_segs axi_iic_0/S_AXI/Reg] -force
+  assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_iic_fe/AXI] [get_bd_addr_segs axi_iic_0/S_AXI/Reg] -force
+  assign_bd_address -offset 0x00010000 -range 0x00000080 -target_address_space [get_bd_addr_spaces axi_iic_fe/AXI] [get_bd_addr_segs i2c_register/S_AXI/reg0] -force
   assign_bd_address -offset 0x00000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_uart_bridge/axi_uart_bridge/M_AXI] [get_bd_addr_segs axi_iic_0/S_AXI/Reg] -force
   assign_bd_address -offset 0x40600000 -range 0x00010000 -target_address_space [get_bd_addr_spaces axi_uart_bridge/axi_uart_bridge/M_UART] [get_bd_addr_segs axi_uart_bridge/axi_uartlite/S_AXI/Reg] -force
+  assign_bd_address -offset 0x00010000 -range 0x00000080 -target_address_space [get_bd_addr_spaces axi_uart_bridge/axi_uart_bridge/M_AXI] [get_bd_addr_segs i2c_register/S_AXI/reg0] -force
 
 
   # Restore current instance

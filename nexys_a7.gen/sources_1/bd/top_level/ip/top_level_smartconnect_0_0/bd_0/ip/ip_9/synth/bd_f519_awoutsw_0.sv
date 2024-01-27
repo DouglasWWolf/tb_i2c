@@ -52,7 +52,7 @@
 
 (* X_CORE_INFO = "sc_switchboard_v1_0_6_top,Vivado 2021.1" *)
 (* CHECK_LICENSE_TYPE = "bd_f519_awoutsw_0,sc_switchboard_v1_0_6_top,{}" *)
-(* CORE_GENERATION_INFO = "bd_f519_awoutsw_0,sc_switchboard_v1_0_6_top,{x_ipProduct=Vivado 2021.1,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=sc_switchboard,x_ipVersion=1.0,x_ipCoreRevision=6,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,C_PAYLD_WIDTH=174,K_MAX_INFO_WIDTH=1,C_S_PIPELINES=0,C_M_PIPELINES=0,C_S_LATENCY=0,C_NUM_SI=1,C_NUM_MI=1,C_TESTING_MODE=0,C_CONNECTIVITY=0b1}" *)
+(* CORE_GENERATION_INFO = "bd_f519_awoutsw_0,sc_switchboard_v1_0_6_top,{x_ipProduct=Vivado 2021.1,x_ipVendor=xilinx.com,x_ipLibrary=ip,x_ipName=sc_switchboard,x_ipVersion=1.0,x_ipCoreRevision=6,x_ipLanguage=VERILOG,x_ipSimLanguage=MIXED,C_PAYLD_WIDTH=175,K_MAX_INFO_WIDTH=1,C_S_PIPELINES=0,C_M_PIPELINES=0,C_S_LATENCY=0,C_NUM_SI=1,C_NUM_MI=2,C_TESTING_MODE=0,C_CONNECTIVITY=0b11}" *)
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module bd_f519_awoutsw_0 (
   aclk,
@@ -76,41 +76,41 @@ input wire aclk;
 (* X_INTERFACE_INFO = "xilinx.com:signal:clockenable:1.0 aclken CE" *)
 input wire aclken;
 (* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 S00_SC SEND" *)
-input wire [0 : 0] s_sc_send;
+input wire [1 : 0] s_sc_send;
 (* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 S00_SC REQ" *)
-input wire [0 : 0] s_sc_req;
+input wire [1 : 0] s_sc_req;
 (* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 S00_SC INFO" *)
-input wire [0 : 0] s_sc_info;
+input wire [1 : 0] s_sc_info;
 (* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 S00_SC PAYLD" *)
-input wire [173 : 0] s_sc_payld;
+input wire [174 : 0] s_sc_payld;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME S00_SC, BRIDGES M00_SC:M01_SC:M02_SC:M03_SC:M04_SC:M05_SC:M06_SC:M07_SC:M08_SC:M09_SC:M10_SC:M11_SC:M12_SC:M13_SC:M14_SC:M15_SC" *)
 (* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 S00_SC RECV" *)
-output wire [0 : 0] s_sc_recv;
-(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC RECV" *)
-input wire [0 : 0] m_sc_recv;
-(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC SEND" *)
-output wire [0 : 0] m_sc_send;
-(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC REQ" *)
-output wire [0 : 0] m_sc_req;
-(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC INFO" *)
-output wire [0 : 0] m_sc_info;
-(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC PAYLD" *)
-output wire [173 : 0] m_sc_payld;
+output wire [1 : 0] s_sc_recv;
+(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC RECV [0:0] [0:0], xilinx.com:interface:sc:1.0 M01_SC RECV [0:0] [1:1]" *)
+input wire [1 : 0] m_sc_recv;
+(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC SEND [0:0] [0:0], xilinx.com:interface:sc:1.0 M01_SC SEND [0:0] [1:1]" *)
+output wire [1 : 0] m_sc_send;
+(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC REQ [0:0] [0:0], xilinx.com:interface:sc:1.0 M01_SC REQ [0:0] [1:1]" *)
+output wire [1 : 0] m_sc_req;
+(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC INFO [0:0] [0:0], xilinx.com:interface:sc:1.0 M01_SC INFO [0:0] [1:1]" *)
+output wire [1 : 0] m_sc_info;
+(* X_INTERFACE_INFO = "xilinx.com:interface:sc:1.0 M00_SC PAYLD [174:0] [174:0], xilinx.com:interface:sc:1.0 M01_SC PAYLD [174:0] [349:175]" *)
+output wire [349 : 0] m_sc_payld;
 
   sc_switchboard_v1_0_6_top #(
-    .C_PAYLD_WIDTH(174),
+    .C_PAYLD_WIDTH(175),
     .K_MAX_INFO_WIDTH(1),
     .C_S_PIPELINES(0),
     .C_M_PIPELINES(0),
     .C_S_LATENCY(0),
     .C_NUM_SI(1),
-    .C_NUM_MI(1),
+    .C_NUM_MI(2),
     .C_TESTING_MODE(0),
-    .C_CONNECTIVITY(1'B1)
+    .C_CONNECTIVITY(2'B11)
   ) inst (
     .aclk(aclk),
     .aclken(aclken),
-    .connectivity(1'B1),
+    .connectivity(2'B11),
     .s_sc_send(s_sc_send),
     .s_sc_req(s_sc_req),
     .s_sc_info(s_sc_info),

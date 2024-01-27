@@ -10,21 +10,21 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0"></ZoomStartTime>
-      <ZoomEndTime time="1,025"></ZoomEndTime>
-      <Cursor1Time time="0"></Cursor1Time>
+      <ZoomEndTime time="352"></ZoomEndTime>
+      <Cursor1Time time="201"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="291"></NameColumnWidth>
-      <ValueColumnWidth column_width="130"></ValueColumnWidth>
+      <ValueColumnWidth column_width="126"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="6" />
+   <WVObjectSize size="3" />
    <wave_markers>
    </wave_markers>
    <wvobject type="logic" fp_name="top_level_i/system_ila_0/inst/probe0_1">
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="ElementShortName">top_level_i/system_ila_0/inst/probe0_1</obj_property>
       <obj_property name="ObjectShortName">probe0_1</obj_property>
-      <obj_property name="label">o_I2C_IDLE</obj_property>
+      <obj_property name="label">axi_iic_0_iic2intc_irpt</obj_property>
       <obj_property name="LABELRADIX">true</obj_property>
       <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
    </wvobject>
@@ -37,33 +37,37 @@
       <obj_property name="LABELRADIX">true</obj_property>
       <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="top_level_i/system_ila_0/inst/probe2_1">
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="ElementShortName">top_level_i/system_ila_0/inst/probe2_1</obj_property>
-      <obj_property name="ObjectShortName">probe2_1</obj_property>
-      <obj_property name="label">debug_sr_shows_rx</obj_property>
-      <obj_property name="LABELRADIX">true</obj_property>
-      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="top_level_i/system_ila_0/inst/probe3_1">
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="ElementShortName">top_level_i/system_ila_0/inst/probe3_1</obj_property>
-      <obj_property name="ObjectShortName">probe3_1</obj_property>
-      <obj_property name="label">debug_ocy_shows_rx</obj_property>
-      <obj_property name="LABELRADIX">true</obj_property>
-      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
-   </wvobject>
-   <wvobject type="group" fp_name="group384">
+   <wvobject type="group" fp_name="group1028">
       <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : Interface</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="Detail_Data">Interface_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
       <obj_property name="Render_Data">Interface_(i1:s0)_(axi_iic_fe_0_AXI)</obj_property>
       <obj_property name="EnumTransactionColorTable">0=blank</obj_property>
-      <obj_property name="CustomSignalColor">Cornsilk</obj_property>
+      <obj_property name="CustomSignalColor">OliveDrab</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="WaveformStyle">STYLE_ENUM_TRANSACTION</obj_property>
       <obj_property name="isExpanded"></obj_property>
-      <wvobject type="group" fp_name="group385">
+      <wvobject type="group" fp_name="group1060">
+         <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : Write Transactions 0</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="Detail_Data">ila_1___slot_0___axi_iic_fe_0_AXI___Write_Transactions_0_tooltip</obj_property>
+         <obj_property name="Render_Data">ila_1___slot_0___axi_iic_fe_0_AXI___Write_Transactions_0</obj_property>
+         <obj_property name="EnumTransactionColorTable">0000=blank</obj_property>
+         <obj_property name="CustomSignalColor">LightSeaGreen</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ENUM_TRANSACTION</obj_property>
+      </wvobject>
+      <wvobject type="group" fp_name="group1059">
+         <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : Read Transactions 0</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="Detail_Data">ila_1___slot_0___axi_iic_fe_0_AXI___Read_Transactions_0_tooltip</obj_property>
+         <obj_property name="Render_Data">ila_1___slot_0___axi_iic_fe_0_AXI___Read_Transactions_0</obj_property>
+         <obj_property name="EnumTransactionColorTable">0000=blank</obj_property>
+         <obj_property name="CustomSignalColor">Orange</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+         <obj_property name="WaveformStyle">STYLE_ENUM_TRANSACTION</obj_property>
+      </wvobject>
+      <wvobject type="group" fp_name="group1029">
          <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : AR Channel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="Detail_Data">AR_Channel_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
@@ -116,13 +120,13 @@
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject type="group" fp_name="group391">
+      <wvobject type="group" fp_name="group1035">
          <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : R Channel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="Detail_Data">R_Channel_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
          <obj_property name="Render_Data">R_Channel_(i1:s0)_(axi_iic_fe_0_AXI)</obj_property>
          <obj_property name="EnumTransactionColorTable">0=blank</obj_property>
-         <obj_property name="CustomSignalColor">Gold</obj_property>
+         <obj_property name="CustomSignalColor">OliveDrab</obj_property>
          <obj_property name="UseCustomSignalColor">true</obj_property>
          <obj_property name="WaveformStyle">STYLE_ENUM_TRANSACTION</obj_property>
          <obj_property name="isExpanded"></obj_property>
@@ -147,7 +151,7 @@
             <obj_property name="ElementShortName">top_level_i/system_ila_0/inst/net_slot_0_axi_rdata[31:0]</obj_property>
             <obj_property name="ObjectShortName">net_slot_0_axi_rdata[31:0]</obj_property>
             <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : RDATA</obj_property>
-            <obj_property name="Radix">HEXRADIX</obj_property>
+            <obj_property name="Radix">BINARYRADIX</obj_property>
             <obj_property name="LABELRADIX">true</obj_property>
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
@@ -170,7 +174,7 @@
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject type="group" fp_name="group397">
+      <wvobject type="group" fp_name="group1041">
          <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : AW Channel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="Detail_Data">AW_Channel_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
@@ -223,7 +227,7 @@
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject type="group" fp_name="group403">
+      <wvobject type="group" fp_name="group1047">
          <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : W Channel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="Detail_Data">W_Channel_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
@@ -267,7 +271,7 @@
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
       </wvobject>
-      <wvobject type="group" fp_name="group408">
+      <wvobject type="group" fp_name="group1052">
          <obj_property name="label">slot_0 : axi_iic_fe_0_AXI : B Channel</obj_property>
          <obj_property name="DisplayName">label</obj_property>
          <obj_property name="Detail_Data">B_Channel_(i1:s0)_(axi_iic_fe_0_AXI)_tooltip</obj_property>
@@ -311,13 +315,5 @@
             <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
          </wvobject>
       </wvobject>
-   </wvobject>
-   <wvobject type="logic" fp_name="top_level_i/system_ila_0/inst/probe4_1">
-      <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="ElementShortName">top_level_i/system_ila_0/inst/probe4_1</obj_property>
-      <obj_property name="ObjectShortName">probe4_1</obj_property>
-      <obj_property name="label">axi_iic_0_iic2intc_irpt</obj_property>
-      <obj_property name="LABELRADIX">true</obj_property>
-      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
    </wvobject>
 </wave_config>

@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Fri Jan 26 20:04:08 2024
+//Date        : Sat Jan 27 01:40:03 2024
 //Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -213,10 +213,9 @@ module source_100mhz_imp_MSWE0P
         .slowest_sync_clk(system_clock_clk_100mhz));
 endmodule
 
-(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=13,numReposBlks=11,numNonXlnxBlks=0,numHierBlks=2,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=2,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=2,da_board_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
+(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=11,numReposBlks=9,numNonXlnxBlks=0,numHierBlks=2,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=3,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=3,da_board_cnt=1,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
 module top_level
-   (BTNC,
-    CLK100MHZ,
+   (CLK100MHZ,
     CPU_RESETN,
     I2C_scl_i,
     I2C_scl_o,
@@ -226,7 +225,6 @@ module top_level
     I2C_sda_t,
     UART_rxd,
     UART_txd);
-  input BTNC;
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK100MHZ CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLK100MHZ, ASSOCIATED_RESET CPU_RESETN, CLK_DOMAIN top_level_CLK100MHZ, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.0" *) input CLK100MHZ;
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.CPU_RESETN RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.CPU_RESETN, INSERT_VIP 0, POLARITY ACTIVE_LOW" *) input CPU_RESETN;
   (* X_INTERFACE_INFO = "xilinx.com:interface:iic:1.0 I2C SCL_I" *) input I2C_scl_i;
@@ -238,7 +236,6 @@ module top_level
   (* X_INTERFACE_INFO = "xilinx.com:interface:uart:1.0 UART RxD" *) input UART_rxd;
   (* X_INTERFACE_INFO = "xilinx.com:interface:uart:1.0 UART TxD" *) output UART_txd;
 
-  wire BTNC_1;
   wire CLK100MHZ_1;
   wire CPU_RESETN_1;
   wire axi_iic_0_IIC_SCL_I;
@@ -267,11 +264,9 @@ module top_level
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WREADY" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_WREADY;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WSTRB" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire [3:0]axi_iic_fe_0_AXI_WSTRB;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WVALID" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_WVALID;
-  wire [15:0]const_00_dout;
-  wire [7:0]const_02_dout;
-  wire [6:0]const_4b_dout;
-  (* DEBUG = "true" *) (* MARK_DEBUG *) wire debug_ocy_shows_rx;
-  (* DEBUG = "true" *) (* MARK_DEBUG *) wire debug_sr_shows_rx;
+  wire [1:0]axi_iic_fe_o_I2C_IDLE;
+  wire [31:0]axi_iic_fe_o_I2C_RX_DATA;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]axi_iic_fe_o_MODULE_REV;
   wire [63:0]hier_0_M_AXI_ARADDR;
   wire hier_0_M_AXI_ARREADY;
   wire hier_0_M_AXI_ARVALID;
@@ -291,8 +286,10 @@ module top_level
   wire hier_0_M_AXI_WVALID;
   wire hier_0_UART_RxD;
   wire hier_0_UART_TxD;
-  (* DEBUG = "true" *) (* MARK_DEBUG *) wire o_I2C_IDLE;
-  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]o_I2C_RX_DATA;
+  wire [6:0]i2c_register_0_o_I2C_DEV_ADDR;
+  wire [2:0]i2c_register_0_o_I2C_READ_LEN;
+  wire i2c_register_0_o_I2C_READ_LEN_wstrobe;
+  wire [7:0]i2c_register_0_o_I2C_REG_NUM;
   wire [0:0]source_100mhz_interconnect_aresetn;
   wire [0:0]source_100mhz_peripheral_aresetn;
   wire system_clock_clk_100mhz;
@@ -313,8 +310,26 @@ module top_level
   wire system_interconnect_M00_AXI_WREADY;
   wire [3:0]system_interconnect_M00_AXI_WSTRB;
   wire system_interconnect_M00_AXI_WVALID;
+  wire [31:0]system_interconnect_M01_AXI_ARADDR;
+  wire [2:0]system_interconnect_M01_AXI_ARPROT;
+  wire system_interconnect_M01_AXI_ARREADY;
+  wire system_interconnect_M01_AXI_ARVALID;
+  wire [31:0]system_interconnect_M01_AXI_AWADDR;
+  wire [2:0]system_interconnect_M01_AXI_AWPROT;
+  wire system_interconnect_M01_AXI_AWREADY;
+  wire system_interconnect_M01_AXI_AWVALID;
+  wire system_interconnect_M01_AXI_BREADY;
+  wire [1:0]system_interconnect_M01_AXI_BRESP;
+  wire system_interconnect_M01_AXI_BVALID;
+  wire [31:0]system_interconnect_M01_AXI_RDATA;
+  wire system_interconnect_M01_AXI_RREADY;
+  wire [1:0]system_interconnect_M01_AXI_RRESP;
+  wire system_interconnect_M01_AXI_RVALID;
+  wire [31:0]system_interconnect_M01_AXI_WDATA;
+  wire system_interconnect_M01_AXI_WREADY;
+  wire [3:0]system_interconnect_M01_AXI_WSTRB;
+  wire system_interconnect_M01_AXI_WVALID;
 
-  assign BTNC_1 = BTNC;
   assign CLK100MHZ_1 = CLK100MHZ;
   assign CPU_RESETN_1 = CPU_RESETN;
   assign I2C_scl_o = axi_iic_0_IIC_SCL_O;
@@ -352,7 +367,7 @@ module top_level
         .sda_i(axi_iic_0_IIC_SDA_I),
         .sda_o(axi_iic_0_IIC_SDA_O),
         .sda_t(axi_iic_0_IIC_SDA_T));
-  top_level_axi_iic_fe_0_0 axi_iic_fe_0
+  top_level_axi_iic_fe_0_0 axi_iic_fe
        (.AXI_ARADDR(axi_iic_fe_0_AXI_ARADDR),
         .AXI_ARPROT(axi_iic_fe_0_AXI_ARPROT),
         .AXI_ARREADY(axi_iic_fe_0_AXI_ARREADY),
@@ -374,15 +389,13 @@ module top_level
         .AXI_WVALID(axi_iic_fe_0_AXI_WVALID),
         .axi_iic_intr(axi_iic_0_iic2intc_irpt),
         .clk(system_clock_clk_100mhz),
-        .debug_ocy_shows_rx(debug_ocy_shows_rx),
-        .debug_sr_shows_rx(debug_sr_shows_rx),
-        .device_addr(const_4b_dout),
-        .i_I2C_INIT_wstrobe(1'b0),
-        .i_I2C_READ_LEN(const_02_dout),
-        .i_I2C_READ_LEN_wstrobe(BTNC_1),
-        .i_I2C_REG_ADDR(const_00_dout),
-        .o_I2C_IDLE(o_I2C_IDLE),
-        .o_I2C_RX_DATA(o_I2C_RX_DATA),
+        .i_I2C_DEV_ADDR(i2c_register_0_o_I2C_DEV_ADDR),
+        .i_I2C_READ_LEN(i2c_register_0_o_I2C_READ_LEN),
+        .i_I2C_READ_LEN_wstrobe(i2c_register_0_o_I2C_READ_LEN_wstrobe),
+        .i_I2C_REG_ADDR(i2c_register_0_o_I2C_REG_NUM),
+        .o_I2C_RX_DATA(axi_iic_fe_o_I2C_RX_DATA),
+        .o_I2C_STATUS(axi_iic_fe_o_I2C_IDLE),
+        .o_MODULE_REV(axi_iic_fe_o_MODULE_REV),
         .resetn(source_100mhz_peripheral_aresetn));
   axi_uart_bridge_imp_1OII57Q axi_uart_bridge
        (.M_AXI_araddr(hier_0_M_AXI_ARADDR),
@@ -406,12 +419,35 @@ module top_level
         .UART_txd(hier_0_UART_TxD),
         .aclk(system_clock_clk_100mhz),
         .aresetn(source_100mhz_peripheral_aresetn));
-  top_level_xlconstant_0_1 const_00
-       (.dout(const_00_dout));
-  top_level_xlconstant_0_2 const_02
-       (.dout(const_02_dout));
-  top_level_xlconstant_0_0 const_4b
-       (.dout(const_4b_dout));
+  top_level_i2c_register_0_0 i2c_register
+       (.S_AXI_ARADDR(system_interconnect_M01_AXI_ARADDR),
+        .S_AXI_ARPROT(system_interconnect_M01_AXI_ARPROT),
+        .S_AXI_ARREADY(system_interconnect_M01_AXI_ARREADY),
+        .S_AXI_ARVALID(system_interconnect_M01_AXI_ARVALID),
+        .S_AXI_AWADDR(system_interconnect_M01_AXI_AWADDR),
+        .S_AXI_AWPROT(system_interconnect_M01_AXI_AWPROT),
+        .S_AXI_AWREADY(system_interconnect_M01_AXI_AWREADY),
+        .S_AXI_AWVALID(system_interconnect_M01_AXI_AWVALID),
+        .S_AXI_BREADY(system_interconnect_M01_AXI_BREADY),
+        .S_AXI_BRESP(system_interconnect_M01_AXI_BRESP),
+        .S_AXI_BVALID(system_interconnect_M01_AXI_BVALID),
+        .S_AXI_RDATA(system_interconnect_M01_AXI_RDATA),
+        .S_AXI_RREADY(system_interconnect_M01_AXI_RREADY),
+        .S_AXI_RRESP(system_interconnect_M01_AXI_RRESP),
+        .S_AXI_RVALID(system_interconnect_M01_AXI_RVALID),
+        .S_AXI_WDATA(system_interconnect_M01_AXI_WDATA),
+        .S_AXI_WREADY(system_interconnect_M01_AXI_WREADY),
+        .S_AXI_WSTRB(system_interconnect_M01_AXI_WSTRB),
+        .S_AXI_WVALID(system_interconnect_M01_AXI_WVALID),
+        .clk(system_clock_clk_100mhz),
+        .i_I2C_RX_DATA(axi_iic_fe_o_I2C_RX_DATA),
+        .i_I2C_STATUS(axi_iic_fe_o_I2C_IDLE),
+        .i_MODULE_REV(axi_iic_fe_o_MODULE_REV),
+        .o_I2C_DEV_ADDR(i2c_register_0_o_I2C_DEV_ADDR),
+        .o_I2C_READ_LEN(i2c_register_0_o_I2C_READ_LEN),
+        .o_I2C_READ_LEN_wstrobe(i2c_register_0_o_I2C_READ_LEN_wstrobe),
+        .o_I2C_REG_NUM(i2c_register_0_o_I2C_REG_NUM),
+        .resetn(source_100mhz_peripheral_aresetn));
   source_100mhz_imp_MSWE0P source_100mhz
        (.CLK100MHZ(CLK100MHZ_1),
         .CPU_RESETN(CPU_RESETN_1),
@@ -439,11 +475,8 @@ module top_level
         .SLOT_0_AXI_wstrb(axi_iic_fe_0_AXI_WSTRB),
         .SLOT_0_AXI_wvalid(axi_iic_fe_0_AXI_WVALID),
         .clk(system_clock_clk_100mhz),
-        .probe0(o_I2C_IDLE),
-        .probe1(o_I2C_RX_DATA),
-        .probe2(debug_sr_shows_rx),
-        .probe3(debug_ocy_shows_rx),
-        .probe4(axi_iic_0_iic2intc_irpt),
+        .probe0(axi_iic_0_iic2intc_irpt),
+        .probe1(axi_iic_fe_o_MODULE_REV),
         .resetn(source_100mhz_peripheral_aresetn));
   top_level_smartconnect_0_0 system_interconnect
        (.M00_AXI_araddr(system_interconnect_M00_AXI_ARADDR),
@@ -463,6 +496,25 @@ module top_level
         .M00_AXI_wready(system_interconnect_M00_AXI_WREADY),
         .M00_AXI_wstrb(system_interconnect_M00_AXI_WSTRB),
         .M00_AXI_wvalid(system_interconnect_M00_AXI_WVALID),
+        .M01_AXI_araddr(system_interconnect_M01_AXI_ARADDR),
+        .M01_AXI_arprot(system_interconnect_M01_AXI_ARPROT),
+        .M01_AXI_arready(system_interconnect_M01_AXI_ARREADY),
+        .M01_AXI_arvalid(system_interconnect_M01_AXI_ARVALID),
+        .M01_AXI_awaddr(system_interconnect_M01_AXI_AWADDR),
+        .M01_AXI_awprot(system_interconnect_M01_AXI_AWPROT),
+        .M01_AXI_awready(system_interconnect_M01_AXI_AWREADY),
+        .M01_AXI_awvalid(system_interconnect_M01_AXI_AWVALID),
+        .M01_AXI_bready(system_interconnect_M01_AXI_BREADY),
+        .M01_AXI_bresp(system_interconnect_M01_AXI_BRESP),
+        .M01_AXI_bvalid(system_interconnect_M01_AXI_BVALID),
+        .M01_AXI_rdata(system_interconnect_M01_AXI_RDATA),
+        .M01_AXI_rready(system_interconnect_M01_AXI_RREADY),
+        .M01_AXI_rresp(system_interconnect_M01_AXI_RRESP),
+        .M01_AXI_rvalid(system_interconnect_M01_AXI_RVALID),
+        .M01_AXI_wdata(system_interconnect_M01_AXI_WDATA),
+        .M01_AXI_wready(system_interconnect_M01_AXI_WREADY),
+        .M01_AXI_wstrb(system_interconnect_M01_AXI_WSTRB),
+        .M01_AXI_wvalid(system_interconnect_M01_AXI_WVALID),
         .S00_AXI_araddr(hier_0_M_AXI_ARADDR),
         .S00_AXI_arprot({1'b0,1'b0,1'b0}),
         .S00_AXI_arready(hier_0_M_AXI_ARREADY),

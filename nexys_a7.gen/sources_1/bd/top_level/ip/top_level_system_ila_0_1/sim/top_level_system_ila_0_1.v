@@ -57,9 +57,6 @@ module top_level_system_ila_0_1 (
   clk,
   probe0,
   probe1,
-  probe2,
-  probe3,
-  probe4,
   SLOT_0_AXI_awaddr,
   SLOT_0_AXI_awprot,
   SLOT_0_AXI_awvalid,
@@ -87,9 +84,6 @@ module top_level_system_ila_0_1 (
 input wire clk;
 input wire [0 : 0] probe0;
 input wire [31 : 0] probe1;
-input wire [0 : 0] probe2;
-input wire [0 : 0] probe3;
-input wire [0 : 0] probe4;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI AWADDR" *)
 input wire [31 : 0] SLOT_0_AXI_awaddr;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI AWPROT" *)
@@ -138,9 +132,6 @@ input wire resetn;
     .clk(clk),
     .probe0(probe0),
     .probe1(probe1),
-    .probe2(probe2),
-    .probe3(probe3),
-    .probe4(probe4),
     .SLOT_0_AXI_awaddr(SLOT_0_AXI_awaddr),
     .SLOT_0_AXI_awprot(SLOT_0_AXI_awprot),
     .SLOT_0_AXI_awvalid(SLOT_0_AXI_awvalid),
