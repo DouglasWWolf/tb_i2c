@@ -1,0 +1,65 @@
+{
+   "ActiveEmotionalView":"No Loops",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-355,-249",
+   "DisplayTieOff":"1",
+   "ExpandedHierarchyInLayout":"",
+   "No Loops_ExpandedHierarchyInLayout":"",
+   "No Loops_Layout":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port UART -pg 1 -lvl 5 -x 1520 -y 70 -defaultsOSRD
+preplace port I2C -pg 1 -lvl 5 -x 1520 -y 200 -defaultsOSRD
+preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 480 -defaultsOSRD
+preplace port port-id_CPU_RESETN -pg 1 -lvl 0 -x 0 -y 500 -defaultsOSRD
+preplace port port-id_BTNC -pg 1 -lvl 0 -x 0 -y 670 -defaultsOSRD
+preplace inst source_100mhz -pg 1 -lvl 1 -x 190 -y 480 -swap {0 3 2 1 4} -defaultsOSRD -pinDir CLK100MHZ left -pinY CLK100MHZ 0L -pinDir clk_100mhz right -pinY clk_100mhz 20R -pinDir CPU_RESETN left -pinY CPU_RESETN 20L -pinBusDir interconnect_aresetn right -pinBusY interconnect_aresetn 0R -pinBusDir peripheral_aresetn right -pinBusY peripheral_aresetn 40R
+preplace inst axi_uart_bridge -pg 1 -lvl 4 -x 1370 -y 70 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 21} -defaultsOSRD -pinDir M_AXI left -pinY M_AXI 0L -pinDir UART right -pinY UART 0R -pinDir aresetn left -pinY aresetn 40L -pinDir aclk left -pinY aclk 20L
+preplace inst axi_iic_0 -pg 1 -lvl 4 -x 1370 -y 200 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir IIC right -pinY IIC 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 20L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 40L -pinDir iic2intc_irpt right -pinY iic2intc_irpt 20R -pinBusDir gpo right -pinBusY gpo 40R
+preplace inst system_interconnect -pg 1 -lvl 3 -x 1080 -y 70 -defaultsOSRD -pinDir S00_AXI right -pinY S00_AXI 0R -pinDir S01_AXI left -pinY S01_AXI 90L -pinDir M00_AXI right -pinY M00_AXI 130R -pinDir aclk left -pinY aclk 110L -pinDir aresetn left -pinY aresetn 130L
+preplace inst system_ila_0 -pg 1 -lvl 3 -x 1080 -y 300 -defaultsOSRD -pinDir SLOT_0_AXI left -pinY SLOT_0_AXI 0L -pinDir clk left -pinY clk 20L -pinDir resetn left -pinY resetn 40L -pinBusDir probe0 left -pinBusY probe0 60L -pinBusDir probe1 left -pinBusY probe1 80L -pinBusDir probe2 left -pinBusY probe2 100L -pinBusDir probe3 left -pinBusY probe3 120L
+preplace inst const_4b -pg 1 -lvl 1 -x 190 -y 280 -defaultsOSRD -pinBusDir dout right -pinBusY dout 0R
+preplace inst const_00 -pg 1 -lvl 1 -x 190 -y 380 -defaultsOSRD -pinBusDir dout right -pinBusY dout 0R
+preplace inst const_02 -pg 1 -lvl 1 -x 190 -y 610 -defaultsOSRD -pinBusDir dout right -pinBusY dout 0R
+preplace inst axi_iic_fe_0 -pg 1 -lvl 2 -x 610 -y 280 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 25 26 22 23 20 21 24 27 28 29 30} -defaultsOSRD -pinDir AXI right -pinY AXI 0R -pinDir clk left -pinY clk 140L -pinDir resetn left -pinY resetn 160L -pinDir debug_sr_shows_rx right -pinY debug_sr_shows_rx 20R -pinDir debug_ocy_shows_rx right -pinY debug_ocy_shows_rx 40R -pinBusDir device_addr left -pinBusY device_addr 0L -pinBusDir i_I2C_REG_ADDR left -pinBusY i_I2C_REG_ADDR 100L -pinDir i_I2C_INIT_wstrobe left -pinY i_I2C_INIT_wstrobe 120L -pinBusDir i_I2C_READ_LEN left -pinBusY i_I2C_READ_LEN 330L -pinDir i_I2C_READ_LEN_wstrobe left -pinY i_I2C_READ_LEN_wstrobe 390L -pinDir o_I2C_IDLE right -pinY o_I2C_IDLE 80R -pinBusDir o_I2C_RX_DATA right -pinBusY o_I2C_RX_DATA 100R
+preplace netloc CLK100MHZ_1 1 0 1 NJ 480
+preplace netloc CPU_RESETN_1 1 0 1 NJ 500
+preplace netloc source_100mhz_interconnect_aresetn 1 1 2 380 200 NJ
+preplace netloc source_100mhz_peripheral_aresetn 1 1 3 400 220 840 480 1240
+preplace netloc system_clock_clk_100mhz 1 1 3 360 180 880 10 1220
+preplace netloc o_I2C_IDLE 1 2 1 N 360
+preplace netloc o_I2C_RX_DATA 1 2 1 N 380
+preplace netloc BTNC_1 1 0 2 NJ 670 NJ
+preplace netloc const_4b_dout 1 1 1 NJ 280
+preplace netloc const_00_dout 1 1 1 NJ 380
+preplace netloc const_02_dout 1 1 1 NJ 610
+preplace netloc debug_sr_shows_rx 1 2 1 860 300n
+preplace netloc debug_ocy_shows_rx 1 2 1 820 320n
+preplace netloc axi_iic_0_IIC 1 4 1 NJ 200
+preplace netloc hier_0_M_AXI 1 3 1 N 70
+preplace netloc hier_0_UART 1 4 1 NJ 70
+preplace netloc system_interconnect_M00_AXI 1 3 1 N 200
+preplace netloc axi_iic_fe_0_AXI 1 2 1 900 160n
+levelinfo -pg 1 0 190 610 1080 1370 1520
+pagesize -pg 1 -db -bbox -sgen -150 0 1610 730
+",
+   "No Loops_ScaleFactor":"0.634286",
+   "No Loops_TopLeft":"-142,-240",
+   "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 100 -defaultsOSRD
+preplace port port-id_CPU_RESETN -pg 1 -lvl 0 -x 0 -y 180 -defaultsOSRD
+preplace inst system_clock -pg 1 -lvl 1 -x 130 -y 100 -defaultsOSRD
+preplace inst system_reset -pg 1 -lvl 2 -x 430 -y 200 -defaultsOSRD
+preplace inst system_interconnect -pg 1 -lvl 3 -x 750 -y 90 -defaultsOSRD
+preplace netloc clk_in1_0_1 1 0 1 NJ 100
+preplace netloc system_clock_clk_100mhz 1 1 2 240 100 NJ
+preplace netloc ext_reset_in_0_1 1 0 2 NJ 180 NJ
+preplace netloc system_reset_interconnect_aresetn 1 2 1 610 120n
+levelinfo -pg 1 0 130 430 750 900
+pagesize -pg 1 -db -bbox -sgen -150 0 900 300
+"
+}
+{
+   "da_axi4_cnt":"2",
+   "da_board_cnt":"1"
+}
