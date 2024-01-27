@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Jan 26 17:39:30 2024" VIVADOVERSION="2021.1">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Fri Jan 26 20:04:18 2024" VIVADOVERSION="2021.1">
 
   <SYSTEMINFO ARCH="artix7" DEVICE="7a100t" NAME="top_level" PACKAGE="csg324" SPEEDGRADE="-1"/>
 
@@ -1594,7 +1594,12 @@
             <CONNECTION INSTANCE="source_100mhz_system_reset" PORT="peripheral_aresetn"/>
           </CONNECTIONS>
         </PORT>
-        <PORT DIR="O" NAME="iic2intc_irpt" SENSITIVITY="LEVEL_HIGH" SIGIS="INTERRUPT"/>
+        <PORT DIR="O" NAME="iic2intc_irpt" SENSITIVITY="LEVEL_HIGH" SIGIS="INTERRUPT" SIGNAME="axi_iic_0_iic2intc_irpt">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="system_ila_0" PORT="probe4"/>
+            <CONNECTION INSTANCE="axi_iic_fe_0" PORT="axi_iic_intr"/>
+          </CONNECTIONS>
+        </PORT>
         <PORT DIR="I" LEFT="8" NAME="s_axi_awaddr" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_0_s_axi_awaddr">
           <CONNECTIONS>
             <CONNECTION INSTANCE="system_interconnect" PORT="M00_AXI_awaddr"/>
@@ -1793,6 +1798,11 @@
         <PORT DIR="I" NAME="resetn" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="source_100mhz_system_reset_peripheral_aresetn">
           <CONNECTIONS>
             <CONNECTION INSTANCE="source_100mhz_system_reset" PORT="peripheral_aresetn"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="axi_iic_intr" SENSITIVITY="LEVEL_HIGH" SIGIS="INTERRUPT" SIGNAME="axi_iic_0_iic2intc_irpt">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axi_iic_0" PORT="iic2intc_irpt"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" NAME="debug_sr_shows_rx" SIGIS="undef" SIGNAME="axi_iic_fe_0_debug_sr_shows_rx">
@@ -5771,7 +5781,7 @@
         <PARAMETER NAME="C_PROBE1_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_PROBE0_WIDTH" VALUE="1"/>
         <PARAMETER NAME="C_DATA_DEPTH" VALUE="1024"/>
-        <PARAMETER NAME="C_NUM_OF_PROBES" VALUE="4"/>
+        <PARAMETER NAME="C_NUM_OF_PROBES" VALUE="5"/>
         <PARAMETER NAME="C_XLNX_HW_PROBE_INFO" VALUE="DEFAULT"/>
         <PARAMETER NAME="Component_Name" VALUE="top_level_system_ila_0_1"/>
         <PARAMETER NAME="C_PROBE70_WIDTH" VALUE="1"/>
@@ -7087,6 +7097,11 @@
         <PORT DIR="I" LEFT="0" NAME="probe3" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_0_debug_ocy_shows_rx">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_iic_fe_0" PORT="debug_ocy_shows_rx"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="0" NAME="probe4" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_0_iic2intc_irpt">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axi_iic_0" PORT="iic2intc_irpt"/>
           </CONNECTIONS>
         </PORT>
       </PORTS>

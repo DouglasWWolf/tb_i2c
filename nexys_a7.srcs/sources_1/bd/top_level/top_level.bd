@@ -858,7 +858,7 @@
             "value": "1"
           },
           "C_NUM_OF_PROBES": {
-            "value": "4"
+            "value": "5"
           },
           "C_PROBE0_TYPE": {
             "value": "0"
@@ -870,6 +870,9 @@
             "value": "0"
           },
           "C_PROBE3_TYPE": {
+            "value": "0"
+          },
+          "C_PROBE4_TYPE": {
             "value": "0"
           },
           "C_SLOT_0_APC_EN": {
@@ -1224,6 +1227,20 @@
               }
             }
           },
+          "axi_iic_intr": {
+            "type": "intr",
+            "direction": "I",
+            "parameters": {
+              "SENSITIVITY": {
+                "value": "LEVEL_HIGH",
+                "value_src": "constant"
+              },
+              "PortWidth": {
+                "value": "1",
+                "value_src": "default_prop"
+              }
+            }
+          },
           "debug_sr_shows_rx": {
             "direction": "O"
           },
@@ -1329,6 +1346,21 @@
           "CPU_RESETN",
           "source_100mhz/CPU_RESETN"
         ]
+      },
+      "axi_iic_0_iic2intc_irpt": {
+        "ports": [
+          "axi_iic_0/iic2intc_irpt",
+          "system_ila_0/probe4",
+          "axi_iic_fe_0/axi_iic_intr"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
       },
       "const_00_dout": {
         "ports": [

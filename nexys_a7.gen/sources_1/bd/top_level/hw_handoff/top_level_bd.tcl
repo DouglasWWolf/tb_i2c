@@ -374,11 +374,12 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.C_MON_TYPE {MIX} \
    CONFIG.C_NUM_MONITOR_SLOTS {1} \
-   CONFIG.C_NUM_OF_PROBES {4} \
+   CONFIG.C_NUM_OF_PROBES {5} \
    CONFIG.C_PROBE0_TYPE {0} \
    CONFIG.C_PROBE1_TYPE {0} \
    CONFIG.C_PROBE2_TYPE {0} \
    CONFIG.C_PROBE3_TYPE {0} \
+   CONFIG.C_PROBE4_TYPE {0} \
    CONFIG.C_SLOT_0_APC_EN {0} \
    CONFIG.C_SLOT_0_AXI_AR_SEL_DATA {1} \
    CONFIG.C_SLOT_0_AXI_AR_SEL_TRIG {1} \
@@ -412,6 +413,8 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_iic_fe_0_AXI] [get_bd_intf_p
   connect_bd_net -net BTNC_1 [get_bd_ports BTNC] [get_bd_pins axi_iic_fe_0/i_I2C_READ_LEN_wstrobe]
   connect_bd_net -net CLK100MHZ_1 [get_bd_ports CLK100MHZ] [get_bd_pins source_100mhz/CLK100MHZ]
   connect_bd_net -net CPU_RESETN_1 [get_bd_ports CPU_RESETN] [get_bd_pins source_100mhz/CPU_RESETN]
+  connect_bd_net -net axi_iic_0_iic2intc_irpt [get_bd_pins axi_iic_0/iic2intc_irpt] [get_bd_pins axi_iic_fe_0/axi_iic_intr] [get_bd_pins system_ila_0/probe4]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets axi_iic_0_iic2intc_irpt]
   connect_bd_net -net const_00_dout [get_bd_pins axi_iic_fe_0/i_I2C_REG_ADDR] [get_bd_pins const_00/dout]
   connect_bd_net -net const_02_dout [get_bd_pins axi_iic_fe_0/i_I2C_READ_LEN] [get_bd_pins const_02/dout]
   connect_bd_net -net const_4b_dout [get_bd_pins axi_iic_fe_0/device_addr] [get_bd_pins const_4b/dout]

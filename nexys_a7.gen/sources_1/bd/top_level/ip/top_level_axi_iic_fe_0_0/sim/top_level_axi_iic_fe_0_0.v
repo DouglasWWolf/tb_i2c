@@ -57,6 +57,7 @@
 module top_level_axi_iic_fe_0_0 (
   clk,
   resetn,
+  axi_iic_intr,
   debug_sr_shows_rx,
   debug_ocy_shows_rx,
   device_addr,
@@ -93,6 +94,9 @@ input wire clk;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME resetn, POLARITY ACTIVE_LOW, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 resetn RST" *)
 input wire resetn;
+(* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME axi_iic_intr, SENSITIVITY LEVEL_HIGH, PortWidth 1" *)
+(* X_INTERFACE_INFO = "xilinx.com:signal:interrupt:1.0 axi_iic_intr INTERRUPT" *)
+input wire axi_iic_intr;
 output wire debug_sr_shows_rx;
 output wire debug_ocy_shows_rx;
 input wire [6 : 0] device_addr;
@@ -148,6 +152,7 @@ output wire AXI_RREADY;
   ) inst (
     .clk(clk),
     .resetn(resetn),
+    .axi_iic_intr(axi_iic_intr),
     .debug_sr_shows_rx(debug_sr_shows_rx),
     .debug_ocy_shows_rx(debug_ocy_shows_rx),
     .device_addr(device_addr),

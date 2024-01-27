@@ -3,7 +3,10 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000)
 (
 
     input wire clk, resetn,
-    
+
+    // The interrupt signal from the Xilinx AXI IIC core
+    input axi_iic_intr,
+
     output reg debug_sr_shows_rx,
     output reg debug_ocy_shows_rx,
 
@@ -57,18 +60,24 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000)
 );
 
 // AXI IIC registers
-localparam  IIC_SOFTR        = IIC_BASE + 16'h0040;
-localparam  IIC_CR           = IIC_BASE + 16'h0100;
-localparam  IIC_SR           = IIC_BASE + 16'h0104;
-localparam  IIC_TX_FIFO      = IIC_BASE + 16'h0108;
-localparam  IIC_RX_FIFO      = IIC_BASE + 16'h010C;
-localparam  IIC_RX_FIFO_OCY  = IIC_BASE + 16'h0118;
-localparam  IIC_RX_FIFO_PIRQ = IIC_BASE + 16'h0120;
+localparam  IIC_GIE          = IIC_BASE + 12'h01C;
+localparam  IIC_ISR          = IIC_BASE + 12'h020;
+localparam  IIC_IER          = IIC_BASE + 12'h028;
+localparam  IIC_SOFTR        = IIC_BASE + 12'h040;
+localparam  IIC_CR           = IIC_BASE + 12'h100;
+localparam  IIC_SR           = IIC_BASE + 12'h104;
+localparam  IIC_TX_FIFO      = IIC_BASE + 12'h108;
+localparam  IIC_RX_FIFO      = IIC_BASE + 12'h10C;
+localparam  IIC_RX_FIFO_OCY  = IIC_BASE + 12'h118;
+localparam  IIC_RX_FIFO_PIRQ = IIC_BASE + 12'h120;
 
 
 // Bit fields of IIC_CR
 localparam  EN = 1;
 localparam  TX_FIFO_RESET = 2;
+
+// Bit fields in IIC_IER and IIC_ISR
+localparam RX_FIFO_FULL = 8;
 
 // Bit values for IIC_TX_FIFO
 localparam I2C_START = {2'b01};
@@ -113,6 +122,31 @@ assign o_I2C_IDLE =
 reg[7:0] rx_data[0:3];
 reg[1:0] byte_index;
 
+// This is an index into the "rca" and "rcd" arrays below
+reg[3:0] cmd_index;
+
+// Read-command address, and Read-command data
+wire[31:0] rca[0:10], rcd[0:10];
+
+assign rca[00] = IIC_GIE         ;assign rcd[00] = 0;                   // Globally disable interrupts
+assign rca[01] = IIC_CR          ;assign rcd[01] = TX_FIFO_RESET;       // Reset the TX FIFO, disable module
+assign rca[02] = IIC_RX_FIFO_PIRQ;assign rcd[02] = i_I2C_READ_LEN - 1;  // Set the number of bytes we expect to receive
+assign rca[03] = IIC_IER         ;assign rcd[03] = RX_FIFO_FULL;        // We want an interrupt when all bytes are received
+assign rca[04] = IIC_CR          ;assign rcd[04] = EN;                  // Enable the AXI IIC module
+assign rca[05] = IIC_GIE         ;assign rcd[05] = 32'h8000_0000;       // Globally enable interrupts
+
+// Set the register address
+assign rca[06] = IIC_TX_FIFO     ;assign rcd[06] = {I2C_START, device_addr[6:0], I2C_WR};
+assign rca[07] = IIC_TX_FIFO     ;assign rcd[07] = i_I2C_REG_ADDR;
+
+// Start a read operation for the desired number of bytes
+assign rca[08] = IIC_TX_FIFO     ;assign rcd[08] = {I2C_START, device_addr[6:0], I2C_RD};
+assign rca[09] = IIC_TX_FIFO     ;assign rcd[09] = {I2C_STOP, 5'b0, i_I2C_READ_LEN[2:0]};
+
+// End of the operation, now the state machine waits for the interrupt
+assign rca[10] = 0               ;assign rcd[10] = 0;
+
+
 always @(posedge clk) begin
     
     debug_sr_shows_rx <= 0;
@@ -155,110 +189,39 @@ always @(posedge clk) begin
         // Reset the TX FIFO
         FSM_READ_IIC:
             if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_CR;
-                AMCI_WDATA <= TX_FIFO_RESET;
-                AMCI_WRITE <= 1;
-                delay      <= 20;
+                cmd_index  <= 0;
                 fsm_state  <= fsm_state + 1;
             end
 
-        // Enable the Xilinx AXI IIC core
+        // Configure all the neccessary registers in the AXI IIC core
         FSM_READ_IIC + 1:
-            if (AMCI_WIDLE && delay == 0) begin
-                AMCI_WADDR <= IIC_CR;
-                AMCI_WDATA <= EN;
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
+            if (AMCI_WIDLE) begin
+                if (rca[cmd_index] == 0)
+                    fsm_state <= fsm_state + 1;
+                else begin
+                    AMCI_WADDR <= rca[cmd_index];
+                    AMCI_WDATA <= rcd[cmd_index];
+                    AMCI_WRITE <= 1;
+                    cmd_index  <= cmd_index + 1;
+                end
             end
 
+        // Wait for the interrupt to signal our RX bytes are waiting
+        // in the RX_FIFO for us
         // Set the max depth of the RX FIFO
         FSM_READ_IIC + 2:
-            if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_RX_FIFO_PIRQ;
-                AMCI_WDATA <= 15;
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
-            end
-
-        // Send "We're writing a register address"
-        FSM_READ_IIC + 3:
-            if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_TX_FIFO;
-                AMCI_WDATA <= {I2C_START, device_addr, I2C_WR};
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
-            end
-
-        // Send the register address
-        FSM_READ_IIC + 4:
-            if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_TX_FIFO;
-                AMCI_WDATA <= i_I2C_REG_ADDR;
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
-            end 
-
-        // Send "We're reading one or more bytes from registers"
-        FSM_READ_IIC + 5:
-            if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_TX_FIFO;
-                AMCI_WDATA <= {I2C_START, device_addr, I2C_RD};
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
-            end
-
-        // Send "This is how many bytes I want to read"
-        FSM_READ_IIC + 6:
-            if (AMCI_WIDLE) begin
-                AMCI_WADDR <= IIC_TX_FIFO;
-                AMCI_WDATA <= {I2C_STOP, 5'b0, i_I2C_READ_LEN[2:0]};
-                AMCI_WRITE <= 1;
-                fsm_state  <= fsm_state + 1;
-            end
-
-        // Read the IIC status register
-        FSM_READ_IIC + 7:
-            if (AMCI_WIDLE) begin
-                AMCI_RADDR <= IIC_SR;
+            if (axi_iic_intr) begin
+                rx_data[0] <= 0;                   
+                rx_data[1] <= 0;
+                rx_data[2] <= 0;
+                rx_data[3] <= 0;
+                byte_index <= 4 - i_I2C_READ_LEN;
+                AMCI_RADDR <= IIC_RX_FIFO;
                 AMCI_READ  <= 1;
                 fsm_state  <= fsm_state + 1;
             end
 
-        // Wait for the status register to say "RX FIFO isn't empty",
-        // then request to read the number of bytes in RX_FIFO
-        FSM_READ_IIC + 8:
-            if (AMCI_RIDLE) begin
-                if (AMCI_RDATA[6] == 1) begin
-                    AMCI_READ <= 1;
-                end else begin
-                    debug_sr_shows_rx <= 1;
-                    AMCI_RADDR <= IIC_RX_FIFO_OCY;
-                    AMCI_READ  <= 1;
-                    fsm_state  <= fsm_state + 1;
-                end
-            end
-
-        // Sit here until all the bytes arrive in RX_FIFO
-        FSM_READ_IIC + 9:
-            if (AMCI_RIDLE) begin
-                if (AMCI_RDATA != i_I2C_READ_LEN-1)
-                    AMCI_READ <= 1;
-                
-                // Here we're going to start reading the bytes from the RX FIFO
-                else begin
-                    debug_ocy_shows_rx <= 1;
-                    rx_data[0] <= 0;                   
-                    rx_data[1] <= 0;
-                    rx_data[2] <= 0;
-                    rx_data[3] <= 0;
-                    byte_index <= 4 - i_I2C_READ_LEN;
-                    AMCI_RADDR <= IIC_RX_FIFO;
-                    AMCI_READ  <= 1;
-                    fsm_state  <= fsm_state + 1;
-                end
-            end
-
-        FSM_READ_IIC + 10:
+        FSM_READ_IIC + 3:
             
             // Here we wait until all bytes have been received
             if (AMCI_RIDLE) begin
@@ -271,13 +234,20 @@ always @(posedge clk) begin
                 end
             end
 
-        // When we get here, rx_data[] is holding all of our received bytes
-        FSM_READ_IIC + 11:
+        // When we get here, rx_data[] is holding all of our received bytes.
+        // Now we can clear the interrupt.
+        FSM_READ_IIC + 4:
             begin
                 o_I2C_RX_DATA <= {rx_data[0], rx_data[1], rx_data[2], rx_data[3]};
-                fsm_state     <= FSM_IDLE;
+                AMCI_WADDR    <= IIC_ISR;
+                AMCI_WDATA    <= 32'hFFFF_FFFF;
+                AMCI_WRITE    <= 1;
+                fsm_state     <= fsm_state + 1;
             end
 
+        // Here we're just waiting for the previous AXI-Write to complete
+        FSM_READ_IIC + 5:
+            if (AMCI_WIDLE) fsm_state <= FSM_IDLE;
 
     endcase
 

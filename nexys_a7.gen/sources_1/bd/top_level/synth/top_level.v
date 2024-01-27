@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Fri Jan 26 17:39:21 2024
+//Date        : Fri Jan 26 20:04:08 2024
 //Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -247,6 +247,7 @@ module top_level
   wire axi_iic_0_IIC_SDA_I;
   wire axi_iic_0_IIC_SDA_O;
   wire axi_iic_0_IIC_SDA_T;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_0_iic2intc_irpt;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE ARADDR" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]axi_iic_fe_0_AXI_ARADDR;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE ARPROT" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire [2:0]axi_iic_fe_0_AXI_ARPROT;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE ARREADY" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_ARREADY;
@@ -325,7 +326,8 @@ module top_level
   assign axi_iic_0_IIC_SDA_I = I2C_sda_i;
   assign hier_0_UART_RxD = UART_rxd;
   top_level_axi_iic_0_0 axi_iic_0
-       (.s_axi_aclk(system_clock_clk_100mhz),
+       (.iic2intc_irpt(axi_iic_0_iic2intc_irpt),
+        .s_axi_aclk(system_clock_clk_100mhz),
         .s_axi_araddr(system_interconnect_M00_AXI_ARADDR),
         .s_axi_aresetn(source_100mhz_peripheral_aresetn),
         .s_axi_arready(system_interconnect_M00_AXI_ARREADY),
@@ -370,6 +372,7 @@ module top_level
         .AXI_WREADY(axi_iic_fe_0_AXI_WREADY),
         .AXI_WSTRB(axi_iic_fe_0_AXI_WSTRB),
         .AXI_WVALID(axi_iic_fe_0_AXI_WVALID),
+        .axi_iic_intr(axi_iic_0_iic2intc_irpt),
         .clk(system_clock_clk_100mhz),
         .debug_ocy_shows_rx(debug_ocy_shows_rx),
         .debug_sr_shows_rx(debug_sr_shows_rx),
@@ -440,6 +443,7 @@ module top_level
         .probe1(o_I2C_RX_DATA),
         .probe2(debug_sr_shows_rx),
         .probe3(debug_ocy_shows_rx),
+        .probe4(axi_iic_0_iic2intc_irpt),
         .resetn(source_100mhz_peripheral_aresetn));
   top_level_smartconnect_0_0 system_interconnect
        (.M00_AXI_araddr(system_interconnect_M00_AXI_ARADDR),
