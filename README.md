@@ -1,4 +1,4 @@
-# Template for Nexys A7 Testbench Design
+# Testbed for AXI IIC Front-end
 
 
  
