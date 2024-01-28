@@ -11,13 +11,6 @@
 
 module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLKS_PER_USEC = 100)
 (
-    output reg   alarm,
-    output[6:0]  dbg_fsm_state,
-    output[31:0] dbg_tlimit,
-    output[31:0] dbg_usec_elapsed,
-
-
-
     input wire clk, resetn,
 
     // The interrupt signal from the Xilinx AXI IIC core
@@ -43,6 +36,16 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLK
     // Max allow duration of an I2C transaction, in microseconds
     input[31:0]       i_I2C_TLIMIT_USEC,
 
+    // The AXI address for a "pass-through" AXI read/write of the AXI IIC module
+    input[11:0]       i_PASSTHRU_ADDR,
+    
+    // The write-data for a "pass-through" AXI write of the AXI IIC module
+    input[31:0]       i_PASSTHRU_WDATA,
+    
+    // Begin a "pass-thru" AXI transaction to the AXI IIC module
+    input             i_PASSTHRU,
+    input             i_PASSTHRU_wstrobe,  
+
     // The revision number of this module
     output[31:0]      o_MODULE_REV,
 
@@ -54,6 +57,12 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLK
 
     // The number of microseconds that the I2C transaction took
     output reg[31:0]  o_I2C_TRANSACT_USEC,
+
+    // The data-returned from a "pass-thru" AXI read of the AXI IIC module
+    output reg[31:0]  o_PASSTHRU_RDATA,
+
+    // The RRESP or BRESP value from the most recent pass-thu transaction
+    output reg[1:0]   o_PASSTHRU_RESP,
 
     //====================  An AXI-Lite Master Interface  ======================
 
@@ -133,12 +142,20 @@ wire       AMCI_RIDLE;
 //==========================================================================
 
 
+//------------------- States of our primary state machine ---------------------
 reg[6:0]    fsm_state;
-localparam  FSM_IDLE      = 0;
-localparam  FSM_READ_IIC  = 10;
-localparam  FSM_WRITE_IIC = 20;
-localparam  FSM_TIMEOUT   = 50;
-localparam  FSM_BUS_FAULT = 51;
+localparam  FSM_IDLE        = 0;
+localparam  FSM_READ_IIC    = 10;
+localparam  FSM_WRITE_IIC   = 20;
+localparam  FSM_PASSTHRU_WR = 30;
+localparam  FSM_PASSTHRU_RD = 40;
+localparam  FSM_TIMEOUT     = 50;
+localparam  FSM_BUS_FAULT   = 51;
+//-----------------------------------------------------------------------------
+
+// Definitions i_PASSTHRU
+localparam  PASSTHRU_READ  = 0;
+localparam  PASSTHRU_WRITE = 1;
 
 // This is high when a bus-fault has occured
 reg bus_fault;
@@ -248,6 +265,8 @@ always @(posedge clk) begin
 
 end
 
+// Other blocks should use "usec_elapsed" to determine how many
+// microseconds have elapsed since usec_reset was last asserted
 wire[31:0] usec_elapsed = usec_reset ? 0 : usec_ticks;
 //=============================================================================
 
@@ -260,8 +279,6 @@ reg[31:0] end_of_transaction;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
-    alarm <= 0;
-
     // These signals only strobe high for a single cycle
     AMCI_READ  <= 0;
     AMCI_WRITE <= 0;
@@ -273,22 +290,32 @@ always @(posedge clk) begin
 
         FSM_IDLE:
             begin
-
-                cmd_index <= 0;
-
                 // Were we just told to start an I2C "read register" transaction?
                 if (i_I2C_READ_LEN_wstrobe && i_I2C_READ_LEN >= 1 && i_I2C_READ_LEN <= 4) begin
-                     i2c_timeout <= 0;
-                     bus_fault   <= 0;
-                     fsm_state   <= FSM_READ_IIC;
+                    {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 0;
+                    cmd_index   <= 0;
+                    i2c_timeout <= 0;
+                    bus_fault   <= 0;
+                    byte_index  <= i_I2C_READ_LEN - 1;
+                    fsm_state   <= FSM_READ_IIC;
                 end
 
                 // Were we just told to start an I2C "write register" transaction?
                 if (i_I2C_WRITE_LEN_wstrobe && i_I2C_WRITE_LEN >= 1 && i_I2C_WRITE_LEN <= 4) begin
-                     i2c_timeout <= 0;
-                     bus_fault   <= 0;
-                     fsm_state   <= FSM_WRITE_IIC;
+                    cmd_index   <= 0;
+                    i2c_timeout <= 0;
+                    bus_fault   <= 0;
+                    byte_index  <= i_I2C_WRITE_LEN - 1;                
+                    fsm_state   <= FSM_WRITE_IIC;
                 end
+
+                // Were we just told to perform an AXI read of the AXI IIC module?
+                if (i_PASSTHRU_wstrobe && i_PASSTHRU == PASSTHRU_READ)
+                    fsm_state <= FSM_PASSTHRU_RD;
+
+                // Were we just told to perform an AXI write to the AXI IIC module?
+                if (i_PASSTHRU_wstrobe && i_PASSTHRU == PASSTHRU_WRITE)
+                    fsm_state <= FSM_PASSTHRU_WR;
             end
 
         //-----------------------------------------------------------------------------------
@@ -320,7 +347,6 @@ always @(posedge clk) begin
                 AMCI_READ           <= 1;
                 fsm_state           <= fsm_state + 1;
             end else if (usec_elapsed >= i_I2C_TLIMIT_USEC) begin
-                alarm               <= 1;
                 fsm_state           <= FSM_TIMEOUT;
             end
 
@@ -328,8 +354,6 @@ always @(posedge clk) begin
         FSM_READ_IIC + 2:
             if (AMCI_RIDLE) begin
                 if (AMCI_RDATA & RX_FULL) begin
-                    {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 0;
-                    byte_index <= i_I2C_READ_LEN - 1;
                     AMCI_RADDR <= IIC_RX_FIFO;
                     AMCI_READ  <= 1;
                     fsm_state  <= fsm_state + 1;
@@ -363,10 +387,8 @@ always @(posedge clk) begin
                     AMCI_WDATA <= wcd[cmd_index];
                     AMCI_WRITE <= 1;
                     cmd_index  <= cmd_index + 1;
-                end else begin
-                    byte_index <= i_I2C_WRITE_LEN - 1;                
+                end else 
                     fsm_state  <= fsm_state + 1;
-                end
             end
 
         // Write the bytes to TX FIFO, ensuring that STOP is on for the last byte
@@ -432,6 +454,40 @@ always @(posedge clk) begin
             if (usec_elapsed == end_of_transaction) begin
                 o_I2C_TRANSACT_USEC <= usec_elapsed; 
                 fsm_state           <= FSM_IDLE;
+            end
+
+        //-----------------------------------------------------------------------------------
+        // Here we perform an AXI4-Lite read of the AXI IIC module
+        //-----------------------------------------------------------------------------------
+        FSM_PASSTHRU_RD:
+            if (AMCI_RIDLE) begin
+                AMCI_RADDR <= i_PASSTHRU_ADDR;
+                AMCI_READ  <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        FSM_PASSTHRU_RD + 1:
+            if (AMCI_RIDLE) begin
+                o_PASSTHRU_RDATA <= AMCI_RDATA;
+                o_PASSTHRU_RESP  <= AMCI_RRESP;
+                fsm_state        <= FSM_IDLE;
+            end
+
+        //-----------------------------------------------------------------------------------
+        // Here we perform an AXI4-Lite write to the AXI IIC module
+        //-----------------------------------------------------------------------------------
+        FSM_PASSTHRU_WR:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= i_PASSTHRU_ADDR;
+                AMCI_WDATA <= i_PASSTHRU_WDATA;
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        FSM_PASSTHRU_WR + 1:
+            if (AMCI_WIDLE) begin
+                o_PASSTHRU_RESP  <= AMCI_WRESP;
+                fsm_state        <= FSM_IDLE;
             end
 
         //-----------------------------------------------------------------------------------
@@ -508,9 +564,5 @@ axi4_lite_master
     .AXI_RREADY     (AXI_RREADY)
 );
 //==========================================================================
-
-assign dbg_fsm_state    = fsm_state;
-assign dbg_tlimit       = i_I2C_TLIMIT_USEC;
-assign dbg_usec_elapsed = usec_elapsed;
 
 endmodule

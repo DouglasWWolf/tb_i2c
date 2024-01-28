@@ -71,6 +71,12 @@ module i2c_register
     // Duration of most recent I2C transaction, in microseconds
     input[31:0]  i_I2C_TRANSACT_USEC,
 
+    // The data returned from a pass-thru AXI read of the AXI IIC module
+    input[31:0]  i_PASSTHRU_RDATA,
+
+    // The BRESP/RRESP response from a pass-thru AXI read/write of the AXI IIC module
+    input[1:0]   i_PASSTHRU_RESP,
+
     // Data to be written to an I2C ADDR_MASK
     output[31:0] o_I2C_TX_DATA,
         
@@ -79,14 +85,23 @@ module i2c_register
     output       o_I2C_WRITE_LEN_wstrobe,
 
     // Time limit for I2C transactions, in microseconds
-    output[31:0] o_I2C_TLIMIT_USEC
+    output[31:0] o_I2C_TLIMIT_USEC,
+
+    // The AXI address for a "pass-through" AXI read/write of the AXI IIC module
+    output[11:0] o_PASSTHRU_ADDR,
     
+    // The write-data for a "pass-through" AXI write of the AXI IIC module
+    output[31:0] o_PASSTHRU_WDATA,
+    
+    // Begin a "pass-thru" AXI transaction to the AXI IIC module
+    output       o_PASSTHRU,
+    output       o_PASSTHRU_wstrobe  
     //==========================================================================
 
 );  
 
-    // The number of AXI register we have
-    localparam REGISTER_COUNT = 10;
+    // The number of AXI registers we have
+    localparam REGISTER_COUNT = 15;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -105,31 +120,40 @@ module i2c_register
     localparam SREG_I2C_STATUS        = 1;  
     localparam SREG_I2C_RX_DATA       = 2;
     localparam SREG_I2C_TRANSACT_USEC = 3;
+    localparam SREG_PASSTHRU_RDATA    = 4;
+    localparam SREG_PASSTHRU_RESP     = 5;
     
     // This is an alias for the first control register
-    localparam CREG_FIRST             = 4;    
+    localparam CREG_FIRST             = 6;    
     
-    localparam CREG_DEV_ADDR          = 4;
-    localparam CREG_REG_NUM           = 5;
-    localparam CREG_READ_LEN          = 6;    
-    localparam CREG_TX_DATA           = 7;
-    localparam CREG_WRITE_LEN         = 8;
-    localparam CREG_TLIMIT_USEC       = 9;
+    localparam CREG_DEV_ADDR          = 6;
+    localparam CREG_REG_NUM           = 7;
+    localparam CREG_READ_LEN          = 8;    
+    localparam CREG_TX_DATA           = 9;
+    localparam CREG_WRITE_LEN         = 10;
+    localparam CREG_TLIMIT_USEC       = 11;
+    localparam CREG_PASSTHRU_ADDR     = 12;
+    localparam CREG_PASSTHRU_WDATA    = 13;
+    localparam CREG_PASSTHRU          = 14;
     //==========================================================================
 
 
-    //-------------------------------------------------------
+    //-------------------------------------------------------------
     // Map output ports to registers
-    //-------------------------------------------------------
-    assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR   ];
-    assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM    ];
-    assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN   ];
-    assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN   ];
-    assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA    ];
-    assign o_I2C_WRITE_LEN         = axi_reg[CREG_WRITE_LEN  ];
-    assign o_I2C_WRITE_LEN_wstrobe = wstrobe[CREG_WRITE_LEN  ];
-    assign o_I2C_TLIMIT_USEC       = axi_reg[CREG_TLIMIT_USEC];
-    //-------------------------------------------------------
+    //-------------------------------------------------------------
+    assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR      ];
+    assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM       ];
+    assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN      ];
+    assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN      ];
+    assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA       ];
+    assign o_I2C_WRITE_LEN         = axi_reg[CREG_WRITE_LEN     ];
+    assign o_I2C_WRITE_LEN_wstrobe = wstrobe[CREG_WRITE_LEN     ];
+    assign o_I2C_TLIMIT_USEC       = axi_reg[CREG_TLIMIT_USEC   ];
+    assign o_PASSTHRU_ADDR         = axi_reg[CREG_PASSTHRU_ADDR ];
+    assign o_PASSTHRU_WDATA        = axi_reg[CREG_PASSTHRU_WDATA];
+    assign o_PASSTHRU              = axi_reg[CREG_PASSTHRU      ];
+    assign o_PASSTHRU_wstrobe      = wstrobe[CREG_PASSTHRU      ];
+    //-------------------------------------------------------------
 
 
     //-----------------------------------------------------------------
@@ -139,17 +163,14 @@ module i2c_register
     always @* axi_reg[SREG_I2C_STATUS       ] = i_I2C_STATUS;
     always @* axi_reg[SREG_I2C_RX_DATA      ] = i_I2C_RX_DATA;
     always @* axi_reg[SREG_I2C_TRANSACT_USEC] = i_I2C_TRANSACT_USEC;
+    always @* axi_reg[SREG_PASSTHRU_RDATA   ] = i_PASSTHRU_RDATA;
+    always @* axi_reg[SREG_PASSTHRU_RESP    ] = i_PASSTHRU_RESP;
     //-----------------------------------------------------------------
 
     // Default values for each of the control registers
     wire [31:0] default_value[CREG_FIRST:REGISTER_COUNT-1];
     assign default_value[CREG_TLIMIT_USEC] = 2000;    
 
-    //-----------------------------------------------------------------
-    // Default values
-    //-----------------------------------------------------------------
-    localparam DEFAULT_I2C_TLIMIT_USEC = 2000;
-    //-----------------------------------------------------------------
 
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>

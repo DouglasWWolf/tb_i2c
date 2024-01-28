@@ -1,18 +1,22 @@
 export axi_uart_device=/dev/ttyUSB2
 BASE_ADDR=0x10000
 
-          MODULE_REV=$((BASE_ADDR + 0*4))  
-          I2C_STATUS=$((BASE_ADDR + 1*4))
-         I2C_RX_DATA=$((BASE_ADDR + 2*4))
-   I2C_TRANSACT_USEC=$((BASE_ADDR + 3*4))
-        I2C_DEV_ADDR=$((BASE_ADDR + 4*4))
-         I2C_REG_NUM=$((BASE_ADDR + 5*4))
-        I2C_READ_LEN=$((BASE_ADDR + 6*4))
-         I2C_TX_DATA=$((BASE_ADDR + 7*4))
-       I2C_WRITE_LEN=$((BASE_ADDR + 8*4))
-          I2C_TLIMIT=$((BASE_ADDR + 9*4))
-
-
+          MODULE_REV=$((BASE_ADDR +  0*4))  
+          I2C_STATUS=$((BASE_ADDR +  1*4))
+         I2C_RX_DATA=$((BASE_ADDR +  2*4))
+   I2C_TRANSACT_USEC=$((BASE_ADDR +  3*4))
+      PASSTHRU_RDATA=$((BASE_ADDR +  4*4)) 
+       PASSTHRU_RESP=$((BASE_ADDR +  5*4))
+        I2C_DEV_ADDR=$((BASE_ADDR +  6*4))
+         I2C_REG_NUM=$((BASE_ADDR +  7*4))
+        I2C_READ_LEN=$((BASE_ADDR +  8*4))
+         I2C_TX_DATA=$((BASE_ADDR +  9*4))
+       I2C_WRITE_LEN=$((BASE_ADDR + 10*4))
+          I2C_TLIMIT=$((BASE_ADDR + 11*4))
+       PASSTHRU_ADDR=$((BASE_ADDR + 12*4))
+      PASSTHRU_WDATA=$((BASE_ADDR + 13*4))
+            PASSTHRU=$((BASE_ADDR + 14*4))
+    
 #==============================================================================
 # This reads a PCI register and displays its value in decimal
 #==============================================================================
@@ -79,4 +83,20 @@ write_reg()
 
 }
 
+passthru()
+{
+    if [ "$2" == "" ]; then
+        axireg $PASSTHRU_ADDR $1
+        axireg $PASSTHRU      0
+        sleep .001
+        echo "Data = $(axireg $PASSTHRU_RDATA)"
+        echo "Resp = $(axireg $PASSTHRU_RESP)"
+    else
+        axireg $PASSTHRU_ADDR  $1
+        axireg $PASSTHRU_WDATA $2
+        axireg $PASSTHRU       1
+        sleep .001
+        echo "Resp = $(axireg $PASSTHRU_RESP)"
+    fi 
+}
 
