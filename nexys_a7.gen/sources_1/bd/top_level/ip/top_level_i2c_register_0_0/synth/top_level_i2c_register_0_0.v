@@ -87,7 +87,8 @@ module top_level_i2c_register_0_0 (
   i_I2C_TRANSACT_USEC,
   o_I2C_TX_DATA,
   o_I2C_WRITE_LEN,
-  o_I2C_WRITE_LEN_wstrobe
+  o_I2C_WRITE_LEN_wstrobe,
+  o_I2C_TLIMIT_USEC
 );
 
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME clk, ASSOCIATED_BUSIF S_AXI, ASSOCIATED_RESET resetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, INSERT_VIP 0" *)
@@ -141,12 +142,13 @@ output wire [7 : 0] o_I2C_REG_NUM;
 output wire [2 : 0] o_I2C_READ_LEN;
 output wire o_I2C_READ_LEN_wstrobe;
 input wire [31 : 0] i_MODULE_REV;
-input wire [1 : 0] i_I2C_STATUS;
+input wire [7 : 0] i_I2C_STATUS;
 input wire [31 : 0] i_I2C_RX_DATA;
 input wire [31 : 0] i_I2C_TRANSACT_USEC;
 output wire [31 : 0] o_I2C_TX_DATA;
 output wire [2 : 0] o_I2C_WRITE_LEN;
 output wire o_I2C_WRITE_LEN_wstrobe;
+output wire [31 : 0] o_I2C_TLIMIT_USEC;
 
   i2c_register inst (
     .clk(clk),
@@ -180,6 +182,7 @@ output wire o_I2C_WRITE_LEN_wstrobe;
     .i_I2C_TRANSACT_USEC(i_I2C_TRANSACT_USEC),
     .o_I2C_TX_DATA(o_I2C_TX_DATA),
     .o_I2C_WRITE_LEN(o_I2C_WRITE_LEN),
-    .o_I2C_WRITE_LEN_wstrobe(o_I2C_WRITE_LEN_wstrobe)
+    .o_I2C_WRITE_LEN_wstrobe(o_I2C_WRITE_LEN_wstrobe),
+    .o_I2C_TLIMIT_USEC(o_I2C_TLIMIT_USEC)
   );
 endmodule

@@ -886,7 +886,7 @@
             "value": "1"
           },
           "C_NUM_OF_PROBES": {
-            "value": "2"
+            "value": "6"
           },
           "C_PROBE0_TYPE": {
             "value": "0"
@@ -1246,7 +1246,7 @@
           },
           "i_I2C_STATUS": {
             "direction": "I",
-            "left": "1",
+            "left": "7",
             "right": "0"
           },
           "i_I2C_RX_DATA": {
@@ -1271,6 +1271,11 @@
           },
           "o_I2C_WRITE_LEN_wstrobe": {
             "direction": "O"
+          },
+          "o_I2C_TLIMIT_USEC": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
           }
         }
       },
@@ -1506,6 +1511,21 @@
           "alarm": {
             "direction": "O"
           },
+          "dbg_fsm_state": {
+            "direction": "O",
+            "left": "6",
+            "right": "0"
+          },
+          "dbg_tlimit": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "dbg_usec_elapsed": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
           "clk": {
             "type": "clk",
             "direction": "I",
@@ -1587,6 +1607,11 @@
           "i_I2C_WRITE_LEN_wstrobe": {
             "direction": "I"
           },
+          "i_I2C_TLIMIT_USEC": {
+            "direction": "I",
+            "left": "31",
+            "right": "0"
+          },
           "o_MODULE_REV": {
             "direction": "O",
             "left": "31",
@@ -1594,7 +1619,7 @@
           },
           "o_I2C_STATUS": {
             "direction": "O",
-            "left": "1",
+            "left": "7",
             "right": "0"
           },
           "o_I2C_RX_DATA": {
@@ -1679,9 +1704,19 @@
         ]
       },
       "alarm": {
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
+      },
+      "alarm_1": {
         "ports": [
           "axi_iic_fe/alarm",
-          "system_ila_0/probe1"
+          "system_ila_0/probe5"
         ],
         "hdl_attributes": {
           "DEBUG": {
@@ -1731,6 +1766,48 @@
           "i2c_register/i_MODULE_REV"
         ]
       },
+      "dbg_fsm_state_1": {
+        "ports": [
+          "axi_iic_fe/dbg_fsm_state",
+          "system_ila_0/probe2"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
+      },
+      "dbg_tlimit": {
+        "ports": [
+          "axi_iic_fe/dbg_tlimit",
+          "system_ila_0/probe3"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
+      },
+      "dbg_usec_elapsed": {
+        "ports": [
+          "axi_iic_fe/dbg_usec_elapsed",
+          "system_ila_0/probe4"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
+      },
       "i2c_register_0_o_I2C_DEV_ADDR": {
         "ports": [
           "i2c_register/o_I2C_DEV_ADDR",
@@ -1754,6 +1831,21 @@
           "i2c_register/o_I2C_REG_NUM",
           "axi_iic_fe/i_I2C_REG_NUM"
         ]
+      },
+      "i2c_register_o_I2C_TLIMIT_USEC": {
+        "ports": [
+          "i2c_register/o_I2C_TLIMIT_USEC",
+          "system_ila_0/probe1",
+          "axi_iic_fe/i_I2C_TLIMIT_USEC"
+        ],
+        "hdl_attributes": {
+          "DEBUG": {
+            "value": "true"
+          },
+          "MARK_DEBUG": {
+            "value": "true"
+          }
+        }
       },
       "i2c_register_o_I2C_WRITE_LEN": {
         "ports": [

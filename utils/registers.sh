@@ -10,6 +10,7 @@ BASE_ADDR=0x10000
         I2C_READ_LEN=$((BASE_ADDR + 6*4))
          I2C_TX_DATA=$((BASE_ADDR + 7*4))
        I2C_WRITE_LEN=$((BASE_ADDR + 8*4))
+          I2C_TLIMIT=$((BASE_ADDR + 9*4))
 
 
 #==============================================================================

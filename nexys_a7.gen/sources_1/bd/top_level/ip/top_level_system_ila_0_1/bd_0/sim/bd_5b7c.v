@@ -30,6 +30,10 @@ module bd_5b7c
     clk,
     probe0,
     probe1,
+    probe2,
+    probe3,
+    probe4,
+    probe5,
     resetn);
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI ARADDR" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME SLOT_0_AXI, ADDR_WIDTH 32, ARUSER_WIDTH 0, AWUSER_WIDTH 0, BUSER_WIDTH 0, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, DATA_WIDTH 32, FREQ_HZ 100000000, HAS_BRESP 1, HAS_BURST 0, HAS_CACHE 0, HAS_LOCK 0, HAS_PROT 1, HAS_QOS 0, HAS_REGION 0, HAS_RRESP 1, HAS_WSTRB 1, ID_WIDTH 0, INSERT_VIP 0, MAX_BURST_LENGTH 1, NUM_READ_OUTSTANDING 1, NUM_READ_THREADS 1, NUM_WRITE_OUTSTANDING 1, NUM_WRITE_THREADS 1, PHASE 0.0, PROTOCOL AXI4LITE, READ_WRITE_MODE READ_WRITE, RUSER_BITS_PER_BYTE 0, RUSER_WIDTH 0, SUPPORTS_NARROW_BURST 0, WUSER_BITS_PER_BYTE 0, WUSER_WIDTH 0" *) input [31:0]SLOT_0_AXI_araddr;
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI ARPROT" *) input [2:0]SLOT_0_AXI_arprot;
@@ -52,7 +56,11 @@ module bd_5b7c
   (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 SLOT_0_AXI WVALID" *) input SLOT_0_AXI_wvalid;
   (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.CLK CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.CLK, ASSOCIATED_BUSIF SLOT_0_AXI, ASSOCIATED_RESET resetn, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, INSERT_VIP 0, PHASE 0.0" *) input clk;
   input [0:0]probe0;
-  input [0:0]probe1;
+  input [31:0]probe1;
+  input [6:0]probe2;
+  input [31:0]probe3;
+  input [31:0]probe4;
+  input [0:0]probe5;
   (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.RESETN RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.RESETN, INSERT_VIP 0, POLARITY ACTIVE_LOW" *) input resetn;
 
   wire [31:0]Conn_ARADDR;
@@ -104,7 +112,11 @@ module bd_5b7c
   wire [3:0]net_slot_0_axi_wstrb;
   wire net_slot_0_axi_wvalid;
   wire [0:0]probe0_1;
-  wire [0:0]probe1_1;
+  wire [31:0]probe1_1;
+  wire [6:0]probe2_1;
+  wire [31:0]probe3_1;
+  wire [31:0]probe4_1;
+  wire [0:0]probe5_1;
   wire resetn_1;
 
   assign Conn_ARADDR = SLOT_0_AXI_araddr[31:0];
@@ -128,7 +140,11 @@ module bd_5b7c
   assign Conn_WVALID = SLOT_0_AXI_wvalid;
   assign clk_1 = clk;
   assign probe0_1 = probe0[0];
-  assign probe1_1 = probe1[0];
+  assign probe1_1 = probe1[31:0];
+  assign probe2_1 = probe2[6:0];
+  assign probe3_1 = probe3[31:0];
+  assign probe4_1 = probe4[31:0];
+  assign probe5_1 = probe5[0];
   assign resetn_1 = resetn;
   bd_5b7c_g_inst_0 g_inst
        (.aclk(clk_1),
@@ -179,24 +195,28 @@ module bd_5b7c
        (.clk(clk_1),
         .probe0(probe0_1),
         .probe1(probe1_1),
-        .probe10(net_slot_0_axi_r_cnt),
-        .probe11(net_slot_0_axi_rdata),
-        .probe12(net_slot_0_axi_rresp),
-        .probe13(net_slot_0_axi_wdata),
-        .probe14(net_slot_0_axi_wstrb),
-        .probe15(net_slot_0_axi_aw_ctrl),
-        .probe16(net_slot_0_axi_w_ctrl),
-        .probe17(net_slot_0_axi_b_ctrl),
-        .probe18(net_slot_0_axi_ar_ctrl),
-        .probe19(net_slot_0_axi_r_ctrl),
-        .probe2(net_slot_0_axi_ar_cnt),
-        .probe3(net_slot_0_axi_araddr),
-        .probe4(net_slot_0_axi_arprot),
-        .probe5(net_slot_0_axi_aw_cnt),
-        .probe6(net_slot_0_axi_awaddr),
-        .probe7(net_slot_0_axi_awprot),
-        .probe8(net_slot_0_axi_b_cnt),
-        .probe9(net_slot_0_axi_bresp));
+        .probe10(net_slot_0_axi_awaddr),
+        .probe11(net_slot_0_axi_awprot),
+        .probe12(net_slot_0_axi_b_cnt),
+        .probe13(net_slot_0_axi_bresp),
+        .probe14(net_slot_0_axi_r_cnt),
+        .probe15(net_slot_0_axi_rdata),
+        .probe16(net_slot_0_axi_rresp),
+        .probe17(net_slot_0_axi_wdata),
+        .probe18(net_slot_0_axi_wstrb),
+        .probe19(net_slot_0_axi_aw_ctrl),
+        .probe2(probe2_1),
+        .probe20(net_slot_0_axi_w_ctrl),
+        .probe21(net_slot_0_axi_b_ctrl),
+        .probe22(net_slot_0_axi_ar_ctrl),
+        .probe23(net_slot_0_axi_r_ctrl),
+        .probe3(probe3_1),
+        .probe4(probe4_1),
+        .probe5(probe5_1),
+        .probe6(net_slot_0_axi_ar_cnt),
+        .probe7(net_slot_0_axi_araddr),
+        .probe8(net_slot_0_axi_arprot),
+        .probe9(net_slot_0_axi_aw_cnt));
   bd_5b7c_slot_0_ar_0 slot_0_ar
        (.In0(net_slot_0_axi_arvalid),
         .In1(net_slot_0_axi_arready),

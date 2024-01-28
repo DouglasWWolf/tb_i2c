@@ -63,7 +63,7 @@ module i2c_register
     input[31:0]  i_MODULE_REV,
 
     // The idle & fault status bits
-    input[1:0]   i_I2C_STATUS,
+    input[7:0]   i_I2C_STATUS,
 
     // Data received when reading a device register over I2C
     input[31:0]  i_I2C_RX_DATA,
@@ -76,13 +76,17 @@ module i2c_register
         
     // The number of bytes to write.  Starts the write.
     output[2:0]  o_I2C_WRITE_LEN,
-    output       o_I2C_WRITE_LEN_wstrobe
+    output       o_I2C_WRITE_LEN_wstrobe,
+
+    // Time limit for I2C transactions, in microseconds
+    output[31:0] o_I2C_TLIMIT_USEC
+    
     //==========================================================================
 
 );  
 
     // The number of AXI register we have
-    localparam REGISTER_COUNT = 9;
+    localparam REGISTER_COUNT = 10;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -110,19 +114,21 @@ module i2c_register
     localparam CREG_READ_LEN          = 6;    
     localparam CREG_TX_DATA           = 7;
     localparam CREG_WRITE_LEN         = 8;
+    localparam CREG_TLIMIT_USEC       = 9;
     //==========================================================================
 
 
     //-------------------------------------------------------
     // Map output ports to registers
     //-------------------------------------------------------
-    assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR ];
-    assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM  ];
-    assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN ];
-    assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN ];
-    assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA  ];
-    assign o_I2C_WRITE_LEN         = axi_reg[CREG_WRITE_LEN];
-    assign o_I2C_WRITE_LEN_wstrobe = wstrobe[CREG_WRITE_LEN];
+    assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR   ];
+    assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM    ];
+    assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN   ];
+    assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN   ];
+    assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA    ];
+    assign o_I2C_WRITE_LEN         = axi_reg[CREG_WRITE_LEN  ];
+    assign o_I2C_WRITE_LEN_wstrobe = wstrobe[CREG_WRITE_LEN  ];
+    assign o_I2C_TLIMIT_USEC       = axi_reg[CREG_TLIMIT_USEC];
     //-------------------------------------------------------
 
 
@@ -135,6 +141,15 @@ module i2c_register
     always @* axi_reg[SREG_I2C_TRANSACT_USEC] = i_I2C_TRANSACT_USEC;
     //-----------------------------------------------------------------
 
+    // Default values for each of the control registers
+    wire [31:0] default_value[CREG_FIRST:REGISTER_COUNT-1];
+    assign default_value[CREG_TLIMIT_USEC] = 2000;    
+
+    //-----------------------------------------------------------------
+    // Default values
+    //-----------------------------------------------------------------
+    localparam DEFAULT_I2C_TLIMIT_USEC = 2000;
+    //-----------------------------------------------------------------
 
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
@@ -193,6 +208,7 @@ module i2c_register
         // If we're in reset, initialize important registers
         if (resetn == 0) begin
             ashi_write_state <= 0;
+            axi_reg[CREG_TLIMIT_USEC] <= DEFAULT_I2C_TLIMIT_USEC;
 
         // If we're not in reset, and a write-request has occured...        
         end else case (ashi_write_state)

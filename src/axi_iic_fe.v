@@ -11,7 +11,12 @@
 
 module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLKS_PER_USEC = 100)
 (
-    output reg alarm,
+    output reg   alarm,
+    output[6:0]  dbg_fsm_state,
+    output[31:0] dbg_tlimit,
+    output[31:0] dbg_usec_elapsed,
+
+
 
     input wire clk, resetn,
 
@@ -35,11 +40,14 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLK
     input[2:0]        i_I2C_WRITE_LEN,
     input             i_I2C_WRITE_LEN_wstrobe,
 
+    // Max allow duration of an I2C transaction, in microseconds
+    input[31:0]       i_I2C_TLIMIT_USEC,
+
     // The revision number of this module
     output[31:0]      o_MODULE_REV,
 
     // Status: idle/fault
-    output[1:0]       o_I2C_STATUS,
+    output[7:0]       o_I2C_STATUS,
     
     // The result of an I2C read operation is output here
     output [31:0]     o_I2C_RX_DATA,
@@ -125,22 +133,29 @@ wire       AMCI_RIDLE;
 //==========================================================================
 
 
-reg[5:0]    fsm_state;
+reg[6:0]    fsm_state;
 localparam  FSM_IDLE      = 0;
 localparam  FSM_READ_IIC  = 10;
 localparam  FSM_WRITE_IIC = 20;
+localparam  FSM_TIMEOUT   = 50;
+localparam  FSM_BUS_FAULT = 51;
 
 // This is high when a bus-fault has occured
 reg bus_fault;
 
+// This is high when the duration an I2C transaction has exceeded i_I2C_TLIMIT_USEC
+reg i2c_timeout;
+
 // We're idle when we're in IDLE state, and no "start this function" signals are asserted
 wire fsm_is_idle =
 (
-    (fsm_state == FSM_IDLE      ) && 
-    (i_I2C_READ_LEN_wstrobe == 0)
+    (fsm_state == FSM_IDLE       ) && 
+    (i_I2C_READ_LEN_wstrobe  == 0) &&
+    (i_I2C_WRITE_LEN_wstrobe == 0)
 );
 
-assign o_I2C_STATUS = {bus_fault, fsm_is_idle};
+// The status output is an aggregation of these states
+assign o_I2C_STATUS = {i2c_timeout, bus_fault, fsm_is_idle};
 
 // This is the first revision of this module
 assign o_MODULE_REV = 1;
@@ -191,7 +206,6 @@ assign rca[09] = 0               ;assign rcd[09] = 0;
 
 
 
-
 //-----------------------------------------------------------------------------
 // I2C configuration for a write operation
 //-----------------------------------------------------------------------------
@@ -212,16 +226,16 @@ assign wca[05] = 0;              ;assign wcd[05] = 0;
 // This block counts elapsed microseconds.  Count is reset to zero on 
 // any cycle where "usec_reset" is high
 //=============================================================================
-reg[31:0] usec_elapsed;
-reg       usec_reset;
+reg                            usec_reset;
 //-----------------------------------------------------------------------------
+reg[31:0]                      usec_ticks;
 reg[$clog2(CLKS_PER_USEC-1):0] usec_counter;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
     if (resetn == 0 || usec_reset == 1) begin
         usec_counter <= 0;
-        usec_elapsed <= 0; 
+        usec_ticks   <= 0; 
     end
 
     else if (usec_counter < CLKS_PER_USEC-1)
@@ -229,19 +243,24 @@ always @(posedge clk) begin
 
     else begin
         usec_counter <= 0;
-        usec_elapsed <= usec_elapsed + 1;
+        usec_ticks   <= usec_ticks + 1;
     end
 
 end
+
+wire[31:0] usec_elapsed = usec_reset ? 0 : usec_ticks;
 //=============================================================================
 
-reg[31:0] delay;
-reg[31:0] end_of_transaction;
 
+
+//=============================================================================
+// This is the main state machine, handling I2C-related transactions
+//=============================================================================
+reg[31:0] end_of_transaction;
+//-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
     alarm <= 0;
-    if (delay) delay <= delay - 1;
 
     // These signals only strobe high for a single cycle
     AMCI_READ  <= 0;
@@ -259,31 +278,27 @@ always @(posedge clk) begin
 
                 // Were we just told to start an I2C "read register" transaction?
                 if (i_I2C_READ_LEN_wstrobe && i_I2C_READ_LEN >= 1 && i_I2C_READ_LEN <= 4) begin
-                     bus_fault <= 0;
-                     fsm_state <= FSM_READ_IIC;
+                     i2c_timeout <= 0;
+                     bus_fault   <= 0;
+                     fsm_state   <= FSM_READ_IIC;
                 end
 
                 // Were we just told to start an I2C "write register" transaction?
                 if (i_I2C_WRITE_LEN_wstrobe && i_I2C_WRITE_LEN >= 1 && i_I2C_WRITE_LEN <= 4) begin
-                     bus_fault <= 0;
-                     fsm_state <= FSM_WRITE_IIC;
+                     i2c_timeout <= 0;
+                     bus_fault   <= 0;
+                     fsm_state   <= FSM_WRITE_IIC;
                 end
             end
 
         //-----------------------------------------------------------------------------------
         // Start of state machine for performing an I2C read operation
         //-----------------------------------------------------------------------------------
-       FSM_READ_IIC:
-            begin
-                bus_fault  <= 0;
-                cmd_index  <= 0;
-                fsm_state  <= fsm_state + 1;
-            end
 
         // Configure all the neccessary registers in the AXI IIC core.  When
         // we're done, we'll wait for an interrupt to tell us either that our
         // data is waiting in the RX_FIFO, or that a fault has occured.  
-        FSM_READ_IIC + 1:
+        FSM_READ_IIC:
             if (AMCI_WIDLE) begin
                 if (rca[cmd_index]) begin
                     AMCI_WADDR <= rca[cmd_index];
@@ -296,17 +311,21 @@ always @(posedge clk) begin
                 end
             end
 
-        // The interrupt line has gone high.  Let's find out why
-        FSM_READ_IIC + 2:
+        // The interrupt line has gone high.  Let's find out why.
+        // If our wait time exceeds i_I2C_TLIMIT_USEC, stop waiting
+        FSM_READ_IIC + 1:
             if (axi_iic_intr) begin
                 o_I2C_TRANSACT_USEC <= usec_elapsed;
                 AMCI_RADDR          <= IIC_ISR;
                 AMCI_READ           <= 1;
                 fsm_state           <= fsm_state + 1;
+            end else if (usec_elapsed >= i_I2C_TLIMIT_USEC) begin
+                alarm               <= 1;
+                fsm_state           <= FSM_TIMEOUT;
             end
 
         // Find out if we received data.  If not, it's an error
-        FSM_READ_IIC + 3:
+        FSM_READ_IIC + 2:
             if (AMCI_RIDLE) begin
                 if (AMCI_RDATA & RX_FULL) begin
                     {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 0;
@@ -314,15 +333,12 @@ always @(posedge clk) begin
                     AMCI_RADDR <= IIC_RX_FIFO;
                     AMCI_READ  <= 1;
                     fsm_state  <= fsm_state + 1;
-                end else begin
-                    {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 32'hDEAD_BEEF;
-                    bus_fault  <= 1;
-                    fsm_state  <= FSM_IDLE;
-                end
+                end else
+                    fsm_state  <= FSM_BUS_FAULT;
             end
 
         // Here we read in all bytes from the RX FIFO and placing them in rx_data[]
-        FSM_READ_IIC + 4:
+        FSM_READ_IIC + 3:
             if (AMCI_RIDLE) begin
                 rx_data[byte_index] <= AMCI_RDATA;
                 if (byte_index > 0) begin
@@ -336,17 +352,11 @@ always @(posedge clk) begin
         //-----------------------------------------------------------------------------------
         // Start of state machine for performing an I2C write operation
         //-----------------------------------------------------------------------------------
-        FSM_WRITE_IIC:
-            begin
-                bus_fault  <= 0;
-                cmd_index  <= 0;
-                fsm_state  <= fsm_state + 1;
-            end
 
         // Configure all the neccessary registers in the AXI IIC core.  When
         // we're done, we'll wait for an interrupt to tell us either that our
         // data is waiting in the RX_FIFO, or that a fault has occured.  
-        FSM_WRITE_IIC + 1:
+        FSM_WRITE_IIC:
             if (AMCI_WIDLE) begin
                 if (wca[cmd_index]) begin
                     AMCI_WADDR <= wca[cmd_index];
@@ -360,7 +370,7 @@ always @(posedge clk) begin
             end
 
         // Write the bytes to TX FIFO, ensuring that STOP is on for the last byte
-        FSM_WRITE_IIC + 2:
+        FSM_WRITE_IIC + 1:
             if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_TX_FIFO;
                 AMCI_WDATA <= (byte_index == 0) ? {I2C_STOP, tx_byte[7:0]} : tx_byte[7:0];
@@ -373,7 +383,7 @@ always @(posedge clk) begin
             end
 
         // We've placed our entire command in the TX FIFO.  Send it.
-        FSM_WRITE_IIC + 3:
+        FSM_WRITE_IIC + 2:
             if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_CR;
                 AMCI_WDATA <= EN;
@@ -385,7 +395,7 @@ always @(posedge clk) begin
         // We've sent the "Enable transaction" command.  Start the
         // microsecond timer, and start a read of the IIC status
         // register
-        FSM_WRITE_IIC + 4:
+        FSM_WRITE_IIC + 3:
             if (AMCI_WIDLE) begin
                 usec_reset <= 1;
                 AMCI_RADDR <= IIC_SR;
@@ -395,13 +405,11 @@ always @(posedge clk) begin
 
         // We're polling the status register to wait for bit 7
         // to tell us "The TX_FIFO has been emptied"
-        FSM_WRITE_IIC + 5:
+        FSM_WRITE_IIC + 4:
             
             // An interrupt indicates something awry in the transaction
-            if (axi_iic_intr) begin
-                bus_fault <= 1;
-                fsm_state <= FSM_IDLE;
-            end 
+            if (axi_iic_intr)
+                fsm_state <= FSM_BUS_FAULT;
 
             // If our read of the IIC_SR (Status register) is complete,
             // Check to see if all bytes have been transmitted
@@ -412,24 +420,47 @@ always @(posedge clk) begin
                 if (AMCI_RDATA[7]) begin
                     end_of_transaction <= usec_elapsed + 200;
                     fsm_state          <= fsm_state + 1;
-                end
-
-                // If the TX FIFO wasn't empty, keeping polling 
-                else AMCI_READ <= 1;
+                end else if (usec_elapsed >= i_I2C_TLIMIT_USEC) 
+                    fsm_state <= FSM_TIMEOUT;
+                else
+                    AMCI_READ <= 1;
             end
 
         // Here we pause a moment to allow the last byte in the FIFO to 
         // finish being transmitted to the I2C device
-        FSM_WRITE_IIC + 6:
+        FSM_WRITE_IIC + 5:
             if (usec_elapsed == end_of_transaction) begin
                 o_I2C_TRANSACT_USEC <= usec_elapsed; 
                 fsm_state           <= FSM_IDLE;
             end
 
+        //-----------------------------------------------------------------------------------
+        // We get here if the duration of a transaction exceed i_I2C_TLIMIT_USEC
+        //-----------------------------------------------------------------------------------
+        FSM_TIMEOUT:
+            begin
+                {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 32'hDEAD_BEEF;
+                o_I2C_TRANSACT_USEC <= usec_elapsed;
+                i2c_timeout         <= 1;
+                fsm_state           <= FSM_IDLE;
+            end
+
+        //-----------------------------------------------------------------------------------
+        // We get here if a bus fault is detected
+        //-----------------------------------------------------------------------------------
+        FSM_BUS_FAULT:
+            begin
+                {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 32'hDEAD_BEEF;
+                o_I2C_TRANSACT_USEC <= usec_elapsed;
+                bus_fault           <= 1;
+                fsm_state           <= FSM_IDLE;
+            end
+
+ 
     endcase
 
 end
-
+//=============================================================================
 
 
 //==========================================================================
@@ -477,5 +508,9 @@ axi4_lite_master
     .AXI_RREADY     (AXI_RREADY)
 );
 //==========================================================================
+
+assign dbg_fsm_state    = fsm_state;
+assign dbg_tlimit       = i_I2C_TLIMIT_USEC;
+assign dbg_usec_elapsed = usec_elapsed;
 
 endmodule

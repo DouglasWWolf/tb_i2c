@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Sat Jan 27 18:51:57 2024
+//Date        : Sat Jan 27 21:17:04 2024
 //Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -238,7 +238,7 @@ module top_level
 
   wire CLK100MHZ_1;
   wire CPU_RESETN_1;
-  (* DEBUG = "true" *) (* MARK_DEBUG *) wire alarm;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire alarm_1;
   wire axi_iic_0_IIC_SCL_I;
   wire axi_iic_0_IIC_SCL_O;
   wire axi_iic_0_IIC_SCL_T;
@@ -265,10 +265,13 @@ module top_level
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WREADY" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_WREADY;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WSTRB" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire [3:0]axi_iic_fe_0_AXI_WSTRB;
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WVALID" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_WVALID;
-  wire [1:0]axi_iic_fe_o_I2C_IDLE;
+  wire [7:0]axi_iic_fe_o_I2C_IDLE;
   wire [31:0]axi_iic_fe_o_I2C_RX_DATA;
   wire [31:0]axi_iic_fe_o_I2C_TRANSACT_USEC;
   wire [31:0]axi_iic_fe_o_MODULE_REV;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [6:0]dbg_fsm_state_1;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]dbg_tlimit;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]dbg_usec_elapsed;
   wire [63:0]hier_0_M_AXI_ARADDR;
   wire hier_0_M_AXI_ARREADY;
   wire hier_0_M_AXI_ARVALID;
@@ -292,6 +295,7 @@ module top_level
   wire [2:0]i2c_register_0_o_I2C_READ_LEN;
   wire i2c_register_0_o_I2C_READ_LEN_wstrobe;
   wire [7:0]i2c_register_0_o_I2C_REG_NUM;
+  (* DEBUG = "true" *) (* MARK_DEBUG *) wire [31:0]i2c_register_o_I2C_TLIMIT_USEC;
   wire [2:0]i2c_register_o_I2C_WRITE_LEN;
   wire i2c_register_o_I2C_WRITE_LEN_wstrobe;
   wire [31:0]o_I2C_TX_DATA;
@@ -392,13 +396,17 @@ module top_level
         .AXI_WREADY(axi_iic_fe_0_AXI_WREADY),
         .AXI_WSTRB(axi_iic_fe_0_AXI_WSTRB),
         .AXI_WVALID(axi_iic_fe_0_AXI_WVALID),
-        .alarm(alarm),
+        .alarm(alarm_1),
         .axi_iic_intr(axi_iic_0_iic2intc_irpt),
         .clk(system_clock_clk_100mhz),
+        .dbg_fsm_state(dbg_fsm_state_1),
+        .dbg_tlimit(dbg_tlimit),
+        .dbg_usec_elapsed(dbg_usec_elapsed),
         .i_I2C_DEV_ADDR(i2c_register_0_o_I2C_DEV_ADDR),
         .i_I2C_READ_LEN(i2c_register_0_o_I2C_READ_LEN),
         .i_I2C_READ_LEN_wstrobe(i2c_register_0_o_I2C_READ_LEN_wstrobe),
         .i_I2C_REG_NUM(i2c_register_0_o_I2C_REG_NUM),
+        .i_I2C_TLIMIT_USEC(i2c_register_o_I2C_TLIMIT_USEC),
         .i_I2C_TX_DATA(o_I2C_TX_DATA),
         .i_I2C_WRITE_LEN(i2c_register_o_I2C_WRITE_LEN),
         .i_I2C_WRITE_LEN_wstrobe(i2c_register_o_I2C_WRITE_LEN_wstrobe),
@@ -458,6 +466,7 @@ module top_level
         .o_I2C_READ_LEN(i2c_register_0_o_I2C_READ_LEN),
         .o_I2C_READ_LEN_wstrobe(i2c_register_0_o_I2C_READ_LEN_wstrobe),
         .o_I2C_REG_NUM(i2c_register_0_o_I2C_REG_NUM),
+        .o_I2C_TLIMIT_USEC(i2c_register_o_I2C_TLIMIT_USEC),
         .o_I2C_TX_DATA(o_I2C_TX_DATA),
         .o_I2C_WRITE_LEN(i2c_register_o_I2C_WRITE_LEN),
         .o_I2C_WRITE_LEN_wstrobe(i2c_register_o_I2C_WRITE_LEN_wstrobe),
@@ -490,7 +499,11 @@ module top_level
         .SLOT_0_AXI_wvalid(axi_iic_fe_0_AXI_WVALID),
         .clk(system_clock_clk_100mhz),
         .probe0(axi_iic_0_iic2intc_irpt),
-        .probe1(alarm),
+        .probe1(i2c_register_o_I2C_TLIMIT_USEC),
+        .probe2(dbg_fsm_state_1),
+        .probe3(dbg_tlimit),
+        .probe4(dbg_usec_elapsed),
+        .probe5(alarm_1),
         .resetn(source_100mhz_peripheral_aresetn));
   top_level_smartconnect_0_0 system_interconnect
        (.M00_AXI_araddr(system_interconnect_M00_AXI_ARADDR),

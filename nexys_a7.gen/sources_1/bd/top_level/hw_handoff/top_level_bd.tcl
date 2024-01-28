@@ -361,11 +361,11 @@ proc create_root_design { parentCell } {
   # Create instance: system_ila_0, and set properties
   set system_ila_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:system_ila:1.1 system_ila_0 ]
   set_property -dict [ list \
-   CONFIG.C_BRAM_CNT {20.5} \
+   CONFIG.C_BRAM_CNT {24} \
    CONFIG.C_DATA_DEPTH {4096} \
    CONFIG.C_MON_TYPE {MIX} \
    CONFIG.C_NUM_MONITOR_SLOTS {1} \
-   CONFIG.C_NUM_OF_PROBES {2} \
+   CONFIG.C_NUM_OF_PROBES {6} \
    CONFIG.C_PROBE0_TYPE {0} \
    CONFIG.C_PROBE1_TYPE {0} \
    CONFIG.C_PROBE2_TYPE {0} \
@@ -408,18 +408,26 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_iic_fe_0_AXI] [get_bd_intf_p
   # Create port connections
   connect_bd_net -net CLK100MHZ_1 [get_bd_ports CLK100MHZ] [get_bd_pins source_100mhz/CLK100MHZ]
   connect_bd_net -net CPU_RESETN_1 [get_bd_ports CPU_RESETN] [get_bd_pins source_100mhz/CPU_RESETN]
-  connect_bd_net -net alarm [get_bd_pins axi_iic_fe/alarm] [get_bd_pins system_ila_0/probe1]
-  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets alarm]
+  connect_bd_net -net alarm_1 [get_bd_pins axi_iic_fe/alarm] [get_bd_pins system_ila_0/probe5]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets alarm_1]
   connect_bd_net -net axi_iic_0_iic2intc_irpt [get_bd_pins axi_iic_0/iic2intc_irpt] [get_bd_pins axi_iic_fe/axi_iic_intr] [get_bd_pins system_ila_0/probe0]
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets axi_iic_0_iic2intc_irpt]
   connect_bd_net -net axi_iic_fe_o_I2C_IDLE [get_bd_pins axi_iic_fe/o_I2C_STATUS] [get_bd_pins i2c_register/i_I2C_STATUS]
   connect_bd_net -net axi_iic_fe_o_I2C_RX_DATA [get_bd_pins axi_iic_fe/o_I2C_RX_DATA] [get_bd_pins i2c_register/i_I2C_RX_DATA]
   connect_bd_net -net axi_iic_fe_o_I2C_TRANSACT_USEC [get_bd_pins axi_iic_fe/o_I2C_TRANSACT_USEC] [get_bd_pins i2c_register/i_I2C_TRANSACT_USEC]
   connect_bd_net -net axi_iic_fe_o_MODULE_REV [get_bd_pins axi_iic_fe/o_MODULE_REV] [get_bd_pins i2c_register/i_MODULE_REV]
+  connect_bd_net -net dbg_fsm_state_1 [get_bd_pins axi_iic_fe/dbg_fsm_state] [get_bd_pins system_ila_0/probe2]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets dbg_fsm_state_1]
+  connect_bd_net -net dbg_tlimit [get_bd_pins axi_iic_fe/dbg_tlimit] [get_bd_pins system_ila_0/probe3]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets dbg_tlimit]
+  connect_bd_net -net dbg_usec_elapsed [get_bd_pins axi_iic_fe/dbg_usec_elapsed] [get_bd_pins system_ila_0/probe4]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets dbg_usec_elapsed]
   connect_bd_net -net i2c_register_0_o_I2C_DEV_ADDR [get_bd_pins axi_iic_fe/i_I2C_DEV_ADDR] [get_bd_pins i2c_register/o_I2C_DEV_ADDR]
   connect_bd_net -net i2c_register_0_o_I2C_READ_LEN [get_bd_pins axi_iic_fe/i_I2C_READ_LEN] [get_bd_pins i2c_register/o_I2C_READ_LEN]
   connect_bd_net -net i2c_register_0_o_I2C_READ_LEN_wstrobe [get_bd_pins axi_iic_fe/i_I2C_READ_LEN_wstrobe] [get_bd_pins i2c_register/o_I2C_READ_LEN_wstrobe]
   connect_bd_net -net i2c_register_0_o_I2C_REG_NUM [get_bd_pins axi_iic_fe/i_I2C_REG_NUM] [get_bd_pins i2c_register/o_I2C_REG_NUM]
+  connect_bd_net -net i2c_register_o_I2C_TLIMIT_USEC [get_bd_pins axi_iic_fe/i_I2C_TLIMIT_USEC] [get_bd_pins i2c_register/o_I2C_TLIMIT_USEC] [get_bd_pins system_ila_0/probe1]
+  set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets i2c_register_o_I2C_TLIMIT_USEC]
   connect_bd_net -net i2c_register_o_I2C_WRITE_LEN [get_bd_pins axi_iic_fe/i_I2C_WRITE_LEN] [get_bd_pins i2c_register/o_I2C_WRITE_LEN]
   connect_bd_net -net i2c_register_o_I2C_WRITE_LEN_wstrobe [get_bd_pins axi_iic_fe/i_I2C_WRITE_LEN_wstrobe] [get_bd_pins i2c_register/o_I2C_WRITE_LEN_wstrobe]
   connect_bd_net -net o_I2C_TX_DATA [get_bd_pins axi_iic_fe/i_I2C_TX_DATA] [get_bd_pins i2c_register/o_I2C_TX_DATA]

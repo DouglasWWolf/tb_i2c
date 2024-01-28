@@ -56,6 +56,9 @@
 (* DowngradeIPIdentifiedWarnings = "yes" *)
 module top_level_axi_iic_fe_0_0 (
   alarm,
+  dbg_fsm_state,
+  dbg_tlimit,
+  dbg_usec_elapsed,
   clk,
   resetn,
   axi_iic_intr,
@@ -66,6 +69,7 @@ module top_level_axi_iic_fe_0_0 (
   i_I2C_TX_DATA,
   i_I2C_WRITE_LEN,
   i_I2C_WRITE_LEN_wstrobe,
+  i_I2C_TLIMIT_USEC,
   o_MODULE_REV,
   o_I2C_STATUS,
   o_I2C_RX_DATA,
@@ -92,6 +96,9 @@ module top_level_axi_iic_fe_0_0 (
 );
 
 output wire alarm;
+output wire [6 : 0] dbg_fsm_state;
+output wire [31 : 0] dbg_tlimit;
+output wire [31 : 0] dbg_usec_elapsed;
 (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME clk, ASSOCIATED_BUSIF AXI, ASSOCIATED_RESET resetn, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, CLK_DOMAIN /source_100mhz/system_clock_clk_out1, INSERT_VIP 0" *)
 (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 clk CLK" *)
 input wire clk;
@@ -108,8 +115,9 @@ input wire i_I2C_READ_LEN_wstrobe;
 input wire [31 : 0] i_I2C_TX_DATA;
 input wire [2 : 0] i_I2C_WRITE_LEN;
 input wire i_I2C_WRITE_LEN_wstrobe;
+input wire [31 : 0] i_I2C_TLIMIT_USEC;
 output wire [31 : 0] o_MODULE_REV;
-output wire [1 : 0] o_I2C_STATUS;
+output wire [7 : 0] o_I2C_STATUS;
 output wire [31 : 0] o_I2C_RX_DATA;
 output wire [31 : 0] o_I2C_TRANSACT_USEC;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWADDR" *)
@@ -158,6 +166,9 @@ output wire AXI_RREADY;
     .CLKS_PER_USEC(100)
   ) inst (
     .alarm(alarm),
+    .dbg_fsm_state(dbg_fsm_state),
+    .dbg_tlimit(dbg_tlimit),
+    .dbg_usec_elapsed(dbg_usec_elapsed),
     .clk(clk),
     .resetn(resetn),
     .axi_iic_intr(axi_iic_intr),
@@ -168,6 +179,7 @@ output wire AXI_RREADY;
     .i_I2C_TX_DATA(i_I2C_TX_DATA),
     .i_I2C_WRITE_LEN(i_I2C_WRITE_LEN),
     .i_I2C_WRITE_LEN_wstrobe(i_I2C_WRITE_LEN_wstrobe),
+    .i_I2C_TLIMIT_USEC(i_I2C_TLIMIT_USEC),
     .o_MODULE_REV(o_MODULE_REV),
     .o_I2C_STATUS(o_I2C_STATUS),
     .o_I2C_RX_DATA(o_I2C_RX_DATA),
