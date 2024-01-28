@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Jan 27 05:30:48 2024" VIVADOVERSION="2021.1">
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sat Jan 27 16:16:16 2024" VIVADOVERSION="2021.1">
 
   <SYSTEMINFO ARCH="artix7" DEVICE="7a100t" NAME="top_level" PACKAGE="csg324" SPEEDGRADE="-1"/>
 
@@ -1781,6 +1781,7 @@
       <DOCUMENTS/>
       <PARAMETERS>
         <PARAMETER NAME="IIC_BASE" VALUE="0x00000000"/>
+        <PARAMETER NAME="CLKS_PER_USEC" VALUE="100"/>
         <PARAMETER NAME="Component_Name" VALUE="top_level_axi_iic_fe_0_0"/>
         <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
       </PARAMETERS>
@@ -1853,6 +1854,11 @@
         <PORT DIR="O" LEFT="31" NAME="o_I2C_RX_DATA" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_o_I2C_RX_DATA">
           <CONNECTIONS>
             <CONNECTION INSTANCE="i2c_register" PORT="i_I2C_RX_DATA"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="31" NAME="o_I2C_TRANSACT_USEC" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_o_I2C_TRANSACT_USEC">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="i2c_register" PORT="i_I2C_TRANSACT_USEC"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="31" NAME="AXI_AWADDR" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_AXI_AWADDR">
@@ -2675,6 +2681,11 @@
         <PORT DIR="I" LEFT="31" NAME="i_I2C_RX_DATA" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_o_I2C_RX_DATA">
           <CONNECTIONS>
             <CONNECTION INSTANCE="axi_iic_fe" PORT="o_I2C_RX_DATA"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="31" NAME="i_I2C_TRANSACT_USEC" RIGHT="0" SIGIS="undef" SIGNAME="axi_iic_fe_o_I2C_TRANSACT_USEC">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="axi_iic_fe" PORT="o_I2C_TRANSACT_USEC"/>
           </CONNECTIONS>
         </PORT>
         <PORT DIR="O" LEFT="31" NAME="o_I2C_TX_DATA" RIGHT="0" SIGIS="undef" SIGNAME="i2c_register_o_I2C_TX_DATA">

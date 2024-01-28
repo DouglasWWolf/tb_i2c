@@ -69,6 +69,7 @@ module top_level_axi_iic_fe_0_0 (
   o_MODULE_REV,
   o_I2C_STATUS,
   o_I2C_RX_DATA,
+  o_I2C_TRANSACT_USEC,
   AXI_AWADDR,
   AXI_AWVALID,
   AXI_AWPROT,
@@ -110,6 +111,7 @@ input wire i_I2C_WRITE_LEN_wstrobe;
 output wire [31 : 0] o_MODULE_REV;
 output wire [1 : 0] o_I2C_STATUS;
 output wire [31 : 0] o_I2C_RX_DATA;
+output wire [31 : 0] o_I2C_TRANSACT_USEC;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWADDR" *)
 output wire [31 : 0] AXI_AWADDR;
 (* X_INTERFACE_INFO = "xilinx.com:interface:aximm:1.0 AXI AWVALID" *)
@@ -152,7 +154,8 @@ WRITE_THREADS 1, RUSER_BITS_PER_BYTE 0, WUSER_BITS_PER_BYTE 0, INSERT_VIP 0" *)
 output wire AXI_RREADY;
 
   axi_iic_fe #(
-    .IIC_BASE(32'H00000000)
+    .IIC_BASE(32'H00000000),
+    .CLKS_PER_USEC(100)
   ) inst (
     .alarm(alarm),
     .clk(clk),
@@ -168,6 +171,7 @@ output wire AXI_RREADY;
     .o_MODULE_REV(o_MODULE_REV),
     .o_I2C_STATUS(o_I2C_STATUS),
     .o_I2C_RX_DATA(o_I2C_RX_DATA),
+    .o_I2C_TRANSACT_USEC(o_I2C_TRANSACT_USEC),
     .AXI_AWADDR(AXI_AWADDR),
     .AXI_AWVALID(AXI_AWVALID),
     .AXI_AWPROT(AXI_AWPROT),

@@ -1,5 +1,15 @@
+/*
+    This module serves as a "front-end" for the Xilinx AXI IIC module, and greatly 
+    simplifies performing register read/writes to I2C devices.
 
-module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000)
+    Note: On the Xilinx AXI IIC module, the TX_FIFO_EMPTY bit of the IER doesn't work 
+          the way the documentation implies.   There is no way to generate an interrupt
+          at the completion of an I2C write-transaction, which is why this module polls 
+          to find out when a write-transaction is complete.
+
+*/
+
+module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLKS_PER_USEC = 100)
 (
     output reg alarm,
 
@@ -33,6 +43,9 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000)
     
     // The result of an I2C read operation is output here
     output [31:0]     o_I2C_RX_DATA,
+
+    // The number of microseconds that the I2C transaction took
+    output reg[31:0]  o_I2C_TRANSACT_USEC,
 
     //====================  An AXI-Lite Master Interface  ======================
 
@@ -195,6 +208,33 @@ assign wca[05] = 0;              ;assign wcd[05] = 0;
 //-----------------------------------------------------------------------------
 
 
+//=============================================================================
+// This block counts elapsed microseconds.  Count is reset to zero on 
+// any cycle where "usec_reset" is high
+//=============================================================================
+reg[31:0] usec_elapsed;
+reg       usec_reset;
+//-----------------------------------------------------------------------------
+reg[$clog2(CLKS_PER_USEC-1):0] usec_counter;
+//-----------------------------------------------------------------------------
+always @(posedge clk) begin
+
+    if (resetn == 0 || usec_reset == 1) begin
+        usec_counter <= 0;
+        usec_elapsed <= 0; 
+    end
+
+    else if (usec_counter < CLKS_PER_USEC-1)
+        usec_counter <= usec_counter + 1;
+
+    else begin
+        usec_counter <= 0;
+        usec_elapsed <= usec_elapsed + 1;
+    end
+
+end
+//=============================================================================
+
 reg[31:0] delay;
 always @(posedge clk) begin
 
@@ -204,6 +244,7 @@ always @(posedge clk) begin
     // These signals only strobe high for a single cycle
     AMCI_READ  <= 0;
     AMCI_WRITE <= 0;
+    usec_reset <= 0;
 
     if (resetn == 0)
         fsm_state <= 0;
@@ -241,6 +282,7 @@ always @(posedge clk) begin
                     AMCI_WRITE <= 1;
                     cmd_index  <= cmd_index + 1;
                 end else begin
+                    usec_reset <= 1;                
                     fsm_state  <= fsm_state + 1;
                 end
             end
@@ -248,9 +290,10 @@ always @(posedge clk) begin
         // The interrupt line has gone high.  Let's find out why
         FSM_READ_IIC + 2:
             if (axi_iic_intr) begin
-                AMCI_RADDR <= IIC_ISR;
-                AMCI_READ  <= 1;
-                fsm_state  <= fsm_state + 1;
+                o_I2C_TRANSACT_USEC <= usec_elapsed;
+                AMCI_RADDR          <= IIC_ISR;
+                AMCI_READ           <= 1;
+                fsm_state           <= fsm_state + 1;
             end
 
         // Find out if we received data.  If not, it's an error

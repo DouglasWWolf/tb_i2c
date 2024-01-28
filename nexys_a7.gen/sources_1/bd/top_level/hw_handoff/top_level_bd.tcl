@@ -414,6 +414,7 @@ connect_bd_intf_net -intf_net [get_bd_intf_nets axi_iic_fe_0_AXI] [get_bd_intf_p
   set_property HDL_ATTRIBUTE.DEBUG {true} [get_bd_nets axi_iic_0_iic2intc_irpt]
   connect_bd_net -net axi_iic_fe_o_I2C_IDLE [get_bd_pins axi_iic_fe/o_I2C_STATUS] [get_bd_pins i2c_register/i_I2C_STATUS]
   connect_bd_net -net axi_iic_fe_o_I2C_RX_DATA [get_bd_pins axi_iic_fe/o_I2C_RX_DATA] [get_bd_pins i2c_register/i_I2C_RX_DATA]
+  connect_bd_net -net axi_iic_fe_o_I2C_TRANSACT_USEC [get_bd_pins axi_iic_fe/o_I2C_TRANSACT_USEC] [get_bd_pins i2c_register/i_I2C_TRANSACT_USEC]
   connect_bd_net -net axi_iic_fe_o_MODULE_REV [get_bd_pins axi_iic_fe/o_MODULE_REV] [get_bd_pins i2c_register/i_MODULE_REV]
   connect_bd_net -net i2c_register_0_o_I2C_DEV_ADDR [get_bd_pins axi_iic_fe/i_I2C_DEV_ADDR] [get_bd_pins i2c_register/o_I2C_DEV_ADDR]
   connect_bd_net -net i2c_register_0_o_I2C_READ_LEN [get_bd_pins axi_iic_fe/i_I2C_READ_LEN] [get_bd_pins i2c_register/o_I2C_READ_LEN]

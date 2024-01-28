@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Sat Jan 27 05:30:37 2024
+//Date        : Sat Jan 27 16:16:05 2024
 //Host        : simtool-5 running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -267,6 +267,7 @@ module top_level
   (* CONN_BUS_INFO = "axi_iic_fe_0_AXI xilinx.com:interface:aximm:1.0 AXI4LITE WVALID" *) (* DEBUG = "true" *) (* MARK_DEBUG *) wire axi_iic_fe_0_AXI_WVALID;
   wire [1:0]axi_iic_fe_o_I2C_IDLE;
   wire [31:0]axi_iic_fe_o_I2C_RX_DATA;
+  wire [31:0]axi_iic_fe_o_I2C_TRANSACT_USEC;
   wire [31:0]axi_iic_fe_o_MODULE_REV;
   wire [63:0]hier_0_M_AXI_ARADDR;
   wire hier_0_M_AXI_ARREADY;
@@ -403,6 +404,7 @@ module top_level
         .i_I2C_WRITE_LEN_wstrobe(i2c_register_o_I2C_WRITE_LEN_wstrobe),
         .o_I2C_RX_DATA(axi_iic_fe_o_I2C_RX_DATA),
         .o_I2C_STATUS(axi_iic_fe_o_I2C_IDLE),
+        .o_I2C_TRANSACT_USEC(axi_iic_fe_o_I2C_TRANSACT_USEC),
         .o_MODULE_REV(axi_iic_fe_o_MODULE_REV),
         .resetn(source_100mhz_peripheral_aresetn));
   axi_uart_bridge_imp_1OII57Q axi_uart_bridge
@@ -450,6 +452,7 @@ module top_level
         .clk(system_clock_clk_100mhz),
         .i_I2C_RX_DATA(axi_iic_fe_o_I2C_RX_DATA),
         .i_I2C_STATUS(axi_iic_fe_o_I2C_IDLE),
+        .i_I2C_TRANSACT_USEC(axi_iic_fe_o_I2C_TRANSACT_USEC),
         .i_MODULE_REV(axi_iic_fe_o_MODULE_REV),
         .o_I2C_DEV_ADDR(i2c_register_0_o_I2C_DEV_ADDR),
         .o_I2C_READ_LEN(i2c_register_0_o_I2C_READ_LEN),

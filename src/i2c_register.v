@@ -68,19 +68,21 @@ module i2c_register
     // Data received when reading a device register over I2C
     input[31:0]  i_I2C_RX_DATA,
 
+    // Duration of most recent I2C transaction, in microseconds
+    input[31:0]  i_I2C_TRANSACT_USEC,
+
     // Data to be written to an I2C ADDR_MASK
     output[31:0] o_I2C_TX_DATA,
         
     // The number of bytes to write.  Starts the write.
     output[2:0]  o_I2C_WRITE_LEN,
     output       o_I2C_WRITE_LEN_wstrobe
-
     //==========================================================================
 
 );  
 
     // The number of AXI register we have
-    localparam REGISTER_COUNT = 8;
+    localparam REGISTER_COUNT = 9;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -95,19 +97,19 @@ module i2c_register
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
     //=========================  AXI Register Map  =============================
-    localparam SREG_MODULE_REV       = 0;  
-    localparam SREG_I2C_STATUS       = 1;  
-    localparam SREG_I2C_RX_DATA      = 2;
-
-    // This is an alias for the first control register
-    localparam CREG_FIRST            = 3;    
+    localparam SREG_MODULE_REV        = 0;  
+    localparam SREG_I2C_STATUS        = 1;  
+    localparam SREG_I2C_RX_DATA       = 2;
+    localparam SREG_I2C_TRANSACT_USEC = 3;
     
-    localparam CREG_DEV_ADDR         = 3;
-    localparam CREG_REG_NUM          = 4;
-    localparam CREG_READ_LEN         = 5;    
-    localparam CREG_TX_DATA          = 6;
-    localparam CREG_WRITE_LEN        = 7;
-
+    // This is an alias for the first control register
+    localparam CREG_FIRST             = 4;    
+    
+    localparam CREG_DEV_ADDR          = 4;
+    localparam CREG_REG_NUM           = 5;
+    localparam CREG_READ_LEN          = 6;    
+    localparam CREG_TX_DATA           = 7;
+    localparam CREG_WRITE_LEN         = 8;
     //==========================================================================
 
 
@@ -127,9 +129,10 @@ module i2c_register
     //-----------------------------------------------------------------
     // Map registers to input ports
     //-----------------------------------------------------------------
-    always @* axi_reg[SREG_MODULE_REV ] = i_MODULE_REV;
-    always @* axi_reg[SREG_I2C_STATUS ] = i_I2C_STATUS;
-    always @* axi_reg[SREG_I2C_RX_DATA] = i_I2C_RX_DATA;
+    always @* axi_reg[SREG_MODULE_REV       ] = i_MODULE_REV;
+    always @* axi_reg[SREG_I2C_STATUS       ] = i_I2C_STATUS;
+    always @* axi_reg[SREG_I2C_RX_DATA      ] = i_I2C_RX_DATA;
+    always @* axi_reg[SREG_I2C_TRANSACT_USEC] = i_I2C_TRANSACT_USEC;
     //-----------------------------------------------------------------
 
 

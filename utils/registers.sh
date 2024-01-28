@@ -1,14 +1,15 @@
 export axi_uart_device=/dev/ttyUSB2
 BASE_ADDR=0x10000
 
-    MODULE_REV=$((BASE_ADDR + 0*4))  
-    I2C_STATUS=$((BASE_ADDR + 1*4))
-   I2C_RX_DATA=$((BASE_ADDR + 2*4))
-  I2C_DEV_ADDR=$((BASE_ADDR + 3*4))
-   I2C_REG_NUM=$((BASE_ADDR + 4*4))
-  I2C_READ_LEN=$((BASE_ADDR + 5*4))
-   I2C_TX_DATA=$((BASE_ADDR + 6*4))
- I2C_WRITE_LEN=$((BASE_ADDR + 7*4))
+          MODULE_REV=$((BASE_ADDR + 0*4))  
+          I2C_STATUS=$((BASE_ADDR + 1*4))
+         I2C_RX_DATA=$((BASE_ADDR + 2*4))
+   I2C_TRANSACT_USEC=$((BASE_ADDR + 3*4))
+        I2C_DEV_ADDR=$((BASE_ADDR + 4*4))
+         I2C_REG_NUM=$((BASE_ADDR + 5*4))
+        I2C_READ_LEN=$((BASE_ADDR + 6*4))
+         I2C_TX_DATA=$((BASE_ADDR + 7*4))
+       I2C_WRITE_LEN=$((BASE_ADDR + 89*4))
 
 
 #==============================================================================
