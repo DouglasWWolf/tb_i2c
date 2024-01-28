@@ -9,7 +9,7 @@ BASE_ADDR=0x10000
          I2C_REG_NUM=$((BASE_ADDR + 5*4))
         I2C_READ_LEN=$((BASE_ADDR + 6*4))
          I2C_TX_DATA=$((BASE_ADDR + 7*4))
-       I2C_WRITE_LEN=$((BASE_ADDR + 89*4))
+       I2C_WRITE_LEN=$((BASE_ADDR + 8*4))
 
 
 #==============================================================================
@@ -47,8 +47,12 @@ read_reg()
         test $(axi_read $I2C_STATUS) -ne 0 && break
     done
 
-    axi_read $I2C_RX_DATA
     axireg $I2C_RX_DATA
+    echo "Data   = $(axireg $I2C_RX_DATA)"
+    echo "Status = $(axireg $I2C_STATUS)"
+    echo "usec   = $(axireg $I2C_TRANSACT_USEC)"
+
+
 }
 
 
@@ -69,7 +73,9 @@ write_reg()
         test $(axi_read $I2C_STATUS) -ne 0 && break
     done
 
-    axireg $I2C_STATUS
+    echo "Status = $(axireg $I2C_STATUS)"
+    echo "usec   = $(axireg $I2C_TRANSACT_USEC)"
+
 }
 
 

@@ -200,7 +200,7 @@ assign rca[09] = 0               ;assign rcd[09] = 0;
 wire[31:0] wca[0:5], wcd[0:5];
 
 assign wca[00] = IIC_SOFTR;      ;assign wcd[00] = 4'b1010;             // Soft-reset of the AXI IIC module
-assign wca[01] = IIC_IER         ;assign wcd[01] = TX_EMPTY | TX_ERR | ARB_LOST;
+assign wca[01] = IIC_IER         ;assign wcd[01] = TX_ERR | ARB_LOST;
 assign wca[02] = IIC_GIE         ;assign wcd[02] = 32'h8000_0000;       // Globally enable interrupts
 assign wca[03] = IIC_TX_FIFO     ;assign wcd[03] = {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_WR};
 assign wca[04] = IIC_TX_FIFO     ;assign wcd[04] = i_I2C_REG_NUM[7:0];
@@ -236,6 +236,8 @@ end
 //=============================================================================
 
 reg[31:0] delay;
+reg[31:0] end_of_transaction;
+
 always @(posedge clk) begin
 
     alarm <= 0;
@@ -252,13 +254,20 @@ always @(posedge clk) begin
 
         FSM_IDLE:
             begin
-               
-                if (i_I2C_READ_LEN_wstrobe && i_I2C_READ_LEN >= 1 && i_I2C_READ_LEN <= 4)
+
+                cmd_index <= 0;
+
+                // Were we just told to start an I2C "read register" transaction?
+                if (i_I2C_READ_LEN_wstrobe && i_I2C_READ_LEN >= 1 && i_I2C_READ_LEN <= 4) begin
+                     bus_fault <= 0;
                      fsm_state <= FSM_READ_IIC;
+                end
 
-                if (i_I2C_WRITE_LEN_wstrobe && i_I2C_WRITE_LEN >= 1 && i_I2C_WRITE_LEN <= 4)
+                // Were we just told to start an I2C "write register" transaction?
+                if (i_I2C_WRITE_LEN_wstrobe && i_I2C_WRITE_LEN >= 1 && i_I2C_WRITE_LEN <= 4) begin
+                     bus_fault <= 0;
                      fsm_state <= FSM_WRITE_IIC;
-
+                end
             end
 
         //-----------------------------------------------------------------------------------
@@ -363,38 +372,59 @@ always @(posedge clk) begin
                 end
             end
 
+        // We've placed our entire command in the TX FIFO.  Send it.
         FSM_WRITE_IIC + 3:
-            if (AMCI_WIDLE & AMCI_RIDLE) begin
+            if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_CR;
                 AMCI_WDATA <= EN;
                 AMCI_WRITE <= 1;
-                AMCI_RADDR <= 0;
                 fsm_state  <= fsm_state + 1;
-                delay <= 50000000;
             end
         
 
-        // The interrupt line has gone high.  Let's find out why
+        // We've sent the "Enable transaction" command.  Start the
+        // microsecond timer, and start a read of the IIC status
+        // register
         FSM_WRITE_IIC + 4:
-            if (AMCI_WIDLE & AMCI_RIDLE) begin
-                if (AMCI_RADDR == IIC_SR && AMCI_RDATA[7]) begin
-                    alarm <= 1;
-                    fsm_state <= fsm_state + 1;
-                end
+            if (AMCI_WIDLE) begin
+                usec_reset <= 1;
                 AMCI_RADDR <= IIC_SR;
                 AMCI_READ  <= 1;
-                if (delay == 0) begin
-                    fsm_state <= fsm_state + 1;
-                end
-
-                if (axi_iic_intr) begin
-                    alarm <= 1;
-                    fsm_state <= fsm_state + 1;
-                end
+                fsm_state  <= fsm_state + 1;
             end
 
+        // We're polling the status register to wait for bit 7
+        // to tell us "The TX_FIFO has been emptied"
         FSM_WRITE_IIC + 5:
-            if (AMCI_RIDLE) fsm_state <= FSM_IDLE;
+            
+            // An interrupt indicates something awry in the transaction
+            if (axi_iic_intr) begin
+                bus_fault <= 1;
+                fsm_state <= FSM_IDLE;
+            end 
+
+            // If our read of the IIC_SR (Status register) is complete,
+            // Check to see if all bytes have been transmitted
+            else if (AMCI_RIDLE) begin
+                
+                // If the TX FIFO is empty, go wait for the last TX
+                // byte to finish transmitting
+                if (AMCI_RDATA[7]) begin
+                    end_of_transaction <= usec_elapsed + 200;
+                    fsm_state          <= fsm_state + 1;
+                end
+
+                // If the TX FIFO wasn't empty, keeping polling 
+                else AMCI_READ <= 1;
+            end
+
+        // Here we pause a moment to allow the last byte in the FIFO to 
+        // finish being transmitted to the I2C device
+        FSM_WRITE_IIC + 6:
+            if (usec_elapsed == end_of_transaction) begin
+                o_I2C_TRANSACT_USEC <= usec_elapsed; 
+                fsm_state           <= FSM_IDLE;
+            end
 
     endcase
 
