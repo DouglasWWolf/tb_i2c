@@ -1,4 +1,3 @@
-export axi_uart_device=/dev/ttyUSB2
 BASE_ADDR=0x10000
 
           MODULE_REV=$((BASE_ADDR +  0*4))  
