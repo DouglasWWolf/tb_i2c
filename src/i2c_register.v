@@ -205,10 +205,13 @@ module i2c_register
         // These bits strobe high for only a single cycle
         wstrobe <= 0;
 
-        // If we're in reset, initialize important registers
+        // If we're in reset, set the default values of the AXI registers
         if (resetn == 0) begin
             ashi_write_state <= 0;
-            axi_reg[CREG_TLIMIT_USEC] <= DEFAULT_I2C_TLIMIT_USEC;
+
+            for (i = CREG_FIRST; i < REGISTER_COUNT; i=i+1) begin
+                axi_reg[i] <= default_value[i];
+            end
 
         // If we're not in reset, and a write-request has occured...        
         end else case (ashi_write_state)

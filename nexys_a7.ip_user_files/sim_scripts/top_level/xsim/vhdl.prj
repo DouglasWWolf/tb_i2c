@@ -1,7 +1,0 @@
-vhdl xil_defaultlib  \
-"../../../bd/top_level/ip/top_level_smartconnect_0_0/bd_0/ip/ip_1/sim/bd_f519_psr_aclk_0.vhd" \
-"../../../bd/top_level/ip/top_level_proc_sys_reset_0_0/sim/top_level_proc_sys_reset_0_0.vhd" \
-"../../../bd/top_level/ip/top_level_axi_uartlite_0_0/sim/top_level_axi_uartlite_0_0.vhd" \
-"../../../bd/top_level/ip/top_level_axi_iic_0_0/sim/top_level_axi_iic_0_0.vhd" \
-
-nosort
