@@ -7,30 +7,31 @@
    "No Loops_ExpandedHierarchyInLayout":"",
    "No Loops_Layout":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
-preplace port UART -pg 1 -lvl 6 -x 1700 -y 60 -defaultsOSRD
-preplace port I2C -pg 1 -lvl 6 -x 1700 -y 190 -defaultsOSRD
-preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 380 -defaultsOSRD
-preplace port port-id_CPU_RESETN -pg 1 -lvl 0 -x 0 -y 400 -defaultsOSRD
-preplace inst source_100mhz -pg 1 -lvl 1 -x 190 -y 380 -swap {0 3 2 1 4} -defaultsOSRD -pinDir CLK100MHZ left -pinY CLK100MHZ 0L -pinDir clk_100mhz right -pinY clk_100mhz 20R -pinDir CPU_RESETN left -pinY CPU_RESETN 20L -pinBusDir interconnect_aresetn right -pinBusY interconnect_aresetn 0R -pinBusDir peripheral_aresetn right -pinBusY peripheral_aresetn 100R
-preplace inst axi_uart_bridge -pg 1 -lvl 5 -x 1560 -y 60 -defaultsOSRD -pinDir M_AXI left -pinY M_AXI 0L -pinDir UART right -pinY UART 0R -pinDir aresetn left -pinY aresetn 20L -pinDir aclk left -pinY aclk 40L
-preplace inst axi_iic -pg 1 -lvl 5 -x 1560 -y 190 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 27 25 26 28} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir IIC right -pinY IIC 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 60L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 20L -pinDir iic2intc_irpt left -pinY iic2intc_irpt 40L -pinBusDir gpo right -pinBusY gpo 20R
-preplace inst system_interconnect -pg 1 -lvl 2 -x 500 -y 60 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 87 86} -defaultsOSRD -pinDir S00_AXI right -pinY S00_AXI 0R -pinDir S01_AXI left -pinY S01_AXI 0L -pinDir M00_AXI right -pinY M00_AXI 340R -pinDir aclk left -pinY aclk 340L -pinDir aresetn left -pinY aresetn 320L
-preplace inst i2c_register -pg 1 -lvl 3 -x 840 -y 140 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 38 24 30 33 36 32 37 35 22 28 27 31 34 39 23 25 29 26} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 260L -pinDir clk left -pinY clk 320L -pinDir resetn left -pinY resetn 340L -pinBusDir o_I2C_DEV_ADDR right -pinBusY o_I2C_DEV_ADDR 320R -pinBusDir o_I2C_REG_NUM right -pinBusY o_I2C_REG_NUM 40R -pinBusDir o_I2C_READ_LEN right -pinBusY o_I2C_READ_LEN 160R -pinDir o_I2C_READ_LEN_wstrobe right -pinY o_I2C_READ_LEN_wstrobe 220R -pinBusDir i_MODULE_REV right -pinBusY i_MODULE_REV 280R -pinBusDir i_I2C_STATUS right -pinBusY i_I2C_STATUS 200R -pinBusDir i_I2C_RX_DATA right -pinBusY i_I2C_RX_DATA 300R -pinBusDir i_I2C_TRANSACT_USEC right -pinBusY i_I2C_TRANSACT_USEC 260R -pinBusDir i_PASSTHRU_RDATA right -pinBusY i_PASSTHRU_RDATA 0R -pinBusDir i_PASSTHRU_RESP right -pinBusY i_PASSTHRU_RESP 120R -pinBusDir o_I2C_TX_DATA right -pinBusY o_I2C_TX_DATA 100R -pinBusDir o_I2C_WRITE_LEN right -pinBusY o_I2C_WRITE_LEN 180R -pinDir o_I2C_WRITE_LEN_wstrobe right -pinY o_I2C_WRITE_LEN_wstrobe 240R -pinBusDir o_I2C_TLIMIT_USEC right -pinBusY o_I2C_TLIMIT_USEC 340R -pinBusDir o_PASSTHRU_ADDR right -pinBusY o_PASSTHRU_ADDR 20R -pinBusDir o_PASSTHRU_WDATA right -pinBusY o_PASSTHRU_WDATA 60R -pinDir o_PASSTHRU right -pinY o_PASSTHRU 140R -pinDir o_PASSTHRU_wstrobe right -pinY o_PASSTHRU_wstrobe 80R
-preplace inst axi_iic_fe -pg 1 -lvl 4 -x 1230 -y 140 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 40 39 22 37 23 29 32 26 30 33 38 21 24 28 25 35 31 36 34 20 27} -defaultsOSRD -pinDir AXI right -pinY AXI 50R -pinDir clk left -pinY clk 380L -pinDir resetn left -pinY resetn 360L -pinDir axi_iic_intr right -pinY axi_iic_intr 90R -pinBusDir i_I2C_DEV_ADDR left -pinBusY i_I2C_DEV_ADDR 320L -pinBusDir i_I2C_REG_NUM left -pinBusY i_I2C_REG_NUM 40L -pinBusDir i_I2C_READ_LEN left -pinBusY i_I2C_READ_LEN 160L -pinDir i_I2C_READ_LEN_wstrobe left -pinY i_I2C_READ_LEN_wstrobe 220L -pinBusDir i_I2C_TX_DATA left -pinBusY i_I2C_TX_DATA 100L -pinBusDir i_I2C_WRITE_LEN left -pinBusY i_I2C_WRITE_LEN 180L -pinDir i_I2C_WRITE_LEN_wstrobe left -pinY i_I2C_WRITE_LEN_wstrobe 240L -pinBusDir i_I2C_TLIMIT_USEC left -pinBusY i_I2C_TLIMIT_USEC 340L -pinBusDir i_PASSTHRU_ADDR left -pinBusY i_PASSTHRU_ADDR 20L -pinBusDir i_PASSTHRU_WDATA left -pinBusY i_PASSTHRU_WDATA 60L -pinDir i_PASSTHRU left -pinY i_PASSTHRU 140L -pinDir i_PASSTHRU_wstrobe left -pinY i_PASSTHRU_wstrobe 80L -pinBusDir o_MODULE_REV left -pinBusY o_MODULE_REV 280L -pinBusDir o_I2C_STATUS left -pinBusY o_I2C_STATUS 200L -pinBusDir o_I2C_RX_DATA left -pinBusY o_I2C_RX_DATA 300L -pinBusDir o_I2C_TRANSACT_USEC left -pinBusY o_I2C_TRANSACT_USEC 260L -pinBusDir o_PASSTHRU_RDATA left -pinBusY o_PASSTHRU_RDATA 0L -pinBusDir o_PASSTHRU_RESP left -pinBusY o_PASSTHRU_RESP 120L
-preplace netloc CLK100MHZ_1 1 0 1 NJ 380
-preplace netloc CPU_RESETN_1 1 0 1 NJ 400
+preplace port UART -pg 1 -lvl 6 -x 1760 -y 60 -defaultsOSRD
+preplace port I2C -pg 1 -lvl 6 -x 1760 -y 190 -defaultsOSRD
+preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 400 -defaultsOSRD
+preplace port port-id_CPU_RESETN -pg 1 -lvl 0 -x 0 -y 420 -defaultsOSRD
+preplace inst source_100mhz -pg 1 -lvl 1 -x 190 -y 400 -swap {0 3 2 1 4} -defaultsOSRD -pinDir CLK100MHZ left -pinY CLK100MHZ 0L -pinDir clk_100mhz right -pinY clk_100mhz 20R -pinDir CPU_RESETN left -pinY CPU_RESETN 20L -pinBusDir interconnect_aresetn right -pinBusY interconnect_aresetn 0R -pinBusDir peripheral_aresetn right -pinBusY peripheral_aresetn 100R
+preplace inst axi_uart_bridge -pg 1 -lvl 5 -x 1620 -y 60 -defaultsOSRD -pinDir M_AXI left -pinY M_AXI 0L -pinDir UART right -pinY UART 0R -pinDir aresetn left -pinY aresetn 20L -pinDir aclk left -pinY aclk 40L
+preplace inst axi_iic -pg 1 -lvl 5 -x 1620 -y 190 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 27 25 26 28} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir IIC right -pinY IIC 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 60L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 20L -pinDir iic2intc_irpt left -pinY iic2intc_irpt 40L -pinBusDir gpo right -pinBusY gpo 20R
+preplace inst system_interconnect -pg 1 -lvl 2 -x 500 -y 60 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 87 86} -defaultsOSRD -pinDir S00_AXI right -pinY S00_AXI 0R -pinDir S01_AXI left -pinY S01_AXI 0L -pinDir M00_AXI right -pinY M00_AXI 360R -pinDir aclk left -pinY aclk 360L -pinDir aresetn left -pinY aresetn 340L
+preplace inst i2c_register -pg 1 -lvl 3 -x 840 -y 140 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 39 24 37 30 33 36 32 38 35 22 28 27 31 34 40 23 25 29 26} -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 280L -pinDir clk left -pinY clk 340L -pinDir resetn left -pinY resetn 360L -pinBusDir o_I2C_DEV_ADDR right -pinBusY o_I2C_DEV_ADDR 340R -pinBusDir o_I2C_REG_NUM right -pinBusY o_I2C_REG_NUM 40R -pinBusDir o_I2C_REG_NUM_LEN right -pinBusY o_I2C_REG_NUM_LEN 300R -pinBusDir o_I2C_READ_LEN right -pinBusY o_I2C_READ_LEN 160R -pinDir o_I2C_READ_LEN_wstrobe right -pinY o_I2C_READ_LEN_wstrobe 220R -pinBusDir i_MODULE_REV right -pinBusY i_MODULE_REV 280R -pinBusDir i_I2C_STATUS right -pinBusY i_I2C_STATUS 200R -pinBusDir i_I2C_RX_DATA right -pinBusY i_I2C_RX_DATA 320R -pinBusDir i_I2C_TRANSACT_USEC right -pinBusY i_I2C_TRANSACT_USEC 260R -pinBusDir i_PASSTHRU_RDATA right -pinBusY i_PASSTHRU_RDATA 0R -pinBusDir i_PASSTHRU_RESP right -pinBusY i_PASSTHRU_RESP 120R -pinBusDir o_I2C_TX_DATA right -pinBusY o_I2C_TX_DATA 100R -pinBusDir o_I2C_WRITE_LEN right -pinBusY o_I2C_WRITE_LEN 180R -pinDir o_I2C_WRITE_LEN_wstrobe right -pinY o_I2C_WRITE_LEN_wstrobe 240R -pinBusDir o_I2C_TLIMIT_USEC right -pinBusY o_I2C_TLIMIT_USEC 360R -pinBusDir o_PASSTHRU_ADDR right -pinBusY o_PASSTHRU_ADDR 20R -pinBusDir o_PASSTHRU_WDATA right -pinBusY o_PASSTHRU_WDATA 60R -pinDir o_PASSTHRU right -pinY o_PASSTHRU 140R -pinDir o_PASSTHRU_wstrobe right -pinY o_PASSTHRU_wstrobe 80R
+preplace inst system_ila_0 -pg 1 -lvl 5 -x 1620 -y 350 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 21 20} -defaultsOSRD -pinDir SLOT_0_AXI left -pinY SLOT_0_AXI 0L -pinDir clk left -pinY clk 40L -pinDir resetn left -pinY resetn 20L
+preplace inst axi_iic_fe -pg 1 -lvl 4 -x 1230 -y 140 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 41 40 22 38 36 23 29 32 26 30 33 39 21 24 28 25 35 31 37 34 20 27} -defaultsOSRD -pinDir AXI right -pinY AXI 50R -pinDir clk left -pinY clk 400L -pinDir resetn left -pinY resetn 380L -pinDir axi_iic_intr right -pinY axi_iic_intr 90R -pinBusDir i_I2C_DEV_ADDR left -pinBusY i_I2C_DEV_ADDR 340L -pinBusDir i_I2C_REG_NUM_LEN left -pinBusY i_I2C_REG_NUM_LEN 300L -pinBusDir i_I2C_REG_NUM left -pinBusY i_I2C_REG_NUM 40L -pinBusDir i_I2C_READ_LEN left -pinBusY i_I2C_READ_LEN 160L -pinDir i_I2C_READ_LEN_wstrobe left -pinY i_I2C_READ_LEN_wstrobe 220L -pinBusDir i_I2C_TX_DATA left -pinBusY i_I2C_TX_DATA 100L -pinBusDir i_I2C_WRITE_LEN left -pinBusY i_I2C_WRITE_LEN 180L -pinDir i_I2C_WRITE_LEN_wstrobe left -pinY i_I2C_WRITE_LEN_wstrobe 240L -pinBusDir i_I2C_TLIMIT_USEC left -pinBusY i_I2C_TLIMIT_USEC 360L -pinBusDir i_PASSTHRU_ADDR left -pinBusY i_PASSTHRU_ADDR 20L -pinBusDir i_PASSTHRU_WDATA left -pinBusY i_PASSTHRU_WDATA 60L -pinDir i_PASSTHRU left -pinY i_PASSTHRU 140L -pinDir i_PASSTHRU_wstrobe left -pinY i_PASSTHRU_wstrobe 80L -pinBusDir o_MODULE_REV left -pinBusY o_MODULE_REV 280L -pinBusDir o_I2C_STATUS left -pinBusY o_I2C_STATUS 200L -pinBusDir o_I2C_RX_DATA left -pinBusY o_I2C_RX_DATA 320L -pinBusDir o_I2C_TRANSACT_USEC left -pinBusY o_I2C_TRANSACT_USEC 260L -pinBusDir o_PASSTHRU_RDATA left -pinBusY o_PASSTHRU_RDATA 0L -pinBusDir o_PASSTHRU_RESP left -pinBusY o_PASSTHRU_RESP 120L
+preplace netloc CLK100MHZ_1 1 0 1 NJ 400
+preplace netloc CPU_RESETN_1 1 0 1 NJ 420
 preplace netloc axi_iic_0_iic2intc_irpt 1 4 1 N 230
 preplace netloc axi_iic_fe_o_I2C_IDLE 1 3 1 N 340
-preplace netloc axi_iic_fe_o_I2C_RX_DATA 1 3 1 N 440
+preplace netloc axi_iic_fe_o_I2C_RX_DATA 1 3 1 N 460
 preplace netloc axi_iic_fe_o_I2C_TRANSACT_USEC 1 3 1 N 400
 preplace netloc axi_iic_fe_o_MODULE_REV 1 3 1 N 420
 preplace netloc axi_iic_fe_o_PASSTHRU_RDATA 1 3 1 N 140
 preplace netloc axi_iic_fe_o_PASSTHRU_RESP 1 3 1 N 260
-preplace netloc i2c_register_0_o_I2C_DEV_ADDR 1 3 1 N 460
+preplace netloc i2c_register_0_o_I2C_DEV_ADDR 1 3 1 N 480
 preplace netloc i2c_register_0_o_I2C_READ_LEN 1 3 1 N 300
 preplace netloc i2c_register_0_o_I2C_READ_LEN_wstrobe 1 3 1 N 360
 preplace netloc i2c_register_0_o_I2C_REG_NUM 1 3 1 N 180
-preplace netloc i2c_register_o_I2C_TLIMIT_USEC 1 3 1 N 480
+preplace netloc i2c_register_o_I2C_TLIMIT_USEC 1 3 1 N 500
 preplace netloc i2c_register_o_I2C_WRITE_LEN 1 3 1 N 320
 preplace netloc i2c_register_o_I2C_WRITE_LEN_wstrobe 1 3 1 N 380
 preplace netloc i2c_register_o_PASSTHRU 1 3 1 N 280
@@ -38,19 +39,20 @@ preplace netloc i2c_register_o_PASSTHRU_ADDR 1 3 1 N 160
 preplace netloc i2c_register_o_PASSTHRU_WDATA 1 3 1 N 200
 preplace netloc i2c_register_o_PASSTHRU_wstrobe 1 3 1 N 220
 preplace netloc o_I2C_TX_DATA 1 3 1 N 240
-preplace netloc source_100mhz_interconnect_aresetn 1 1 1 NJ 380
-preplace netloc source_100mhz_peripheral_aresetn 1 1 4 N 480 640 540 1020 80 1420
-preplace netloc system_clock_clk_100mhz 1 1 4 360 460 660 560 1040 580 1440
+preplace netloc source_100mhz_interconnect_aresetn 1 1 1 NJ 400
+preplace netloc source_100mhz_peripheral_aresetn 1 1 4 N 500 640 560 1020 80 1440
+preplace netloc system_clock_clk_100mhz 1 1 4 360 480 660 580 1040 600 1460
+preplace netloc i2c_register_o_I2C_REG_NUM_LEN 1 3 1 N 440
 preplace netloc axi_iic_0_IIC 1 5 1 NJ 190
+preplace netloc axi_iic_fe_AXI 1 4 1 1420 190n
 preplace netloc hier_0_M_AXI 1 2 3 N 60 N 60 N
 preplace netloc hier_0_UART 1 5 1 NJ 60
-preplace netloc axi_iic_fe_AXI 1 4 1 N 190
-preplace netloc system_interconnect_M00_AXI 1 2 1 N 400
-levelinfo -pg 1 0 190 500 840 1230 1560 1700
-pagesize -pg 1 -db -bbox -sgen -150 0 1790 590
+preplace netloc system_interconnect_M00_AXI 1 2 1 N 420
+levelinfo -pg 1 0 190 500 840 1230 1620 1760
+pagesize -pg 1 -db -bbox -sgen -150 0 1850 610
 ",
-   "No Loops_ScaleFactor":"0.57513",
-   "No Loops_TopLeft":"-143,-398",
+   "No Loops_ScaleFactor":"0.557789",
+   "No Loops_TopLeft":"-142,-384",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
 preplace port port-id_CLK100MHZ -pg 1 -lvl 0 -x 0 -y 100 -defaultsOSRD

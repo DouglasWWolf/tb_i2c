@@ -8,14 +8,16 @@ BASE_ADDR=0x10000
        PASSTHRU_RESP=$((BASE_ADDR +  5*4))
         I2C_DEV_ADDR=$((BASE_ADDR +  6*4))
          I2C_REG_NUM=$((BASE_ADDR +  7*4))
-        I2C_READ_LEN=$((BASE_ADDR +  8*4))
-         I2C_TX_DATA=$((BASE_ADDR +  9*4))
-       I2C_WRITE_LEN=$((BASE_ADDR + 10*4))
-          I2C_TLIMIT=$((BASE_ADDR + 11*4))
-       PASSTHRU_ADDR=$((BASE_ADDR + 12*4))
-      PASSTHRU_WDATA=$((BASE_ADDR + 13*4))
-            PASSTHRU=$((BASE_ADDR + 14*4))
-    
+     I2C_REG_NUM_LEN=$((BASE_ADDR +  8*4))
+        I2C_READ_LEN=$((BASE_ADDR +  9*4))
+         I2C_TX_DATA=$((BASE_ADDR + 10*4))
+       I2C_WRITE_LEN=$((BASE_ADDR + 11*4))
+          I2C_TLIMIT=$((BASE_ADDR + 12*4))
+       PASSTHRU_ADDR=$((BASE_ADDR + 13*4))
+      PASSTHRU_WDATA=$((BASE_ADDR + 14*4))
+            PASSTHRU=$((BASE_ADDR + 15*4))
+      
+
 #==============================================================================
 # This reads a PCI register and displays its value in decimal
 #==============================================================================

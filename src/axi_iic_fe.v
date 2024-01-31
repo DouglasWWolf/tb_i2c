@@ -18,9 +18,12 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLK
 
     // Address of the I2C device we want to read/write
     input[6:0]        i_I2C_DEV_ADDR,
-    
+
+    // The number of bytes of "register number" to send (0, 1, or 2)
+    input[1:0]        i_I2C_REG_NUM_LEN,
+
     // The target register of that I2C device
-    input[7:0]        i_I2C_REG_NUM,
+    input[15:0]       i_I2C_REG_NUM,
 
     // Set the read length and start an I2C read
     input[2:0]        i_I2C_READ_LEN,
@@ -143,14 +146,15 @@ wire       AMCI_RIDLE;
 
 
 //------------------- States of our primary state machine ---------------------
-reg[6:0]    fsm_state;
-localparam  FSM_IDLE        = 0;
-localparam  FSM_READ_IIC    = 10;
-localparam  FSM_WRITE_IIC   = 20;
-localparam  FSM_PASSTHRU_WR = 30;
-localparam  FSM_PASSTHRU_RD = 40;
-localparam  FSM_TIMEOUT     = 50;
-localparam  FSM_BUS_FAULT   = 51;
+reg[6:0]    fsm_state, return_state;
+localparam  FSM_IDLE         = 0;
+localparam  FSM_READ_IIC     = 10;
+localparam  FSM_WRITE_IIC    = 20;
+localparam  FSM_PASSTHRU_WR  = 30;
+localparam  FSM_PASSTHRU_RD  = 40;
+localparam  FSM_SEND_REG_NUM = 45;
+localparam  FSM_TIMEOUT      = 50;
+localparam  FSM_BUS_FAULT    = 51;
 //-----------------------------------------------------------------------------
 
 // Definitions i_PASSTHRU
@@ -168,7 +172,8 @@ wire fsm_is_idle =
 (
     (fsm_state == FSM_IDLE       ) && 
     (i_I2C_READ_LEN_wstrobe  == 0) &&
-    (i_I2C_WRITE_LEN_wstrobe == 0)
+    (i_I2C_WRITE_LEN_wstrobe == 0) &&
+    (i_PASSTHRU_wstrobe      == 0)
 );
 
 // The status output is an aggregation of these states
@@ -194,48 +199,33 @@ wire[7:0] tx_byte = (byte_index == 3) ? i_I2C_TX_DATA[31:24] :
                                         i_I2C_TX_DATA[07:00];
 
 //-----------------------------------------------------------------------------
-// I2C configuration for a read operation
+// IIC AXI configuration for a read operation
 //-----------------------------------------------------------------------------
 
 // Read-command address, and Read-command data
-wire[31:0] rca[0:9], rcd[0:9];
+wire[31:0] rca[0:4], rcd[0:4];
 
 assign rca[00] = IIC_SOFTR;      ;assign rcd[00] = 4'b1010;             // Soft-reset of the AXI IIC module
 assign rca[01] = IIC_RX_FIFO_PIRQ;assign rcd[01] = i_I2C_READ_LEN - 1;  // Set the number of bytes we expect to receive
 assign rca[02] = IIC_IER         ;assign rcd[02] = RX_FULL | TX_ERR | ARB_LOST;
 assign rca[03] = IIC_GIE         ;assign rcd[03] = 32'h8000_0000;       // Globally enable interrupts
-
-// Set the register address
-assign rca[04] = IIC_TX_FIFO     ;assign rcd[04] = {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_WR};
-assign rca[05] = IIC_TX_FIFO     ;assign rcd[05] = i_I2C_REG_NUM[7:0];
-
-// Start a read operation for the desired number of bytes
-assign rca[06] = IIC_TX_FIFO     ;assign rcd[06] = {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_RD};
-assign rca[07] = IIC_TX_FIFO     ;assign rcd[07] = {I2C_STOP, 5'b0, i_I2C_READ_LEN[2:0]};
-
-// Start the transaction
-assign rca[08] = IIC_CR          ;assign rcd[08] = EN;                  // Enable the AXI IIC module
-
-// End of the operation, now the state machine waits for the interrupt
-assign rca[09] = 0               ;assign rcd[09] = 0;
+assign rca[04] = 0               ;assign rcd[04] = 0;
 //-----------------------------------------------------------------------------
 
 
 
 
 //-----------------------------------------------------------------------------
-// I2C configuration for a write operation
+// IIC AXI configuration for a write operation
 //-----------------------------------------------------------------------------
 
 // Write-command address, and Write-command data
-wire[31:0] wca[0:5], wcd[0:5];
+wire[31:0] wca[0:3], wcd[0:3];
 
 assign wca[00] = IIC_SOFTR;      ;assign wcd[00] = 4'b1010;             // Soft-reset of the AXI IIC module
 assign wca[01] = IIC_IER         ;assign wcd[01] = TX_ERR | ARB_LOST;
 assign wca[02] = IIC_GIE         ;assign wcd[02] = 32'h8000_0000;       // Globally enable interrupts
-assign wca[03] = IIC_TX_FIFO     ;assign wcd[03] = {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_WR};
-assign wca[04] = IIC_TX_FIFO     ;assign wcd[04] = i_I2C_REG_NUM[7:0];
-assign wca[05] = 0;              ;assign wcd[05] = 0;
+assign wca[03] = 0;              ;assign wcd[03] = 0;
 //-----------------------------------------------------------------------------
 
 
@@ -276,6 +266,7 @@ wire[31:0] usec_elapsed = usec_reset ? 0 : usec_ticks;
 // This is the main state machine, handling I2C-related transactions
 //=============================================================================
 reg[31:0] end_of_transaction;
+
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
@@ -322,9 +313,8 @@ always @(posedge clk) begin
         // Start of state machine for performing an I2C read operation
         //-----------------------------------------------------------------------------------
 
-        // Configure all the neccessary registers in the AXI IIC core.  When
-        // we're done, we'll wait for an interrupt to tell us either that our
-        // data is waiting in the RX_FIFO, or that a fault has occured.  
+        // Configure all the neccessary registers in the AXI IIC core. When
+        // that's done, we'll set up to send the device-register number  
         FSM_READ_IIC:
             if (AMCI_WIDLE) begin
                 if (rca[cmd_index]) begin
@@ -333,14 +323,52 @@ always @(posedge clk) begin
                     AMCI_WRITE <= 1;
                     cmd_index  <= cmd_index + 1;
                 end else begin
-                    usec_reset <= 1;                
                     fsm_state  <= fsm_state + 1;
                 end
             end
 
+        // If we need to send a register number, make it so
+        FSM_READ_IIC + 1:
+            if (i_I2C_REG_NUM_LEN) begin
+                return_state <= fsm_state + 1;
+                fsm_state    <= FSM_SEND_REG_NUM;
+            end else
+                fsm_state    <= fsm_state + 1;
+
+        // Set up an I2C READ
+        FSM_READ_IIC + 2:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_RD};
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+
+        // Tell the IIC AXI core how many bytes we want to read
+        FSM_READ_IIC + 3:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= {I2C_STOP, 5'b0, i_I2C_READ_LEN[2:0]};
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        // Tell the IIC AXI core to start the transaction, then go wait
+        // for an interrupt to tell us either that the data we wanted 
+        // to read is waiting for us, or that an error occured
+        FSM_READ_IIC + 4:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_CR;
+                AMCI_WDATA <= EN;
+                AMCI_WRITE <= 1;
+                usec_reset <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
         // The interrupt line has gone high.  Let's find out why.
         // If our wait time exceeds i_I2C_TLIMIT_USEC, stop waiting
-        FSM_READ_IIC + 1:
+        FSM_READ_IIC + 5:
             if (axi_iic_intr) begin
                 o_I2C_TRANSACT_USEC <= usec_elapsed;
                 AMCI_RADDR          <= IIC_ISR;
@@ -351,7 +379,7 @@ always @(posedge clk) begin
             end
 
         // Find out if we received data.  If not, it's an error
-        FSM_READ_IIC + 2:
+        FSM_READ_IIC + 6:
             if (AMCI_RIDLE) begin
                 if (AMCI_RDATA & RX_FULL) begin
                     AMCI_RADDR <= IIC_RX_FIFO;
@@ -362,7 +390,7 @@ always @(posedge clk) begin
             end
 
         // Here we read in all bytes from the RX FIFO and placing them in rx_data[]
-        FSM_READ_IIC + 3:
+        FSM_READ_IIC + 7:
             if (AMCI_RIDLE) begin
                 rx_data[byte_index] <= AMCI_RDATA;
                 if (byte_index > 0) begin
@@ -377,9 +405,8 @@ always @(posedge clk) begin
         // Start of state machine for performing an I2C write operation
         //-----------------------------------------------------------------------------------
 
-        // Configure all the neccessary registers in the AXI IIC core.  When
-        // we're done, we'll wait for an interrupt to tell us either that our
-        // data is waiting in the RX_FIFO, or that a fault has occured.  
+        // Configure all the neccessary registers in the AXI IIC core.  WHen
+        // we're done, we'll send the register number we want to write to  
         FSM_WRITE_IIC:
             if (AMCI_WIDLE) begin
                 if (wca[cmd_index]) begin
@@ -391,8 +418,22 @@ always @(posedge clk) begin
                     fsm_state  <= fsm_state + 1;
             end
 
-        // Write the bytes to TX FIFO, ensuring that STOP is on for the last byte
+        // Here we either set up the commands to send a register number
+        // to the device, or (if there is no register number required),
+        // we simply start the data write
         FSM_WRITE_IIC + 1:
+            if (i_I2C_REG_NUM_LEN) begin
+                return_state <= fsm_state + 1;
+                fsm_state    <= FSM_SEND_REG_NUM;
+            end else if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_WR};
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        // Write the bytes to TX FIFO, ensuring that STOP is on for the last byte
+        FSM_WRITE_IIC + 2:
             if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_TX_FIFO;
                 AMCI_WDATA <= (byte_index == 0) ? {I2C_STOP, tx_byte[7:0]} : tx_byte[7:0];
@@ -405,7 +446,7 @@ always @(posedge clk) begin
             end
 
         // We've placed our entire command in the TX FIFO.  Send it.
-        FSM_WRITE_IIC + 2:
+        FSM_WRITE_IIC + 3:
             if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_CR;
                 AMCI_WDATA <= EN;
@@ -417,7 +458,7 @@ always @(posedge clk) begin
         // We've sent the "Enable transaction" command.  Start the
         // microsecond timer, and start a read of the IIC status
         // register
-        FSM_WRITE_IIC + 3:
+        FSM_WRITE_IIC + 4:
             if (AMCI_WIDLE) begin
                 usec_reset <= 1;
                 AMCI_RADDR <= IIC_SR;
@@ -427,7 +468,7 @@ always @(posedge clk) begin
 
         // We're polling the status register to wait for bit 7
         // to tell us "The TX_FIFO has been emptied"
-        FSM_WRITE_IIC + 4:
+        FSM_WRITE_IIC + 5:
             
             // An interrupt indicates something awry in the transaction
             if (axi_iic_intr)
@@ -450,11 +491,47 @@ always @(posedge clk) begin
 
         // Here we pause a moment to allow the last byte in the FIFO to 
         // finish being transmitted to the I2C device
-        FSM_WRITE_IIC + 5:
+        FSM_WRITE_IIC + 6:
             if (usec_elapsed == end_of_transaction) begin
                 o_I2C_TRANSACT_USEC <= usec_elapsed; 
                 fsm_state           <= FSM_IDLE;
             end
+
+        //-----------------------------------------------------------------------------------
+        // This is a subroutine that sends the register number to the device
+        //-----------------------------------------------------------------------------------
+        
+        // Send the device address with "START"
+        FSM_SEND_REG_NUM:
+            begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= {I2C_START, i_I2C_DEV_ADDR[6:0], I2C_WR};
+                AMCI_WRITE <= 1;
+                fsm_state  <= (i_I2C_REG_NUM_LEN == 2) ? fsm_state + 1 : fsm_state + 2; 
+            end
+
+        // Send the high order byte of the register number
+        FSM_SEND_REG_NUM + 1:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= i_I2C_REG_NUM[15:8];
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        // Send the low order byte of the register number
+        FSM_SEND_REG_NUM + 2:
+            if (AMCI_WIDLE) begin
+                AMCI_WADDR <= IIC_TX_FIFO;
+                AMCI_WDATA <= i_I2C_REG_NUM[7:0];
+                AMCI_WRITE <= 1;
+                fsm_state  <= fsm_state + 1;
+            end
+
+        // Return to the caller
+        FSM_SEND_REG_NUM + 3:
+            if (AMCI_WIDLE) fsm_state <= return_state;
+
 
         //-----------------------------------------------------------------------------------
         // Here we perform an AXI4-Lite read of the AXI IIC module

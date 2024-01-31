@@ -53,7 +53,10 @@ module i2c_register
     output[6:0]  o_I2C_DEV_ADDR,
 
     // The register number on the I2C device
-    output[7:0]  o_I2C_REG_NUM,
+    output[15:0]  o_I2C_REG_NUM,
+
+    // The length of the register number in bytes (0, 1, or 2)
+    output[1:0]   o_I2C_REG_NUM_LEN,
 
     // The number of bytes to read.  Starts the read.
     output[2:0]  o_I2C_READ_LEN,
@@ -101,7 +104,7 @@ module i2c_register
 );  
 
     // The number of AXI registers we have
-    localparam REGISTER_COUNT = 15;
+    localparam REGISTER_COUNT = 16;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -128,13 +131,14 @@ module i2c_register
     
     localparam CREG_DEV_ADDR          = 6;
     localparam CREG_REG_NUM           = 7;
-    localparam CREG_READ_LEN          = 8;    
-    localparam CREG_TX_DATA           = 9;
-    localparam CREG_WRITE_LEN         = 10;
-    localparam CREG_TLIMIT_USEC       = 11;
-    localparam CREG_PASSTHRU_ADDR     = 12;
-    localparam CREG_PASSTHRU_WDATA    = 13;
-    localparam CREG_PASSTHRU          = 14;
+    localparam CREG_REG_NUM_LEN       = 8;
+    localparam CREG_READ_LEN          = 9;    
+    localparam CREG_TX_DATA           = 10;
+    localparam CREG_WRITE_LEN         = 11;
+    localparam CREG_TLIMIT_USEC       = 12;
+    localparam CREG_PASSTHRU_ADDR     = 13;
+    localparam CREG_PASSTHRU_WDATA    = 14;
+    localparam CREG_PASSTHRU          = 15;
     //==========================================================================
 
 
@@ -143,6 +147,7 @@ module i2c_register
     //-------------------------------------------------------------
     assign o_I2C_DEV_ADDR          = axi_reg[CREG_DEV_ADDR      ];
     assign o_I2C_REG_NUM           = axi_reg[CREG_REG_NUM       ];
+    assign o_I2C_REG_NUM_LEN       = axi_reg[CREG_REG_NUM_LEN   ];
     assign o_I2C_READ_LEN          = axi_reg[CREG_READ_LEN      ];
     assign o_I2C_READ_LEN_wstrobe  = wstrobe[CREG_READ_LEN      ];
     assign o_I2C_TX_DATA           = axi_reg[CREG_TX_DATA       ];
@@ -170,7 +175,7 @@ module i2c_register
     // Default values for each of the control registers
     wire [31:0] default_value[CREG_FIRST:REGISTER_COUNT-1];
     assign default_value[CREG_TLIMIT_USEC] = 2000;    
-
+    assign default_value[CREG_REG_NUM_LEN] = 1;
 
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
     //<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
