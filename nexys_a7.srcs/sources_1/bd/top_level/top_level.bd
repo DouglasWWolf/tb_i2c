@@ -1463,6 +1463,9 @@
               }
             }
           },
+          "idle": {
+            "direction": "O"
+          },
           "i_I2C_DEV_ADDR": {
             "direction": "I",
             "left": "6",

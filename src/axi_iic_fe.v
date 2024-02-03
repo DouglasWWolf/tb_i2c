@@ -12,9 +12,12 @@
 module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLKS_PER_USEC = 100)
 (
     input wire clk, resetn,
-
+ 
     // The interrupt signal from the Xilinx AXI IIC core
     input             axi_iic_intr,
+    
+    // This is high when we're not doing anything
+    output            idle,
 
     // Address of the I2C device we want to read/write
     input[6:0]        i_I2C_DEV_ADDR,
@@ -168,7 +171,7 @@ reg bus_fault;
 reg i2c_timeout;
 
 // We're idle when we're in IDLE state, and no "start this function" signals are asserted
-wire fsm_is_idle =
+assign idle =
 (
     (fsm_state == FSM_IDLE       ) && 
     (i_I2C_READ_LEN_wstrobe  == 0) &&
@@ -176,8 +179,9 @@ wire fsm_is_idle =
     (i_PASSTHRU_wstrobe      == 0)
 );
 
+
 // The status output is an aggregation of these states
-assign o_I2C_STATUS = {i2c_timeout, bus_fault, fsm_is_idle};
+assign o_I2C_STATUS = {i2c_timeout, bus_fault, idle};
 
 // This is the first revision of this module
 assign o_MODULE_REV = 1;
