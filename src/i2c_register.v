@@ -104,7 +104,7 @@ module i2c_register
 );  
 
     // The number of AXI registers we have
-    localparam REGISTER_COUNT = 16;
+    localparam REGISTER_COUNT = 20;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -125,20 +125,24 @@ module i2c_register
     localparam SREG_I2C_TRANSACT_USEC = 3;
     localparam SREG_PASSTHRU_RDATA    = 4;
     localparam SREG_PASSTHRU_RESP     = 5;
+    localparam SREG_RESERVED_1        = 6;
+    localparam SREG_RESERVED_2        = 7;
+    localparam SREG_RESERVED_3        = 8;
+    localparam SREG_RESERVED_4        = 9;
     
     // This is an alias for the first control register
-    localparam CREG_FIRST             = 6;    
+    localparam CREG_FIRST             = 10;    
     
-    localparam CREG_DEV_ADDR          = 6;
-    localparam CREG_REG_NUM           = 7;
-    localparam CREG_REG_NUM_LEN       = 8;
-    localparam CREG_READ_LEN          = 9;    
-    localparam CREG_TX_DATA           = 10;
-    localparam CREG_WRITE_LEN         = 11;
-    localparam CREG_TLIMIT_USEC       = 12;
-    localparam CREG_PASSTHRU_ADDR     = 13;
-    localparam CREG_PASSTHRU_WDATA    = 14;
-    localparam CREG_PASSTHRU          = 15;
+    localparam CREG_DEV_ADDR          = 10;
+    localparam CREG_REG_NUM           = 11;
+    localparam CREG_REG_NUM_LEN       = 12;
+    localparam CREG_READ_LEN          = 13;    
+    localparam CREG_TX_DATA           = 14;
+    localparam CREG_WRITE_LEN         = 15;
+    localparam CREG_TLIMIT_USEC       = 16;
+    localparam CREG_PASSTHRU_ADDR     = 17;
+    localparam CREG_PASSTHRU_WDATA    = 18;
+    localparam CREG_PASSTHRU          = 19;
     //==========================================================================
 
 
