@@ -9,7 +9,7 @@
 
 */
 
-module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLKS_PER_USEC = 100)
+module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000, parameter CLKS_PER_USEC = 100)
 (
     input wire clk, resetn,
  
@@ -18,6 +18,9 @@ module axi_iic_fe # (parameter IIC_BASE = 32'h0000_0000_0000_0000, parameter CLK
     
     // This is high when we're not doing anything
     output            idle,
+
+    // Bit 0 : Enter I2C stop state prior to reading data from device?
+    input             i_I2C_CONFIG,
 
     // Address of the I2C device we want to read/write
     input[6:0]        i_I2C_DEV_ADDR,
@@ -186,6 +189,9 @@ assign o_I2C_STATUS = {i2c_timeout, bus_fault, idle};
 // This is the first revision of this module
 assign o_MODULE_REV = 1;
 
+// Should we enter an I2C "STOP" data prior to reading data from the device?
+wire stop_before_read = i_I2C_CONFIG;
+
 // Received data from the I2C device
 reg[7:0] rx_data[0:3];
 reg[1:0] byte_index;
@@ -233,6 +239,7 @@ assign wca[03] = 0;              ;assign wcd[03] = 0;
 //-----------------------------------------------------------------------------
 
 
+
 //=============================================================================
 // This block counts elapsed microseconds.  Count is reset to zero on 
 // any cycle where "usec_reset" is high
@@ -270,7 +277,7 @@ wire[31:0] usec_elapsed = usec_reset ? 0 : usec_ticks;
 // This is the main state machine, handling I2C-related transactions
 //=============================================================================
 reg[31:0] end_of_transaction;
-
+reg       is_read;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
@@ -288,6 +295,7 @@ always @(posedge clk) begin
                 // Were we just told to start an I2C "read register" transaction?
                 if (i_I2C_READ_LEN_wstrobe && i_I2C_READ_LEN >= 1 && i_I2C_READ_LEN <= 4) begin
                     {rx_data[3], rx_data[2], rx_data[1],rx_data[0]} <= 0;
+                    is_read     <= 1;
                     cmd_index   <= 0;
                     i2c_timeout <= 0;
                     bus_fault   <= 0;
@@ -297,6 +305,7 @@ always @(posedge clk) begin
 
                 // Were we just told to start an I2C "write register" transaction?
                 if (i_I2C_WRITE_LEN_wstrobe && i_I2C_WRITE_LEN >= 1 && i_I2C_WRITE_LEN <= 4) begin
+                    is_read     <= 0;
                     cmd_index   <= 0;
                     i2c_timeout <= 0;
                     bus_fault   <= 0;
@@ -527,7 +536,7 @@ always @(posedge clk) begin
         FSM_SEND_REG_NUM + 2:
             if (AMCI_WIDLE) begin
                 AMCI_WADDR <= IIC_TX_FIFO;
-                AMCI_WDATA <= i_I2C_REG_NUM[7:0];
+                AMCI_WDATA <= i_I2C_REG_NUM[7:0] | ((is_read & stop_before_read) ? I2C_STOP : 0);
                 AMCI_WRITE <= 1;
                 fsm_state  <= fsm_state + 1;
             end

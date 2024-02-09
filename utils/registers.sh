@@ -1,4 +1,4 @@
-BASE_ADDR=0x10000
+BASE_ADDR=0x3000
 
           MODULE_REV=$((BASE_ADDR +  0*4))  
           I2C_STATUS=$((BASE_ADDR +  1*4))
@@ -14,10 +14,16 @@ BASE_ADDR=0x10000
          I2C_TX_DATA=$((BASE_ADDR + 14*4))
        I2C_WRITE_LEN=$((BASE_ADDR + 15*4))
           I2C_TLIMIT=$((BASE_ADDR + 16*4))
-       PASSTHRU_ADDR=$((BASE_ADDR + 17*4))
-      PASSTHRU_WDATA=$((BASE_ADDR + 18*4))
-            PASSTHRU=$((BASE_ADDR + 19*4))
+          I2C_CONFIG=$((BASE_ADDR + 17*4))
+       PASSTHRU_ADDR=$((BASE_ADDR + 18*4))
+      PASSTHRU_WDATA=$((BASE_ADDR + 19*4))
+            PASSTHRU=$((BASE_ADDR + 20*4))
       
+
+xaxireg()
+{
+    pcireg $1 $2 $3
+}
 
 #==============================================================================
 # This reads a PCI register and displays its value in decimal

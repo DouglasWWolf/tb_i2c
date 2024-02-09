@@ -49,8 +49,11 @@ module i2c_register
     //          These ports are probably mapped to AXI registers
     //==========================================================================
 
+    // Configures I2C transaction options
+    output        o_I2C_CONFIG,
+
     // The address of the I2C device being communicated with
-    output[6:0]  o_I2C_DEV_ADDR,
+    output[6:0]   o_I2C_DEV_ADDR,
 
     // The register number on the I2C device
     output[15:0]  o_I2C_REG_NUM,
@@ -104,7 +107,7 @@ module i2c_register
 );  
 
     // The number of AXI registers we have
-    localparam REGISTER_COUNT = 20;
+    localparam REGISTER_COUNT = 21;
 
     // 32-bit AXI accessible registers
     reg [31:0] axi_reg[0:REGISTER_COUNT-1];
@@ -140,9 +143,10 @@ module i2c_register
     localparam CREG_TX_DATA           = 14;
     localparam CREG_WRITE_LEN         = 15;
     localparam CREG_TLIMIT_USEC       = 16;
-    localparam CREG_PASSTHRU_ADDR     = 17;
-    localparam CREG_PASSTHRU_WDATA    = 18;
-    localparam CREG_PASSTHRU          = 19;
+    localparam CREG_CONFIG            = 17;
+    localparam CREG_PASSTHRU_ADDR     = 18;
+    localparam CREG_PASSTHRU_WDATA    = 19;
+    localparam CREG_PASSTHRU          = 20;
     //==========================================================================
 
 
@@ -162,6 +166,7 @@ module i2c_register
     assign o_PASSTHRU_WDATA        = axi_reg[CREG_PASSTHRU_WDATA];
     assign o_PASSTHRU              = axi_reg[CREG_PASSTHRU      ];
     assign o_PASSTHRU_wstrobe      = wstrobe[CREG_PASSTHRU      ];
+    assign o_I2C_CONFIG            = axi_reg[CREG_CONFIG        ];
     //-------------------------------------------------------------
 
 

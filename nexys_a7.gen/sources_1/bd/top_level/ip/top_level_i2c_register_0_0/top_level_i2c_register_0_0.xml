@@ -887,6 +887,18 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
+        <spirit:name>o_I2C_CONFIG</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>dummy_view</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
         <spirit:name>o_I2C_DEV_ADDR</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
